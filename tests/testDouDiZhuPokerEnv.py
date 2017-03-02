@@ -1,9 +1,11 @@
 #!/bin/python
+#coding:utf-8
 import sys
 import unittest
 sys.path.append("DouDiZhuPoker")
 
 from DouDiZhuPokerEnv   import *
+
 
 class DouDiZhuPokerEnvTester(unittest.TestCase):
     def testNormal(self):
@@ -13,7 +15,6 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         with self.assertRaises(Exception):
             env.init(p)
 
-        print "a"
 
         p = [0,0,0]
         env.init(p)
@@ -49,8 +50,16 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         action = Action([ActionSpace.r],[])
         self.assertFalse(env.isActionValid(action))
 
-        print "b"
+        action = Action([1,2,3,4,5],[12,2,3])
+        self.assertFalse(env.isActionValid(action))
 
         action = Action([ActionSpace.bid],[])
         isTerminal, scores, infos = env.forward(action)
-        print infos[3].public_state
+
+        action = Action([ActionSpace.bid],[])
+        isTerminal, scores, infos = env.forward(action)
+
+        action = Action([ActionSpace.bid],[])
+        isTerminal, scores, infos = env.forward(action)
+
+        self.assertEqual(infos[3].public_state.landlord_id,2)

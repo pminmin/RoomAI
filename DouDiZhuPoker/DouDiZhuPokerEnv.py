@@ -36,35 +36,41 @@ class DouDiZhuPokerEnv(AbstractEnv):
         if action.isComplemented() == False:
             action.complement()
 
+        if action.pattern[0] == "i_invalid":
+            return False;
+
         turnCards = self.private_state.hand_cards[self.public_state.turn] 
         if isActionGeneratedFromCards(action, turnCards) == False:
             return False
 
 
-        if action.patter[0] == "i_invalid":
-            return False
-
         if self.public_state.phase == Phase.bid:
-            if action.pattern[0] not in ["i_cheat","i_roblord"]:  
+            if action.pattern[0] not in ["i_cheat","i_bid"]:  
                 return False
             return True
                 
         elif self.public_state.phase == Phase.play:
-            if action.pattern[0]  == "i_roblord":  
+            license_action = self.public_state.license_action
+            
+            if action.pattern[0]  == "i_bid":  
                 return False
-
-            if action.pattern[0] == "i_cheat":
+            elif action.pattern[0]  == "i_cheat":
                 if self.public_state.turn == self.public_state.license_id:
                     return False
                 return True
             
-            else:
-                if self.public_state.turn == self.public_state.licenseId:
-                    return True
 
-                licese_action = self.public_state.license_action
-                if compareAction(action, license_action) <= 0:
-                    return False
+            if self.public_state.turn == self.public_state.license_id:
+                return True
+
+            elif action.pattern[6] > license_action.pattern[6]:  
+                return True
+               
+            elif action.maxMasterCard - license_action.maxMasterCard > 0: 
+                return True
+
+            else:
+                return False
 
 
     #@Overide
@@ -116,17 +122,17 @@ class DouDiZhuPokerEnv(AbstractEnv):
         if self.public_state.phase == Phase.bid:  
 
             if self.public_state.epoch == 0:      
-                if action.pattern[0] == "i_roblord":
+                if action.pattern[0] == "i_bid":
                     self.public_state.landlord_candidate_id =\
                         self.public_state.turn
 
             elif self.public_state.epoch == 1:
-                if action.pattern[0] == "i_roblord":
+                if action.pattern[0] == "i_bid":
                     self.public_state.landlord_candiate_id  = \
                         self.public_state.turn
 
             elif self.public_state.epoch == 2:
-                if action.pattern[0] == "i_roblord":
+                if action.pattern[0] == "i_bid":
                     self.public_state.landlord_candidate_id = \
                         self.public_state.turn
 
@@ -148,10 +154,10 @@ class DouDiZhuPokerEnv(AbstractEnv):
             if action.pattern[0] == "i_cheat":
                 pass
 
-            elif action.pattern[2] + action.pattern[5] ==\
+            elif action.pattern[1] + action.pattern[4] ==\
                  self.public_state.num_hand_cards[turn]:
 
-                removeActionFromHandCards(action, self.public_state.handCards[turn])
+                removeActionFromCards(action, self.public_state.hand_cards[turn])
                 self.public_state.num_hand_cards[turn] = 0
                 self.public_state.licese_id = \
                     (self.public_state.license_id+1)%3
@@ -168,9 +174,9 @@ class DouDiZhuPokerEnv(AbstractEnv):
 
             else: #action.pattern[0] != "i_cheat" and not complete
                 ## the action exerts the influence
-                removeActionFromHandCards(action, self.public_state.handCards[turn])
+                removeActionFromCards(action, self.public_state.hand_cards[turn])
                 self.public_state.num_hand_cards[turn] -= \
-                    action.pattern[2]+ action.pattern[5]
+                    action.pattern[1]+ action.pattern[4]
                 self.public_state.license_id     = \
                     (self.public_state.licenseId+1)%3
                 self.public_state.license_action = \
@@ -188,7 +194,7 @@ class DouDiZhuPokerEnv(AbstractEnv):
         infos[3].private_state = copy.deepcopy(self.private_state)
         
         if flag == True:
-            info[self.public_state.landlord_id].init_addcards = \
+            infos[self.public_state.landlord_id].init_addcards = \
                 self.private_state.additive_cards
 
         return isTerminal, scores, copy.deepcopy(infos)

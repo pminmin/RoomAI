@@ -8,7 +8,6 @@ from DouDiZhuPokerUtil import *
 
 
 class DouDiZhuPokerUtilTester(unittest.TestCase):
-    '''
     def testAction2Patterns(self):
         
         a = Action([1,1,1],[2]).complement()
@@ -27,27 +26,15 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         self.assertEqual(a.pattern[0], "i_cheat")
         
         a = Action([ActionSpace.R, ActionSpace.r],[]).complement()
-        self.assertEqual(a.pattern[0], "x_twoKings")
+        self.assertEqual(a.pattern[0], "x_rocket")
         
 
     def testAllPatterns(self):
         for k in AllPatterns:
             p = AllPatterns[k]
             self.assertEqual(k,p[0])
-            self.assertEqual(len(p),8)
+            self.assertEqual(len(p),7)
             if "p" in p[0]:
-                self.assertEqual("p_%d_%d_%d_%d_%d"%(p[2],p[3],p[4],p[5],p[6]), p[0])
+                self.assertEqual("p_%d_%d_%d_%d_%d"%(p[1],p[2],p[3],p[4],p[5]), p[0])
 
-    '''
 
-    def testCompare(self):
-        
-        a  = Action([1,1,1],[2])
-        b  = Action([1,1,1,1],[])
-
-        #with self.assertRaises(Exception):
-        #    x = compareActions(a,b)
-
-        c = Action([2,2,2],[1])
-        rankdiff = compareActions(a,c)
-        self.assertTrue(rankdiff < 0)
