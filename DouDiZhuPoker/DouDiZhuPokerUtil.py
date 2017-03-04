@@ -9,6 +9,28 @@
 #3,               10, J, Q,  K,  A,  2,  r,  R
 #
 
+class PhaseSpace:
+    bid  = 0
+    play = 1
+
+class ActionSpace:
+    three   = 0;
+    four    = 1;
+    five    = 2;
+    six     = 3;
+    seven   = 4;
+    eight   = 5;
+    night   = 6;
+    ten     = 7;
+    J       = 8;
+    Q       = 9;
+    K       = 10;
+    A       = 11;
+    two     = 12;
+    r       = 13;
+    R       = 14;
+    cheat   = 15;
+    bid     = 16;
 
 class PrivateState:
     def __init__(self):
@@ -22,7 +44,7 @@ class PublicState:
 
         self.landlord_candidate_id  = -1
         self.landlord_id            = -1
-        self.license_id             = -1
+        self.license_playerid         = -1
         self.license_action         = None
 
         self.first_player           = -1
@@ -46,29 +68,10 @@ class Info:
         self.private_state      = None
         
         
-class ActionSpace:
-    three   = 0;
-    four    = 1;
-    five    = 2;
-    six     = 3;
-    seven   = 4;
-    eight   = 5;
-    night   = 6;
-    ten     = 7;
-    J       = 8;
-    Q       = 9;
-    K       = 10;
-    A       = 11;
-    two     = 12;
-    r       = 13;
-    R       = 14;
-    cheat   = 15;
-    bid = 16;
-
 class Action:
-    def __init__(self, masterCard, slaveCard):
-        self.masterCard         = masterCard
-        self.slaveCard          = slaveCard
+    def __init__(self, masterCards, slaveCards):
+        self.masterCards        = masterCards
+        self.slaveCards         = slaveCards
 
         self.masterValues2Num   = None
         self.slaveValues2Num    = None
@@ -88,14 +91,14 @@ class Action:
     def complement(self):
 
         self.masterValues2Num   = dict()
-        for c in self.masterCard:
+        for c in self.masterCards:
             if c in self.masterValues2Num:
                 self.masterValues2Num[c] += 1
             else:
                 self.masterValues2Num[c]  = 1
 
         self.slaveValues2Num    = dict()
-        for c in self.slaveCard:
+        for c in self.slaveCards:
             if c in self.slaveValues2Num:
                 self.slaveValues2Num[c] += 1
             else:
@@ -121,31 +124,31 @@ class Action:
 
 
         # is cheat?
-        if len(self.masterCard) == 1 \
-            and len(self.slaveCard) == 0 \
-            and self.masterCard[0] == ActionSpace.cheat:
+        if len(self.masterCards) == 1 \
+            and len(self.slaveCards) == 0 \
+            and self.masterCards[0] == ActionSpace.cheat:
                 self.pattern = AllPatterns["i_cheat"]
 
         # is roblord
-        elif len(self.masterCard) == 1 \
-            and len(self.slaveCard) == 0 \
-            and self.masterCard[0] == ActionSpace.bid:
+        elif len(self.masterCards) == 1 \
+            and len(self.slaveCards) == 0 \
+            and self.masterCards[0] == ActionSpace.bid:
                 self.pattern = AllPatterns["i_bid"] 
 
         # is twoKings
-        elif len(self.masterCard) == 2 \
+        elif len(self.masterCards) == 2 \
             and len(self.masterValues2Num) == 2\
-            and len(self.slaveCard) == 0 \
-            and self.masterCard[0] in [ActionSpace.r, ActionSpace.R] \
-            and self.masterCard[1] in [ActionSpace.r, ActionSpace.R]:
+            and len(self.slaveCards) == 0 \
+            and self.masterCards[0] in [ActionSpace.r, ActionSpace.R] \
+            and self.masterCards[1] in [ActionSpace.r, ActionSpace.R]:
                  self.pattern = AllPatterns["x_rocket"]
             
         else:
 
-            ## process masterCard
+            ## process masterCards
             masterValues = self.masterValues2Num
             if len(masterValues) > 0:
-                count = masterValues[self.masterCard[0]]
+                count = masterValues[self.masterCards[0]]
                 for c in masterValues:
                     if masterValues[c] != count:    
                         self.pattern = AllPatterns["i_invalid"]
@@ -154,16 +157,16 @@ class Action:
             ## process slave card
             slaveValues = self.slaveValues2Num
             if len(slaveValues) > 0:
-                count = slaveValues[self.slaveCard[0]]
+                count = slaveValues[self.slaveCards[0]]
                 for c in slaveValues:
                     if slaveValues[c] != count: 
                         self.pattern = AllPatterns["i_invalid"]
 
            
             if self.pattern == None:
-                pattern = "p_%d_%d_%d_%d_%d"%(  len(self.masterCard), len(masterValues),\
+                pattern = "p_%d_%d_%d_%d_%d"%(  len(self.masterCards), len(masterValues),\
                                                 self.isMasterContinuous,\
-                                                len(self.slaveCard),  len(slaveValues))
+                                                len(self.slaveCards),  len(slaveValues))
 
                 if pattern in AllPatterns:
                     self.pattern = AllPatterns[pattern]
@@ -174,14 +177,11 @@ class Action:
 
         return self
 
-class Phase:
-    bid = 0
-    play = 1
 
 
 AllPatterns  = dict();
 #p_NumMasterCard_NumMasterValues_isContinous_NumSlaveCard_NumSlaveValues
-#(name, ChinesName, NumMasterCard, NumMasterValues, isContinous(0,1), NumSlaveCard, NumSlaveValues,rank)
+#(name, NumMasterCard, NumMasterValues, isStraight(0,1), NumSlaveCard, NumSlaveValues,rank)
 AllPatterns["i_invalid"]      =  ("i_invalid",       0,0,0,0,0,-1) #special process logic
 AllPatterns["i_cheat"]        =  ("i_cheat",         1,1,0,0,0,-1) #special process logic
 AllPatterns["i_bid"]          =  ("i_bid",           1,1,0,0,0,-1) #special process logic
@@ -233,31 +233,4 @@ AllPatterns["p_12_4_1_8_4"]   =  ("p_12_4_1_8_4",    12,4,1,8,4,1)
 
 
 
-## check whether is it valid to generate actions from the cards
-def isActionGeneratedFromCards(action, hand_cards):
-    flag = True;
-
-    if action.isComplemented() == False:
-        action.complement()
-
-    for a in action.masterValues2Num:
-        flag = flag and (action.masterValues2Num[a] <= hand_cards[a])
-
-    for a in action.slaveValues2Num:
-        flag = flag and (action.slaveValues2Num[a] <= hand_cards[a])
-
-    return flag
-
-## check
-def removeActionFromCards(action, hands_cards):
-    if action.isComplement() == False:
-        action.complement()
-
-    for a in action.masterValues2Num:
-        hand_cards[a] -= action.masterValues2Num[a]
-
-    for a in action.slaveValues2Num:
-        hand_cards[a] -= action.slaveValues2Num[a]
-
-    return hand_cards
 

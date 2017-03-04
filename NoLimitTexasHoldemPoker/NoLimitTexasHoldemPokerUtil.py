@@ -6,8 +6,10 @@ class Card:
         self.point = point
         self.suit  = suit
 def compareCard(c1,c2):
-    return c1.point < c2.point
-
+    if c1.point != c2.point:
+        return c1.point - c2.point
+    else:
+        return c1.suit - c2.suit
     
 #point
 #0, 1, 2, 3, ..., 7,  8, 9, 10, 11,  12
@@ -22,21 +24,21 @@ def compareCard(c1,c2):
 AllCardsPattern = dict() 
 #name, isStraight, isPair, isSameSuit, [SizeOfPair1, SizeOfPair2](desc), rank, cards
 AllCardsPattern["Straight_SameSuit"] = \
-("Straight_SameSuit",   True,  False, True,  [], 100, [])   
+["Straight_SameSuit",   True,  False, True,  [], 100, []]   
 AllCardsPattern["4_1"] = \
-("4_1",                 False, True,  False, [4,1], 98,[])
+["4_1",                 False, True,  False, [4,1], 98,[]]
 AllCardsPattern["3_2"] = \
-("3_2",                 False, True,  False, [3,2], 97,[])
+["3_2",                 False, True,  False, [3,2], 97,[]]
 AllCardsPattern["SameSuit"] = \
-("SameSuit",            False, False, True,  [], 96,[])
+["SameSuit",            False, False, True,  [], 96,[]]
 AllCardsPattern["Straight_DiffSuit"] = \
-("Straight_DiffSuit",   True,  False, False, [], 95,[])
+["Straight_DiffSuit",   True,  False, False, [], 95,[]]
 AllCardsPattern["3_1_1"] = \
-("3_1_1",               False, True,  False, [3,1,1], 94,[])
+["3_1_1",               False, True,  False, [3,1,1], 94,[]]
 AllCardsPattern["2_2_1"] = \
-("2_2_1",               False, True,  False, [2,2,1], 93,[])
+["2_2_1",               False, True,  False, [2,2,1], 93,[]]
 AllCardsPattern["2_1_1_1"] = \
-("2_1_1_1",             False, True,  False, [2,1,1,1], 92, [])
+["2_1_1_1",             False, True,  False, [2,1,1,1], 92, []]
 
 def Cards2Pattern(hand_cards, remaining_cards):
     point2cards = dict()
@@ -59,7 +61,7 @@ def Cards2Pattern(hand_cards, remaining_cards):
         num2point[num].append(p)    
 
     sorted_point = []
-    for p in point2cards
+    for p in point2cards:
         sorted_point.append(p)
     sorted_point.sort()
    
@@ -76,6 +78,7 @@ def Cards2Pattern(hand_cards, remaining_cards):
                 if numStraight == 5: 
                     pattern = AllCardsPattern["Straight_SameSuit"]   
                     pattern[6] = suit2cards[s][i:i+5]
+                    pattern[6].sort(compareCard)
                     return pattern
     
     ##4_1
@@ -83,10 +86,14 @@ def Cards2Pattern(hand_cards, remaining_cards):
         p4 = num2point[4][0]
         p1 = -1
         for i in xrange(len(sorted_point)-1,-1,-1):
-            if sorted_point[i] != p4:   p1 = sorted_point[i]
+            if sorted_point[i] != p4:   
+                p1 = sorted_point[i]
+                break
         pattern = AllCardsPattern["4_1"]
-        pattern = point2cards[p4][0:4]
-        pattern.append(point2cards[p1][-1])
+        pattern[6] = point2cards[p4][0:4]
+        pattern[6].append(point2cards[p1][0])
+        pattern[6].sort(compareCard)
+        return pattern
 
     ##3_2 
     if len(num2point[3]) >= 1:
@@ -98,6 +105,7 @@ def Cards2Pattern(hand_cards, remaining_cards):
             p2 = num2point[3][0]            
             pattern[6].append(point2cards[p2][0])
             pattern[6].append(point2cards[p2][1])
+            pattern[6].sort(compareCard)
             return pattern
 
         if len(num2point[2]) >= 1:        
@@ -106,6 +114,7 @@ def Cards2Pattern(hand_cards, remaining_cards):
             p2 = num2point[3][len(num2point[2])-1]
             pattern[6].append(point2cards[p2][0])
             pattern[6].append(point2cards[p2][1])
+            pattern[6].sort(compareCard)
             return pattern
             
 
@@ -115,6 +124,7 @@ def Cards2Pattern(hand_cards, remaining_cards):
             pattern = AllCardsPattern["SameSuit"]
             len1    = len(suit2cards[s])
             pattern[6] = suit2cards[s][len1-5:len1]  
+            pattern[6].sort(compareCard)
             return pattern
 
     ##Straight_DiffSuit
@@ -130,6 +140,7 @@ def Cards2Pattern(hand_cards, remaining_cards):
             for p in xrange(idx,idx+5):
                 point = sorted_point[p]
                 pattern[6].append(point2cards[point][0])
+            pattern[6].sort(compareCard)
             return pattern
 
     ##3_1_1
@@ -145,7 +156,8 @@ def Cards2Pattern(hand_cards, remaining_cards):
             if p != p3: 
                 pattern[6].append(point2cards[p][0])
                 num += 1
-            if num == 2:    continue
+            if num == 2:    break
+        pattern[6].sort(compareCard)
         return pattern
 
 
@@ -166,12 +178,13 @@ def Cards2Pattern(hand_cards, remaining_cards):
                 c = point2cards[p][0]
                 pattern[6].append(c)
                 flag = True
-            if flag == True:    continue;
+            if flag == True:    break;
+        pattern[6].sort(compareCard)
         return pattern
 
     ##2_1_1_1
     if len(num2point[2]) == 1:
-        pattern    = AllCards["2_1_1_1"]
+        pattern    = AllCardsPattern["2_1_1_1"]
         p2         = num2point[2][0]
         pattern[6] = point2cards[p2][0:2]
         num     = 0
@@ -179,8 +192,8 @@ def Cards2Pattern(hand_cards, remaining_cards):
             p1 = sorted_point[p]
             if p1 != p2:
                 pattern[6].append(point2cards[p1][0])
-            if num == 3:    continue
-
+            if num == 3:    break
+        pattern[6].sort(compareCard)
         return pattern
 
 class Action:
