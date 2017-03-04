@@ -22,7 +22,7 @@ def compareCard(c1,c2):
 
 
 AllCardsPattern = dict() 
-#name, isStraight, isPair, isSameSuit, [SizeOfPair1, SizeOfPair2](desc), rank, cards
+#name, isStraight, isSamePoint, isSameSuit, [SizeOfPair1, SizeOfPair2](desc), rank, cards
 AllCardsPattern["Straight_SameSuit"] = \
 ["Straight_SameSuit",   True,  False, True,  [], 100, []]   
 AllCardsPattern["4_1"] = \
