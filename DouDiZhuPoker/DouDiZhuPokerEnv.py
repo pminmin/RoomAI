@@ -70,9 +70,14 @@ class DouDiZhuPokerEnv(AbstractEnv):
         self.private_state.num_hand_cards[landlord_id] += 3
 
     def is_action_from_cards(self,turn,action):
+
         flag = True
         if action.isComplemented() == False:
             action.complement()
+
+        if action.pattern[0] == "i_cheat":      return True
+        if action.pattern[0] == "i_bid":        return True
+        if action.pattern[0] == "i_invalid":    return False
         
         hand_cards = self.private_state.hand_cards[turn]
        
@@ -153,6 +158,7 @@ class DouDiZhuPokerEnv(AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
+        
         isTerminal   = False
         scores       = []
         infos        = [Info(), Info(), Info(), Info()]
@@ -181,12 +187,12 @@ class DouDiZhuPokerEnv(AbstractEnv):
                     landlord_id = self.public_state.landlord_id
                     additive_cards = self.private_state.additive_cards
                     infos[landlord_id].init_addcards = copy.deepcopy(additive_cards)
-
         
 
         else: #phase == play
 
             if action.pattern[0] != "i_cheat":
+
                 
                 self.update_cards(turn,action)
                 self.update_license(turn,action)                
@@ -203,7 +209,7 @@ class DouDiZhuPokerEnv(AbstractEnv):
                 
  
         if turnNotChange == False:
-            self.public_state.turn                = (turn+1)%3
+            self.public_state.turn            = (turn+1)%3
         self.public_state.previous_id         = turn
         self.public_state.previous_action     = action
         self.public_state.epoch              += 1
