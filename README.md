@@ -1,6 +1,6 @@
 # RoomAI
 
-A environment with some base players for developing a chess AI player 
+RoomAI is a toolkit for developing and comparing chess-bots.
 
 
 # Contents
