@@ -3,9 +3,7 @@
 import sys
 import unittest
 import copy
-sys.path.append("DouDiZhuPoker")
-
-from DouDiZhuPokerEnv   import *
+from roomai.doudizhu   import *
 
 
 class DouDiZhuPokerEnvTester(unittest.TestCase):

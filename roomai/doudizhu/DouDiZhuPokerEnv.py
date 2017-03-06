@@ -1,12 +1,12 @@
 #!/bin/python
 #coding:utf-8
-from AbstractEnvPlayer import *;
-from DouDiZhuPokerUtil import *;
+from DouDiZhuPokerUtil import *
 
+import roomai
 import random
 import copy
 
-class DouDiZhuPokerEnv(AbstractEnv):
+class DouDiZhuPokerEnv(roomai.AbstractEnv):
 
     def __init__(self):
         self.public_state  = PublicState()

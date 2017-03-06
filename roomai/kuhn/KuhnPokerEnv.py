@@ -1,13 +1,13 @@
 #!/bin/python
 import random
 import math
-from AbstractEnvPlayer import *
+import roomai
 
 class KuhnPokerActions:
     bet   = 0;
     cheat = 1;
 
-class KuhnPokerEnv(AbstractEnv):
+class KuhnPokerEnv(roomai.AbstractEnv):
     def __init__(self):
         self.validActions = [KuhnPokerActions(), KuhnPokerActions()]
 

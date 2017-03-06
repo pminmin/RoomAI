@@ -1,7 +1,7 @@
 #!/bin/python
-from AbstractEnvPlayer import *
+import roomai
 
-class DouDiZhuPokerMaxPlayer(AbstractPlayer):
+class DouDiZhuPokerMaxPlayer(roomai.AbstractPlayer):
     
     def receiveInformation(self,info):
         return 0;

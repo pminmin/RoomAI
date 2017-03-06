@@ -2,9 +2,7 @@
 
 import sys
 import unittest
-sys.path.append("DouDiZhuPoker")
-
-from DouDiZhuPokerUtil import *
+from roomai.doudizhu import *
 
 class DouDiZhuPokerUtilTester(unittest.TestCase):
     def testAction2Patterns(self):

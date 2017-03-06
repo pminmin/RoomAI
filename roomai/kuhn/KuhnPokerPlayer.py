@@ -1,9 +1,9 @@
 #!/bin/python
 #coding:utf-8
-from AbstractEnvPlayer import *;
 import random
+import roomai
 
-class KuhnPokerAlwaysBetPlayer(AbstractPlayer):
+class KuhnPokerAlwaysBetPlayer(roomai.AbstractPlayer):
     def receiveInformation(self,p):
         pass
     def receiveValidActions(self,actions):

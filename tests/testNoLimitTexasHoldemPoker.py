@@ -1,9 +1,8 @@
 #!/bin/python
 import sys
 import unittest
-sys.path.append("NoLimitTexasHoldemPoker")
 
-from NoLimitTexasHoldemPokerUtil import *
+from roomai.texas import *
 
 class NoLimitTexasHoldemPokerTester(unittest.TestCase):
 
