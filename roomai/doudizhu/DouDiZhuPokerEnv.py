@@ -42,6 +42,7 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
         if action.pattern[0] != "i_cheat":
             self.public_state.license_playerid = turn
             self.public_state.license_action   = action 
+            
 
     def update_cards(self, turn, action):
         if action.isComplemented() == False:
@@ -210,10 +211,14 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
  
         if turnNotChange == False:
             self.public_state.turn            = (turn+1)%3
+        self.public_state.is_response         = True
+        if self.public_state.turn == self.public_state.license_playerid:
+            self.public_state.is_response     = False
         self.public_state.previous_id         = turn
         self.public_state.previous_action     = action
         self.public_state.epoch              += 1
-
+        
+        
         self.states2infos(infos) 
 
         return isTerminal, scores, infos

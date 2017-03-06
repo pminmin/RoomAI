@@ -44,8 +44,9 @@ class PublicState:
 
         self.landlord_candidate_id  = -1
         self.landlord_id            = -1
-        self.license_playerid         = -1
+        self.license_playerid       = -1
         self.license_action         = None
+        self.is_response            = False
 
         self.first_player           = -1
         self.turn                   = -1

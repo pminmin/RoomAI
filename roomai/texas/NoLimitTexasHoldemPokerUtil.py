@@ -198,16 +198,21 @@ def Cards2Pattern(hand_cards, remaining_cards):
 
 class Action:
     def __init__(self):
-        self.isBet = False
-        self.price = 0
+        self.quit   = 0 
+        self.cheat  = 1
+        self.bet    = 2
+        self.price  = 0
 
 
 
 class PublicState:
     def __init__(self):
-        self.turn = -1
-        self.previousId     = -1
-        self.previousAction = None        
+        self.public_cards       = [] ##public keep_cards
+        self.turn               = -1
+        self.chips              = [0,0]
+        self.blind_price        = -1  
+        self.previous_id        = -1
+        self.previous_action    = None        
 
 class PrivateState:
     def __init__(self):
@@ -216,8 +221,9 @@ class PrivateState:
 
 class Info:
     def __init__(self):
-        self.public_state  = PublicState()
-        self.private_state = PrivateState()
+        self.player_id      = -1
+        self.public_state   = PublicState()
+        self.private_state  = PrivateState()
 
 
 
