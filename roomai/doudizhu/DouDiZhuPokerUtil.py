@@ -232,6 +232,79 @@ AllPatterns["p_15_5_1_5_5"]   =  ("p_15_5_1_5_5",    15,5,1,5,5,1)
 AllPatterns["p_12_4_1_8_4"]   =  ("p_12_4_1_8_4",    12,4,1,8,4,1)
 
 
+AllActions = []
+for p in AllPatterns:
+    if "i_" in p: continue
+    if "x_rocket" == p[0]:
+        AllActions.append(Action([ActionSpace.r, ActionSpace.R],[]))
+    if "p_" in p:
+        numMasterCard    = p[1]
+        numMasterValue   = p[2]
+        isMasterStraight = p[3]
+        numSlaveCard     = p[4]
+        numSlaveValue    = p[5]
+        
+        
+ 
 
 
+def next_actions(hand_cards, info):
+
+    if ps.is_response == False:
+        actions = generate_actions_wrt_patterns(hand_cards, AllPatterns.values)
+        return actions    
+    
+    else:
+        patterns   = []
+        patterns.append(info.public_state.license_action.pattern)
+
+        if patterns[0][6] == 1:
+            patterns.append(AllPatterns["p_4_1_0_0_0"])  #rank = 10
+            patterns.append(AllPatterns["x_rocket"])     #rank = 100            
+
+        if pattern[6] == 10:
+            patterns.append(AllPatterns["x_rocket"])     #rank = 100
+
+        actions = generate_actions_wrt_patterns(hand_cards, patterns)
+        return actions
+
+def generate_actions_wrt_patterns(hand_cards, patterns):
+    if "i_" in pattern[0]:
+        return []    
+    
+    
+
+    candidates = [];
+    if pattern[0] == "x_rocket":
+        if  hand_cards[ActionSpace.r] == 1 and \
+            hand_cards[ActionSpace.R] == 1:
+        action = Action([ActionSpace.r, ActionSpace.R],[])
+        candidates.append(action)
+        return candidates       
+
+    
+    if pattern[0] == "p_1_1_0_0_0":
+        for c in hand_cards:
+            if hand_cards[c] >= 1:
+                candidates.append(Action([c],[]))
+        return candidates
+
+    if pattern[0] == "p_2_1_0_0_0":
+        for c in hand_cards:
+            if hand_cards[c] >= 1:
+                candidates.append(Action([c,c],[])       
+ 
+    
+    if pattern[0] == "p_3_1_0_0_0":
+        for c in hand_cards:
+            if hand_cards[c] >= 3:
+                candidates.append(Action([c,c,c],[]))
+        return candidates
+
+
+def is_action_valid(hand_cards, public_state):
+     
+    
+            
+    
 

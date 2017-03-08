@@ -210,7 +210,7 @@ class PublicState:
         self.public_cards       = [] ##public keep_cards
         self.turn               = -1
         self.chips              = [0,0]
-        self.blind_price        = -1  
+        self.blind_id           = -1  
         self.previous_id        = -1
         self.previous_action    = None        
 
