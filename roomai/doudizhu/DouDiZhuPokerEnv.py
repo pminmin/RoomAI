@@ -1,6 +1,5 @@
 #!/bin/python
 #coding:utf-8
-from DouDiZhuPokerUtil import *
 
 import roomai
 import random
@@ -10,7 +9,7 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
 
     def __init__(self):
         self.public_state  = PublicState()
-        self.private_state = PrivateState() 
+        self.private_state = PrivateState()
 
     def generate_initial_cards(self):
         cards = [];
@@ -48,12 +47,7 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
         if action.isComplemented() == False:
             action.complement()
 
-        hand_cards = self.private_state.hand_cards[turn]
-        for a in action.masterValues2Num:
-            hand_cards[a] -= action.masterValues2Num[a]
-        for a in action.slaveValues2Num:
-            hand_cards[a] -= action.slaveValues2Num[a]
-        
+        Utils.remove_action_from_handcards(self.private_state.hand_cards[turn], action)
         self.num_hand_cards[turn] -= action.pattern[1] + action.pattern[4]
 
 
@@ -70,63 +64,12 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
             landlord_cards[c] += 1
         self.private_state.num_hand_cards[landlord_id] += 3
 
-    def is_action_from_cards(self,turn,action):
 
-        flag = True
-        if action.isComplemented() == False:
-            action.complement()
-
-        if action.pattern[0] == "i_cheat":      return True
-        if action.pattern[0] == "i_bid":        return True
-        if action.pattern[0] == "i_invalid":    return False
-        
-        hand_cards = self.private_state.hand_cards[turn]
-       
-        for a in action.masterValues2Num:
-            flag = flag and (action.masterValues2Num[a] <= hand_cards[a])
-
-        for a in action.slaveValues2Num:
-            flag = flag and (action.slaveValues2Num[a] <= hand_cards[a])
-
-        return flag    
-
-
-    #@Override
     def isActionValid(self, action):
-        if action.isComplemented() == False:
-            action.complement()
 
-        if action.pattern[0] == "i_invalid":
-            return False;
-
-        turn         = self.public_state.turn
-        license_id   = self.public_state.license_playerid
-        license_act  = self.public_state.license_action 
-        phase        = self.public_state.phase
-
-        if self.is_action_from_cards(turn, action) == False:
-            return False
-
-        if phase == PhaseSpace.bid:
-            if action.pattern[0] not in ["i_cheat","i_bid"]:  
-                return False
-            return True
-                
-        if phase == PhaseSpace.play: 
-            if action.pattern[0]  == "i_bid":  
-                return False
-
-            if license_id == turn:
-                if action.pattern[0] == "i_cheat":  return False
-                return True
-            else:
-                if action.pattern[0] == "i_cheat":  return True
-                
-                if action.pattern[6] > license_act.pattern[6]:  return True
-                elif action.pattern[6] < license_act.pattern[6]:    return False
-                elif action.maxMasterCard - license_act.maxMasterCard > 0:  return True
-                else:   return False
-
+        turn = self.public_state.turn
+        hand_cards = self.private_state.hand_cards[turn]
+        is_action_valid(hand_cards, public_state, action)
 
     #@Overide
     def init(self, players):

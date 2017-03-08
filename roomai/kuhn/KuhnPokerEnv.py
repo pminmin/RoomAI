@@ -2,151 +2,105 @@
 import random
 import math
 import roomai
+import copy
 
-class KuhnPokerActions:
-    bet   = 0;
-    cheat = 1;
 
 class KuhnPokerEnv(roomai.AbstractEnv):
-    def __init__(self):
-        self.validActions = [KuhnPokerActions(), KuhnPokerActions()]
 
+    #@override
     def init(self,players):
 
         if len(players) != 2:
-            raise Exception("KuhnPoker is a game with two players.")
+            raise Exception("KuhnPoker is a game with two players.")        
+
+        self.private_state = PrivateState()
+        card0 = math.floor(random.random() * 3)
+        card1 = math.floor(random.random() * 3)
+        while card0 == card1:
+            card0 = math.floor(random.random() * 3)
+        self.private_state.hand_cards = [card0, card1]
+
+        self.public_state.turn          = int(math.floor(random.random() * 2))
+        self.public_state.first         = self.private_state.turn
+        self.public_state.epoch         = 0
+        self.public_state.action_list   = []
         
-
-        self.player0_card = math.floor(random.random() * 3)
-        self.player1_card = math.floor(random.random() * 3)
-        while self.player1_card == self.player0_card:
-            self.player1_card = math.floor(random.random() * 3)
+        infos = self.gen_infos(2)
+        infos[0].id = 0
+        infos[0].card = card0
+        infos[1].id = 1
+        infos[1].card = card1
         
-        self.turn          = int(math.floor(random.random() * 2))
-        self.firstPlayer   = self.turn
-        self.actionHistory = [];
+        return False, [], infos 
 
-        self.initInfo                        = [dict(),dict(), dict()]; #the last one is used for chance player
-        self.initInfo[0]["card"]             = self.player0_card
-        self.initInfo[1]["card"]             = self.player1_card
-        self.initInfo[self.turn]["order"]    = 0;
-        self.initInfo[1- self.turn]["order"] = 1;
-        self.initInfo[0]["id"]               = 0;
-        self.initInfo[1]["id"]               = 1;
-        self.initInfo[2]["turn"]             = [self.turn]
-        self.initInfo[2]["firstTurnPlayer_card"]  = self.player0_card
-        self.initInfo[2]["secondTurnPlayer_card"] = self.player1_card
-
-        return False, [], self.initInfo, self.validActions
-
-    def round(self,players):
-        infoHistory = [];
-
-        for player in players:
-            player.reset()
-
-        isTerminal, scores, Infos, ValidActions\
-        = self.init(players)
-        infoHistory.append(Infos);
-
-        for i in xrange(len(players)):
-            players[i].receiveValidActions(ValidActions[i]);
-            players[i].receiveInformation(Infos[i]);
-
-        while isTerminal == False:
-            turn = Infos[2]["turn"]
-            action = players[turn].takeAction()
-
-            isTerminal, scores, Infos, ValidActions \
-            = self.forward(action);
-            infoHistory.append(Infos)
-
-            for player in players:
-                if isTerminal == False:
-                    player.receiveInformation(Infos[i])
-                else:
-                    player.receiveResult(scores)
-
-        return infoHistory, scores 
-
+    #@override
     def forward(self, action):
-        self.actionHistory.append(actions)
-        self.turn = 1 - self.turn
+        self.public_state.epoch += 1
+        self.public_state.turn   = (self.public_state.turn+1)%2
+        self.public_state.action_list.append(action)
+        infos = self.gen_infos(2)
 
-        info = [dict(), dict(), dict()] #the last one is used for the chance player
-        info[0]["action"] = actions
-        info[1]["action"] = actions
-        info[2]["turn"]   = self.turn
+        if self.public_state.epoch == 1:
+            return False, [], infos
 
-        if len(self.actionHistory) == 1:
-            return False, [], info, self.validActions;
-
-        elif len(self.actionHistory) == 2:
-            scores = self.evaluteTwo();
+        elif self.public_state.epoch == 2:
+            scores = self.evaluteTwo()
             if scores[0] != -1:
-                return True,  scores, info, self.validActions
-            else:
-                self.turn = 1 - self.turn
-                return False, scores, info, self.validActions
+                return true, scores, infos
 
-        elif len(self.actionHistory) == 3:
-            scores = self.evaluateThree();
-            return True, scores, info, self.validActions
+        elif self.public_state.epoch == 3:
+            scores = self.evaluteThree()
+            return True, scores, infos
 
         else:
-            raise Exception("KuhnPoker has 3 turns at most. However len(self.actionHistory) = %d"%(len(self.actionHistory)))
+            raise Exception("KuhnPoker has 3 turns at most")
 
-    def backward(self):
-        if len(self.actionHistory) == 1:
-            self.actionHistory.pop()
-            return True, [], self.InitInfo, self.validActions
-        else:
-            self.actionHistory.pop()
-            self.turn = 1 - self.turn
-            info = [dict(), dict()]
-            info[0]["action"] = self.actionHistory[len(self.actionHistory)-1]
-            info[1]["action"] = self.actionHistory[len(self.actionHistory)-1]
-            info[2]["turn"]   = self.turn
-            return False,[], info, self.validActions
     
+    def gen_infos(self,num):
+        infos = [Info(), Info(), Info()]
+        for i in xrange(num+1):
+            infos[i].public_state = copy.deepcopy(self.public_state)
+        infos[num].private_state = copy.deepcopy(self.private_state)
 
     def WhoHasHigherCard(self):
-        firstPlayer_card  = self.initInfo[self.firstPlayer]["card"]
-        secondPlayer_card = self.initInfo[1-self.firstPlayer]["card"]
+        hand_cards = self.private_state.hand_cards
+        if hand_cards[0] > hand_cards[1]:
+            return 0
+        else:
+            return 1
 
-        if firstPlayer_card > secondPlayer_card:     return self.firstPlayer
-        elif firstPlayer_card < secondPlayer_card:  return 1-self.firstPlayer
-        else:   raise Exception("fuck")
-
-    def evaluteTwo(self):
+    def evaluteTwo(self, action):
         win    = self.WhoHasHigherCard()
+        first  = self.public_state.first
         scores = [0, 0];
+        actions = self.public_state.action_list
         
-        if self.actionHistory[0] == KuhnPokerActions.cheat and \
-           self.actionHistory[1] == KuhnPokerActions.bet:
+        if actions[0] == KuhnPokerActions.cheat and \
+           actions[1] == KuhnPokerActions.bet:
             return [-1,-1]
         
-        if self.actionHistory[0] == self.actionHistory[1] and \
-           self.actionHistory[0] == KuhnPokerActions.cheat:
+        if actions[0] == actions[1] and \
+           actions[0] == KuhnPokerActions.cheat:
             scores[win] = 1;
             return scores;
 
-        if self.actionHistory[0] == KuhnPokerActions.bet and \
-           self.actionHistory[1] == KuhnPokerActions.cheat:
-            scores[self.firstPlayer] = 1;
+        if actions[0] == KuhnPokerActions.bet and \
+           actions[1] == KuhnPokerActions.cheat:
+            scores[first] = 1;
             return scores;
 
-        if self.actionHistory[0] == self.actionHistory[1] and \
-           self.actionHistory[0] == KuhnPokerActions.bet:
+        if actions[0] == actions[1] and \
+           actions[0] == KuhnPokerActions.bet:
             scores[win] = 2
             return scores;
 
 
     def evaluteThree(self):
-        win = self.WhoHasHigherCard()
-        scores = [0, 0]
-        if self.actionHistory[2] == KuhnPokerActions.cheat:
-            scores[1 - self.firstPlayer] = 1;
+        first   = self.public_state.first 
+        win     = self.WhoHasHigherCard()
+        scores  = [0, 0]
+        if actions[2] == KuhnPokerActions.cheat:
+            scores[1 - first] = 1;
         else:
             scores[win] = 2;
         return scores;
