@@ -5,12 +5,17 @@ import unittest
 from roomai.doudizhu import *
 
 class DouDiZhuPokerUtilTester(unittest.TestCase):
+
+
     def testAction2Patterns(self):
         
         a = Action([1,1,1],[2])
         self.assertEqual(a.pattern[0], "p_3_1_0_1_1")
 
         a = Action([1,1,1,2,3,3],[])
+        self.assertEqual(a.pattern[0], "i_invalid")
+
+        a = Action([1,1,1,1],[2])
         self.assertEqual(a.pattern[0], "i_invalid")
 
         a = Action([1,1,1,1,1],[2])
@@ -52,3 +57,20 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         self.assertEqual(hand_cards.count2num[3],1)
         self.assertEqual(hand_cards.num_cards,4)
         ##[2,2,2,3]
+
+    def testCandidateAction(self):
+        env = DouDiZhuPokerEnv();
+        env.init([None,None,None])
+        env.public_state.is_response = False
+        #hand_cards1 = HandCards([1,2,3,4,5,6,6,13,14])
+        hand_cards1 = HandCards([1,1,1,2,2,3,3,4,4,5,6,8,8,8,8,9,9,10,10,10,10,13,14])
+        print hand_cards1.num_cards
+        #self.assertEqual(hand_cards1.num_cards,32)
+
+ 
+        actions = Utils.candidate_actions(hand_cards1, env.public_state)
+        for a in actions:
+            flag = Utils.is_action_from_handcards(hand_cards1,a)
+            self.assertTrue(flag) 
+            
+            self.assertTrue(a.pattern[0] != "i_invalid") 

@@ -4,6 +4,7 @@
 import os
 import roomai.utils
 import copy
+import itertools
 
 #
 #0, 1, 2, 3, ..., 7,  8, 9, 10, 11, 12, 13, 14
@@ -189,7 +190,7 @@ class Utils(roomai.utils.AbstractUtils):
         action.isMasterStraight = 0
         num = 0
         for v in action.masterValues2Count:
-            if (v + 1) in action.masterValues2Count and v < ActionSpace.two: 
+            if (v + 1) in action.masterValues2Count and (v+1) < ActionSpace.two: 
                 num += 1
         if num == len(action.masterValues2Count) -1 and len(action.masterValues2Count) != 1:
             action.isMasterStraight = 1
@@ -262,22 +263,20 @@ class Utils(roomai.utils.AbstractUtils):
     @classmethod
     def extractStraight(cls, hand_cards, numStraightV, count, exclude):
             cardss = []
-            count = 0
 
             if numStraightV == 0:
                 return cardss
-
-            for i in xrange(12,-1,-1): 
-                if i not in exclude:
-                    count  = 0 
+            c = 0
+            for i in xrange(11,-1,-1): 
+                if i in exclude:
+                    c  = 0 
                 elif hand_cards.cards[i] >= count:
-                    count += 1
+                    c += 1
                 else:
-                    count  = 0        
+                    c  = 0        
 
-                if count >= numStraightV:
-                    cardss.append(hand_cards.cards[i:i+numStraightV])
-
+                if c >= numStraightV:
+                    cardss.append(range(i,i+numStraightV))
 
             return cardss          
 
@@ -288,50 +287,70 @@ class Utils(roomai.utils.AbstractUtils):
             if numDiscreteV == 0:
                 return cardss
 
+            candidates = []
             for c in xrange(len(hand_cards.cards)):
-                old_cardss = copy.deepcopy(cardss)
-                if (hand_cards[c] >= count) and (c not in exclude):
-                    for origin in old_cardss:
-                        if len(origin) == numDiscreteV:  continue
-                        copy1 = copy.deepcopy(origin)
-                        copy1.append(c)
-                        cardss.append(copy1)        
-                    cardss.append([c])
-            
-            return cardss
+                if (hand_cards.cards[c] >= count) and (c not in exclude):
+                    candidates.append(c)
+            if len(candidates) < numDiscreteV:  
+                return cardss
+
+            return list(itertools.permutations(candidates, numDiscreteV)) 
+
 
     
     @classmethod
     def candidate_actions(cls, hand_cards, public_state):
 
         patterns = []
-        if ps.is_response == False:
-            patterns = AllPatterns.values
+        if public_state.phase == PhaseSpace.bid:
+            patterns.append(AllPatterns["i_cheat"])
+            patterns.append(AllPatterns["i_bid"])            
         else:
-            patterns.append(info.public_state.license_action.pattern)
-            if patterns[0][6] == 1:
-                patterns.append(AllPatterns["p_4_1_0_0_0"])  #rank = 10
-                patterns.append(AllPatterns["x_rocket"])     #rank = 100            
-            if pattern[6] == 10:
-                patterns.append(AllPatterns["x_rocket"])     #rank = 100
+            if public_state.is_response == False:
+                for p in AllPatterns:
+                    if p != "i_cheat" and p != "i_invalid":
+                        patterns.append(AllPatterns[p])
+            else:
+                patterns.append(public_state.license_action.pattern)
+                if patterns[0][6] == 1:
+                    patterns.append(AllPatterns["p_4_1_0_0_0"])  #rank = 10
+                    patterns.append(AllPatterns["x_rocket"])     #rank = 100            
+                if pattern[6] == 10:
+                    patterns.append(AllPatterns["x_rocket"])     #rank = 100
+                patterns.append(AllPatterns["i_cheat"])
 
 
         actions = []             
-        MasterCount  = -1
-        SlaveCount   = -1
-        if MasterVNum > 0:
-            MasterCount  = MasterNum/MasterV
-        if SlaveVNum  > 0:
-            SlaveCount   = SlaveNum /SlaveV
-
         for pattern in patterns:    
 
-            if "i_" in pattern[0]:
+            MasterNum   = pattern[1]
+            MasterVNum  = pattern[2]
+            isStraight  = pattern[3]
+            SlaveNum    = pattern[4]
+            SlaveVNum   = pattern[5]
+            MasterCount  = -1
+            SlaveCount   = -1
+
+            if MasterNum > 0:
+                MasterCount  = MasterNum/MasterVNum
+            if SlaveVNum  > 0:
+                SlaveCount   = SlaveNum /SlaveVNum
+
+
+            if "i_invalid" == pattern[0]:
                  continue
-            
+
+            if "i_cheat" == pattern[0]:
+                actions.append(Action([ActionSpace.cheat],[]))
+                continue    
+
+            if "i_bid" == pattern[0]:
+                actions.append(Action([ActionSpace.bid],[]))
+                continue
+
             if pattern[0] == "x_rocket":
-                if  hand_cards[ActionSpace.r] == 1 and \
-                    hand_cards[ActionSpace.R] == 1:
+                if  hand_cards.cards[ActionSpace.r] == 1 and \
+                    hand_cards.cards[ActionSpace.R] == 1:
                     action = Action([ActionSpace.r, ActionSpace.R],[])
                     actions.append(action)
                 continue       
@@ -339,21 +358,17 @@ class Utils(roomai.utils.AbstractUtils):
             if pattern[1] + pattern[4] > hand_cards.num_cards:
                 continue
 
-            if hand_cards.count2num[MasterCount] < MasterVNum:
+            sum1 = 0
+            for count in xrange(MasterCount,5,1):
+                sum1 += hand_cards.count2num[count]
+            if sum1 < MasterVNum:
                 continue
-        
             
-            MasterNum   = pattern[1]
-            MasterVNum  = pattern[2]
-            isStraight  = pattern[3]
-            SlaveNum    = pattern[4]
-            SlaveVNum   = pattern[5]
-
             mCardss = []
             if isStraight == 1:
-                mCardss = extractStraight(hand_cards, MasterVNum, MasterCount, [])
+                mCardss = Utils.extractStraight(hand_cards, MasterVNum, MasterCount, [])
             else:
-                mCardss = extractDiscrete(hand_cards, MasterVNum, MasterCount, [])
+                mCardss = Utils.extractDiscrete(hand_cards, MasterVNum, MasterCount, [])
 
 
             for mCards in mCardss:
@@ -366,7 +381,7 @@ class Utils(roomai.utils.AbstractUtils):
                     actions.append(Action(copy.deepcopy(m), []))
                     continue
 
-                sCardss = extractDiscrete(hand_cards, SlaveVNum, SlaveCount, mCards)
+                sCardss = Utils.extractDiscrete(hand_cards, SlaveVNum, SlaveCount, mCards)
                 for sCards in sCardss:
                     s = []
                     for sc in sCards:
@@ -378,6 +393,7 @@ class Utils(roomai.utils.AbstractUtils):
 
 path = os.path.split(os.path.realpath(__file__))[0]
 AllPatterns  = dict();
+
 file1 = open(path+"/patterns.txt")
 for line in file1:
     line = line.replace(" ","").strip()
