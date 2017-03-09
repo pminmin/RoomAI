@@ -5,7 +5,6 @@ import sys
 import roomai.doudizhu
 import roomai.kuhn
 
-
 #####################################################
                 # environment list #
 #####################################################

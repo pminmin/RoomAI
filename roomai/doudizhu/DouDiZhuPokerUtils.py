@@ -1,7 +1,9 @@
 #!/bin/python
 #coding:utf-8
 
-import roomai
+import os
+import roomai.utils
+import copy
 
 #
 #0, 1, 2, 3, ..., 7,  8, 9, 10, 11, 12, 13, 14
@@ -33,75 +35,61 @@ class ActionSpace:
     cheat   = 15;
     bid     = 16;
 
-class PrivateState:
-    def __init__(self):
-        self.hand_cards         = [[],[],[]]
-        self.num_hand_cards     = [-1,-1,-1]
-        self.additive_cards     = []
+total_kind_cards = 15
 
-class PublicState:
-
-    def __init__(self):
-
-        self.landlord_candidate_id  = -1
-        self.landlord_id            = -1
-        self.license_playerid       = -1
-        self.license_action         = None
-        self.is_response            = False
-
-        self.first_player           = -1
-        self.turn                   = -1
-        self.phase                  = -1
-        self.epoch                  = -1
-
-        self.previous_id            = -1
-        self.previous_action        = None
-
-
-class Info:
-    def __init__(self):
-        ### init
-        self.init_id            = -1
-        self.init_cards         = []
-        self.init_addcards      = []
-
-        self.public_state       = None
-        #In the info sent to players, the private info always be None.
-        self.private_state      = None
+class HandCards:
+    def __init__(self, cards):
+        self.cards      = [0 for i in xrange(total_kind_cards)]
+        for c in cards:
+            self.cards[c] += 1
         
-        
+        self.num_cards  = sum(self.cards)
+
+        self.count2num  = [0 for i in xrange(total_kind_cards)]
+        for num in self.cards:
+            self.count2num[num] += 1
+
+    def add_cards(self, cards):
+        for c in cards:
+            self.num_cards += 1
+            self.count2num[self.cards[c]] -= 1
+            self.cards[c] += 1
+            self.count2num[self.cards[c]] += 1
+
+
+    def remove_cards(self, cards):
+        for c in cards:
+            self.num_cards     -=1
+            self.count2num[self.cards[c]] -= 1
+            self.cards[c] -=1
+            if self.cards[c] != 0:
+                self.count2num[self.cards[c]] += 1
+
+    def remove_action(self, action):
+        self.remove_cards(action.masterCards)
+        self.remove_cards(action.slaveCards)        
+
 class Action:
     def __init__(self, masterCards, slaveCards):
-        self.masterCards        = masterCards
-        self.slaveCards         = slaveCards
+        self.masterCards        = copy.deepcopy(masterCards)
+        self.slaveCards         = copy.deepcopy(slaveCards)
 
-        self.masterValues2Num   = None
-        self.slaveValues2Num    = None
-        self.isMasterStraight = None
+        self.masterValues2Count = None
+        self.slaveValues2Count  = None
+        self.isMasterStraight   = None
         self.maxMasterCard      = None
         self.pattern            = None
 
-    def isComplemented(self):
-
-        flag = (action.masterValues2Num != None and \
-                action.slaveValues2Num != None and \
-                action.isMasterStraight != None and \
-                action.maxMasterCard  != None and \
-                action.pattern != None)
-        return flag
-
-    def complement(self):
         Utils.action2pattern(self)
-        
 
 
-class PrivateState(AbstractPrivateState):
+
+class PrivateState(roomai.utils.AbstractPrivateState):
     def __init__(self):
-        self.hand_cards         = [[],[],[]]
-        self.num_hand_cards     = [-1,-1,-1]
-        self.additive_cards     = []
+        self.hand_cards     = [[],[],[]]
+        self.keep_cards     = []
 
-class PublicState(AbstractPublicState):
+class PublicState(roomai.utils.AbstractPublicState):
 
     def __init__(self):
 
@@ -120,7 +108,7 @@ class PublicState(AbstractPublicState):
         self.previous_action        = None
 
 
-class Info(AbstractInfo):
+class Info(roomai.utils.AbstractInfo):
     def __init__(self):
         ### init
         self.init_id            = -1
@@ -131,28 +119,25 @@ class Info(AbstractInfo):
         #In the info sent to players, the private info always be None.
         self.private_state      = None
 
-class Utils(AbstractUtils):
+class Utils(roomai.utils.AbstractUtils):
 
-    #@override
-    def is_action_valid(self,hand_cards, public_state, action):
-
-        if action.isComplemented() == False:
-            action.complement()
+    @classmethod
+    def is_action_valid(cls, hand_cards, public_state, action):
 
         if action.pattern[0] == "i_invalid":
             return False
     
-        if is_action_from_handcards(hand_cards, action) == False:
+        if Utils.is_action_from_handcards(hand_cards, action) == False:
             return False
 
         turn        = public_state.turn
-        license_id  = public_state.license_palyerid
+        license_id  = public_state.license_playerid
         license_act = public_state.license_action
         phase       = public_state.phase
 
         if phase == PhaseSpace.bid:
             if action.pattern[0] not in ["i_cheat", "i_bid"]:
-                return False:
+                return False
             return True
 
         if phase == PhaseSpace.play:
@@ -170,79 +155,47 @@ class Utils(AbstractUtils):
                 elif action.maxMasterCard - license_act.maxMasterCard > 0:  return True
                 else:   return False
 
-    def next_candidate_actions(hand_cards, public_state):
 
-        if ps.is_response == False:
-            actions = generate_actions_wrt_patterns(hand_cards, AllPatterns.values)
-            return actions    
-    
-        else:
-            patterns   = []
-            patterns.append(info.public_state.license_action.pattern)
-
-            if patterns[0][6] == 1:
-                patterns.append(AllPatterns["p_4_1_0_0_0"])  #rank = 10
-                patterns.append(AllPatterns["x_rocket"])     #rank = 100            
-
-            if pattern[6] == 10:
-                patterns.append(AllPatterns["x_rocket"])     #rank = 100
-
-            actions = generate_actions_wrt_patterns(hand_cards, patterns)
-            return actions
-
-
-    def is_action_from_handcards(self, hand_cards, action):
+    @classmethod
+    def is_action_from_handcards(cls, hand_cards, action):
             flag = True
-            if action.isComplemented() == False:
-            action.complement()
-
             if action.pattern[0] == "i_cheat":  return True
             if action.pattern[0] == "i_bid":    return True
             if action.pattern[0] == "i_invalid":    return False
 
-            if a in action.masterValues2Num:
-                flag = flag and (action.masterValues2Num[a] <= hand_cards[a])
-            if a in action.action.slaveValues2Num:
-                flag = flag and (action.action.slaveValues2Num[a] <= hand_cards[a])
+            for a in action.masterValues2Count:
+                flag = flag and (action.masterValues2Count[a] <= hand_cards.cards[a])
+            for a in action.slaveValues2Count:
+                flag = flag and (action.slaveValues2Count[a] <= hand_cards.cards[a])
             return flag
 
-    def remove_action_from_handcards(self,hand_cards, action):
-            if action.isComplemented() == False:
-                action.complement()
+    @classmethod
+    def action2pattern(cls,action):
 
-            for a in action.masterValues2Num:
-                hand_cards[a] -= action.masterValues2Num[a]
-            for a in action.action.slaveValues2Num:
-                hand_cards[a] -= actoin.action.slaveValues2Num[a]
-
-
-
-    def action2pattern(self, action):
-
-        action.masterValues2Num   = dict()
+        action.masterValues2Count   = dict()
         for c in action.masterCards:
-            if c in action.masterValues2Num:
-                action.masterValues2Num[c] += 1
+            if c in action.masterValues2Count:
+                action.masterValues2Count[c] += 1
             else:
-                action.masterValues2Num[c]  = 1
+                action.masterValues2Count[c]  = 1
 
-        action.action.slaveValues2Num    = dict()
+        action.slaveValues2Count    = dict()
         for c in action.slaveCards:
-            if c in action.action.slaveValues2Num:
-                action.action.slaveValues2Num[c] += 1
+            if c in action.slaveValues2Count:
+                action.slaveValues2Count[c] += 1
             else:
-                action.action.slaveValues2Num[c]  = 1
+                action.slaveValues2Count[c]  = 1
 
         action.isMasterStraight = 0
         num = 0
-        for v in action.masterValues2Num:
-            if (v + 1) in action.masterValues2Num and v < ActionSpace.two: 
+        for v in action.masterValues2Count:
+            if (v + 1) in action.masterValues2Count and v < ActionSpace.two: 
                 num += 1
-        if num == len(action.masterValues2Num) -1 and len(action.masterValues2Num) != 1:
+        if num == len(action.masterValues2Count) -1 and len(action.masterValues2Count) != 1:
             action.isMasterStraight = 1
 
         action.maxMasterCard = -1
-        for c in action.masterValues2Num:
+        for c in action.masterValues2Count:
             if action.maxMasterCard < c:
                 action.maxMasterCard = c
 
@@ -266,7 +219,7 @@ class Utils(AbstractUtils):
 
         # is twoKings
         elif len(action.masterCards) == 2 \
-            and len(action.masterValues2Num) == 2\
+            and len(action.masterValues2Count) == 2\
             and len(action.slaveCards) == 0 \
             and action.masterCards[0] in [ActionSpace.r, ActionSpace.R] \
             and action.masterCards[1] in [ActionSpace.r, ActionSpace.R]:
@@ -275,7 +228,7 @@ class Utils(AbstractUtils):
         else:
 
             ## process masterCards
-            masterValues = action.masterValues2Num
+            masterValues = action.masterValues2Count
             if len(masterValues) > 0:
                 count = masterValues[action.masterCards[0]]
                 for c in masterValues:
@@ -284,7 +237,7 @@ class Utils(AbstractUtils):
 
 
             ## process slave card
-            action.slaveValues = action.slaveValues2Num
+            action.slaveValues = action.slaveValues2Count
             if len(action.slaveValues) > 0:
                 count = action.slaveValues[action.slaveCards[0]]
                 for c in action.slaveValues:
@@ -304,12 +257,128 @@ class Utils(AbstractUtils):
 
 
 
-        return self
+        return action
+
+    @classmethod
+    def extractStraight(cls, hand_cards, numStraightV, count, exclude):
+            cardss = []
+            count = 0
+
+            if numStraightV == 0:
+                return cardss
+
+            for i in xrange(12,-1,-1): 
+                if i not in exclude:
+                    count  = 0 
+                elif hand_cards.cards[i] >= count:
+                    count += 1
+                else:
+                    count  = 0        
+
+                if count >= numStraightV:
+                    cardss.append(hand_cards.cards[i:i+numStraightV])
 
 
+            return cardss          
 
-AllPatterns                     = dict();
-file1 = open("patterns.txt")
+    @classmethod        
+    def extractDiscrete(cls, hand_cards, numDiscreteV, count, exclude):
+            cardss  = []
+            
+            if numDiscreteV == 0:
+                return cardss
+
+            for c in xrange(len(hand_cards.cards)):
+                old_cardss = copy.deepcopy(cardss)
+                if (hand_cards[c] >= count) and (c not in exclude):
+                    for origin in old_cardss:
+                        if len(origin) == numDiscreteV:  continue
+                        copy1 = copy.deepcopy(origin)
+                        copy1.append(c)
+                        cardss.append(copy1)        
+                    cardss.append([c])
+            
+            return cardss
+
+    
+    @classmethod
+    def candidate_actions(cls, hand_cards, public_state):
+
+        patterns = []
+        if ps.is_response == False:
+            patterns = AllPatterns.values
+        else:
+            patterns.append(info.public_state.license_action.pattern)
+            if patterns[0][6] == 1:
+                patterns.append(AllPatterns["p_4_1_0_0_0"])  #rank = 10
+                patterns.append(AllPatterns["x_rocket"])     #rank = 100            
+            if pattern[6] == 10:
+                patterns.append(AllPatterns["x_rocket"])     #rank = 100
+
+
+        actions = []             
+        MasterCount  = -1
+        SlaveCount   = -1
+        if MasterVNum > 0:
+            MasterCount  = MasterNum/MasterV
+        if SlaveVNum  > 0:
+            SlaveCount   = SlaveNum /SlaveV
+
+        for pattern in patterns:    
+
+            if "i_" in pattern[0]:
+                 continue
+            
+            if pattern[0] == "x_rocket":
+                if  hand_cards[ActionSpace.r] == 1 and \
+                    hand_cards[ActionSpace.R] == 1:
+                    action = Action([ActionSpace.r, ActionSpace.R],[])
+                    actions.append(action)
+                continue       
+
+            if pattern[1] + pattern[4] > hand_cards.num_cards:
+                continue
+
+            if hand_cards.count2num[MasterCount] < MasterVNum:
+                continue
+        
+            
+            MasterNum   = pattern[1]
+            MasterVNum  = pattern[2]
+            isStraight  = pattern[3]
+            SlaveNum    = pattern[4]
+            SlaveVNum   = pattern[5]
+
+            mCardss = []
+            if isStraight == 1:
+                mCardss = extractStraight(hand_cards, MasterVNum, MasterCount, [])
+            else:
+                mCardss = extractDiscrete(hand_cards, MasterVNum, MasterCount, [])
+
+
+            for mCards in mCardss:
+                m = []
+                for mc in mCards:
+                    m.extend([mc for i in xrange(MasterCount)])
+                m.sort()
+              
+                if  SlaveVNum == 0:
+                    actions.append(Action(copy.deepcopy(m), []))
+                    continue
+
+                sCardss = extractDiscrete(hand_cards, SlaveVNum, SlaveCount, mCards)
+                for sCards in sCardss:
+                    s = []
+                    for sc in sCards:
+                        s.extend([sc for i in xrange(SlaveCount)])
+                    s.sort()
+                    actions.append(Action(copy.deepcopy(m), s))
+
+        return actions
+
+path = os.path.split(os.path.realpath(__file__))[0]
+AllPatterns  = dict();
+file1 = open(path+"/patterns.txt")
 for line in file1:
     line = line.replace(" ","").strip()
     line = line.split("#")[0]
@@ -321,7 +390,3 @@ for line in file1:
     AllPatterns[lines[0]] = lines
 file1.close()
 
-AllActions                      = []
-
-
-HandCards2CandidateActions      = dict()

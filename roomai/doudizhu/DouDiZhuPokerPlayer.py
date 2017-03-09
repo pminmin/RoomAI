@@ -1,7 +1,7 @@
 #!/bin/python
 import roomai
 
-class DouDiZhuPokerMaxPlayer(roomai.AbstractPlayer):
+class DouDiZhuPokerMaxPlayer(roomai.utils.AbstractPlayer):
     
     def receiveInformation(self,info):
         return 0;

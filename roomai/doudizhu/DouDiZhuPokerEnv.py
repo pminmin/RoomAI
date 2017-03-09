@@ -1,19 +1,21 @@
 #!/bin/python
 #coding:utf-8
 
-import roomai
+import roomai.utils
 import random
 import copy
 
-class DouDiZhuPokerEnv(roomai.AbstractEnv):
+from DouDiZhuPokerUtils import *
+
+class DouDiZhuPokerEnv(roomai.utils.AbstractEnv):
 
     def __init__(self):
         self.public_state  = PublicState()
         self.private_state = PrivateState()
 
     def generate_initial_cards(self):
-        cards = [];
 
+        cards = []
         for i in xrange(13):
             for j in xrange(4):
                 cards.append(i)
@@ -21,21 +23,19 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
         cards.append(14)
         random.shuffle(cards)
 
-        handCards    = [[0 for j in xrange(15)] for i in xrange(3)]
-        for i in xrange(len(cards)-3):
-            idx = cards[i]
-            handCards[i%3][idx] += 1
+        hand_cards =[0, 0, 0]
+        for i in xrange(3):
+            hand_cards[i] = HandCards(cards[i*17:(i+1)*17])
 
-        keepCards = cards[-3:]
-
-        self.private_state.hand_cards     =  handCards;
-        self.private_state.additive_cards =  keepCards 
-        self.num_hand_cards               =  [17,17,17] 
+        keep_cards = cards[len(cards)-3:len(cards)]
+        self.private_state.hand_cards =  hand_cards;
+        self.private_state.keep_cards =  keep_cards 
      
     def states2infos(self, infos):
         for i in xrange(4):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[3].private_state    = copy.deepcopy(self.private_state)
+    
 
     def update_license(self, turn, action):
         if action.pattern[0] != "i_cheat":
@@ -44,11 +44,8 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
             
 
     def update_cards(self, turn, action):
-        if action.isComplemented() == False:
-            action.complement()
-
-        Utils.remove_action_from_handcards(self.private_state.hand_cards[turn], action)
-        self.num_hand_cards[turn] -= action.pattern[1] + action.pattern[4]
+        self.private_state.hand_cards[turn].remove_cards(action.masterCards)
+        self.private_state.hand_cards[turn].remove_cards(action.slaveCards)
 
 
     def update_phase_bid2play(self):
@@ -57,19 +54,15 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
         self.public_state.landlord_id      = self.public_state.landlord_candidate_id
         self.public_state.license_playerid = self.public_state.turn        
 
-        landlord_id    = self.public_state.landlord_id
-        landlord_cards = self.private_state.hand_cards[landlord_id]
-        additive_cards = self.private_state.additive_cards
-        for c in additive_cards:
-            landlord_cards[c] += 1
-        self.private_state.num_hand_cards[landlord_id] += 3
+        landlord_id = self.public_state.landlord_id
+        self.private_state.hand_cards[landlord_id].add_cards(self.private_state.keep_cards)
 
 
     def isActionValid(self, action):
-
-        turn = self.public_state.turn
+        public_state = self.public_state
+        turn = public_state.turn
         hand_cards = self.private_state.hand_cards[turn]
-        is_action_valid(hand_cards, public_state, action)
+        return Utils.is_action_valid(hand_cards, public_state, action)
 
     #@Overide
     def init(self, players):
@@ -107,9 +100,6 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
         scores       = []
         infos        = [Info(), Info(), Info(), Info()]
 
-        if action.isComplemented() == False:
-            action.complement() 
-
         turn = self.public_state.turn
         turnNotChange = False
 
@@ -129,7 +119,7 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
                     turnNotChange = True
                    
                     landlord_id = self.public_state.landlord_id
-                    additive_cards = self.private_state.additive_cards
+                    additive_cards = self.private_state.keep_cards
                     infos[landlord_id].init_addcards = copy.deepcopy(additive_cards)
         
 
@@ -141,7 +131,7 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
                 self.update_cards(turn,action)
                 self.update_license(turn,action)                
     
-                num = self.private_state.num_hand_cards[turn]
+                num = self.private_state.hand_cards[turn].num_cards
                 if num == 0:
                     isTerminal = True
                     if turn == self.public_state.landlord_id:
@@ -160,8 +150,7 @@ class DouDiZhuPokerEnv(roomai.AbstractEnv):
         self.public_state.previous_id         = turn
         self.public_state.previous_action     = action
         self.public_state.epoch              += 1
-        
-        
+         
         self.states2infos(infos) 
 
         return isTerminal, scores, infos

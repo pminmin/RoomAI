@@ -10,7 +10,7 @@ class AbstractPublicState:
 class AbstractPrivateState:
     noting  = 0
 
-class Info:
+class AbstractInfo:
     def __init__(self, public_state, private_state):
         self.public_state  = None
         self.private_state = None
@@ -53,10 +53,12 @@ class AbstractEnv:
 
 class AbstractUtils:
     
-    def is_action_valid(self, public_state, action):
+    @classmethod
+    def is_action_valid(public_state, action):
         raise NotImplementedError("The is_action_valid hasn't been implemented")
 
-    def squeeze_valid_action(self, env, player):
+    @classmethod
+    def squeeze_valid_action(env, player):
         action = player.takeAction()
         count  = 0
 
@@ -72,7 +74,7 @@ class AbstractUtils:
 
         return action
 
-     
+    @classmethod
     def round(env, players):
     
         isTerminal, _, infos = env.init(players)
