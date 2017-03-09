@@ -58,10 +58,15 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         self.assertEqual(hand_cards.num_cards,4)
         ##[2,2,2,3]
 
+    def test_extractStraight(self):
+        a = 0 
+
     def testCandidateAction(self):
         env = DouDiZhuPokerEnv();
         env.init([None,None,None])
         env.public_state.is_response = False
+        env.public_state.phase = PhaseSpace.play
+        
         #hand_cards1 = HandCards([1,2,3,4,5,6,6,13,14])
         hand_cards1 = HandCards([1,1,1,2,2,3,3,4,4,5,6,8,8,8,8,9,9,10,10,10,10,13,14])
         print hand_cards1.num_cards
@@ -71,6 +76,20 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         actions = Utils.candidate_actions(hand_cards1, env.public_state)
         for a in actions:
             flag = Utils.is_action_from_handcards(hand_cards1,a)
-            self.assertTrue(flag) 
-            
+            self.assertTrue(flag)     
             self.assertTrue(a.pattern[0] != "i_invalid") 
+        
+
+        hand_cards2 = []
+        for i in xrange(13):
+            for j in xrange(4):
+                hand_cards2.append(i)
+        hand_cards2.append(13)
+        hand_cards2.append(14)
+        env.public_state.is_response = True
+        env.public_state.license_action = Action([1,1],[])
+        actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
+        for a in actions:
+            print a.masterCards, a.slaveCards
+        print "15 is cheat, boom"
+        self.assertEqual(len(actions),28)

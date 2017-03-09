@@ -283,7 +283,6 @@ class Utils(roomai.utils.AbstractUtils):
     @classmethod        
     def extractDiscrete(cls, hand_cards, numDiscreteV, count, exclude):
             cardss  = []
-            
             if numDiscreteV == 0:
                 return cardss
 
@@ -305,17 +304,17 @@ class Utils(roomai.utils.AbstractUtils):
         if public_state.phase == PhaseSpace.bid:
             patterns.append(AllPatterns["i_cheat"])
             patterns.append(AllPatterns["i_bid"])            
-        else:
+        else:       
             if public_state.is_response == False:
                 for p in AllPatterns:
                     if p != "i_cheat" and p != "i_invalid":
                         patterns.append(AllPatterns[p])
             else:
                 patterns.append(public_state.license_action.pattern)
-                if patterns[0][6] == 1:
+                if public_state.license_action.pattern[6] == 1:
                     patterns.append(AllPatterns["p_4_1_0_0_0"])  #rank = 10
                     patterns.append(AllPatterns["x_rocket"])     #rank = 100            
-                if pattern[6] == 10:
+                if public_state.license_action.pattern[6] == 10:
                     patterns.append(AllPatterns["x_rocket"])     #rank = 100
                 patterns.append(AllPatterns["i_cheat"])
 
@@ -335,6 +334,7 @@ class Utils(roomai.utils.AbstractUtils):
                 MasterCount  = MasterNum/MasterVNum
             if SlaveVNum  > 0:
                 SlaveCount   = SlaveNum /SlaveVNum
+
 
 
             if "i_invalid" == pattern[0]:
