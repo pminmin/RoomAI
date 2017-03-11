@@ -293,7 +293,7 @@ class Utils(roomai.utils.AbstractUtils):
             if len(candidates) < numDiscreteV:  
                 return cardss
 
-            return list(itertools.permutations(candidates, numDiscreteV)) 
+            return list(itertools.combinations(candidates, numDiscreteV)) 
 
 
     
@@ -391,10 +391,22 @@ class Utils(roomai.utils.AbstractUtils):
 
         return actions
 
+
+############## read data ################
+
+import zipfile
+
+def get_file(path):
+    if ".zip" in path:
+        lines = path.split(".zip")
+        zip1  = zipfile.ZipFile(lines[0] + ".zip")
+        return zip1.read(lines[2])
+    else:
+        return open(path)
+
 path = os.path.split(os.path.realpath(__file__))[0]
 AllPatterns  = dict();
-
-file1 = open(path+"/patterns.txt")
+file1 = get_file(path+"/patterns.txt")
 for line in file1:
     line = line.replace(" ","").strip()
     line = line.split("#")[0]
@@ -405,4 +417,34 @@ for line in file1:
         lines[i] = int(lines[i])
     AllPatterns[lines[0]] = lines
 file1.close()
+
+AllActions = dict();
+action_file = get_file(path+"/actions.txt")
+for line in action_file:
+    line  = line.replace(" ","").strip()
+    lines = line.split("\t")
+
+    m   = []
+    ms  = lines[0].split(",")
+    for c in ms:
+        if c != "":
+            m.append(int(c))
+    
+    s   = []
+    ss  = []
+    if len(lines) == 2:
+        ss  = lines[1].split(",")
+    for c in ss:
+        if c != "":
+            s.append(int(c))
+
+    if line in AllActions:
+        print line
+        print AllActions[line].masterCards, AllActions[line].slaveCards
+
+    AllActions[line] = Action(m,s)
+
+action_file.close()
+
+print len(AllActions)
 

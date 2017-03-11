@@ -1,6 +1,6 @@
 # RoomAI
 
-RoomAI is a toolkit for developing and comparing chess-bots.
+RoomAI is a toolkit for developing and comparing imperfect information game bots
 
 
 # Contents

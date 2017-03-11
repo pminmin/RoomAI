@@ -52,7 +52,8 @@ class AbstractEnv:
     
 
 class AbstractUtils:
-    
+   
+
     @classmethod
     def is_action_valid(public_state, action):
         raise NotImplementedError("The is_action_valid hasn't been implemented")
@@ -91,3 +92,5 @@ class AbstractUtils:
                 raise Exception("A round has more than 10000 epoches")
 
         return scores
+
+
