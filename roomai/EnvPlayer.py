@@ -24,8 +24,8 @@ def createEnv(name):
 #####################################################
 def createPlayer(name):
 
-    if name == "DouDiZhuMaxPlayer":
-        return roomai.doudizhu.DouDiZhuPokerMaxPlayer()
+    if name == "DouDiZhuRandomPlayer":
+        return roomai.doudizhu.DouDiZhuPokerRandomPlayer()
     elif name == "KuhnCounterfactualRegretPlayer":
         return roomai.kuhn.KuhnPokerCounterfactualRegretPlayer()
     elif name =="KuhnAlwaysBetPlayer":

@@ -1,13 +1,13 @@
 #!/bin/python
 #coding:utf-8
 
-import roomai.utils
+import roomai.abstract
 import random
 import copy
 
 from DouDiZhuPokerUtils import *
 
-class DouDiZhuPokerEnv(roomai.utils.AbstractEnv):
+class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
         self.public_state  = PublicState()
@@ -87,7 +87,7 @@ class DouDiZhuPokerEnv(roomai.utils.AbstractEnv):
         self.states2infos(infos)
         for i in xrange(3):
             infos[i].init_id         = i
-            infos[i].init_cards      = self.private_state.hand_cards[i];
+            infos[i].init_cards      = copy.deepcopy(self.private_state.hand_cards[i]);
 
         return False, [], infos;
 

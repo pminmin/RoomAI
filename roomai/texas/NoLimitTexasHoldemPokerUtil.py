@@ -1,7 +1,7 @@
 #!/bin/python
 #coding:utf-8
 
-import roomai.utils
+import roomai.abstract
 
 class Card:
     def __init__(self, point, suit):
@@ -207,7 +207,7 @@ class Action:
 
 
 
-class PublicState(roomai.utils.AbstractPublicState):
+class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
         self.public_cards       = [] ##public keep_cards
         self.turn               = -1
@@ -216,12 +216,12 @@ class PublicState(roomai.utils.AbstractPublicState):
         self.previous_id        = -1
         self.previous_action    = None        
 
-class PrivateState(roomai.utils.AbstractPrivateState):
+class PrivateState(roomai.abstract.AbstractPrivateState):
     def __init__(self):
         self.keep_cards = []
         self.hand_cards = []
 
-class Info(roomai.utils.AbstractInfo):
+class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
         self.player_id      = -1
         self.public_state   = PublicState()

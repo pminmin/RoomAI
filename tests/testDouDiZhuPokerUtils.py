@@ -89,7 +89,4 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         env.public_state.is_response = True
         env.public_state.license_action = Action([1,1],[])
         actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
-        for a in actions:
-            print a.masterCards, a.slaveCards
-        print "15 is cheat, boom"
         self.assertEqual(len(actions),28)

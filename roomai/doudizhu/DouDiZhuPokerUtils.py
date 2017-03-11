@@ -2,7 +2,7 @@
 #coding:utf-8
 
 import os
-import roomai.utils
+import roomai.abstract
 import copy
 import itertools
 
@@ -85,12 +85,12 @@ class Action:
 
 
 
-class PrivateState(roomai.utils.AbstractPrivateState):
+class PrivateState(roomai.abstract.AbstractPrivateState):
     def __init__(self):
         self.hand_cards     = [[],[],[]]
         self.keep_cards     = []
 
-class PublicState(roomai.utils.AbstractPublicState):
+class PublicState(roomai.abstract.AbstractPublicState):
 
     def __init__(self):
 
@@ -109,7 +109,7 @@ class PublicState(roomai.utils.AbstractPublicState):
         self.previous_action        = None
 
 
-class Info(roomai.utils.AbstractInfo):
+class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
         ### init
         self.init_id            = -1
@@ -120,7 +120,7 @@ class Info(roomai.utils.AbstractInfo):
         #In the info sent to players, the private info always be None.
         self.private_state      = None
 
-class Utils(roomai.utils.AbstractUtils):
+class Utils(roomai.Utils):
 
     @classmethod
     def is_action_valid(cls, hand_cards, public_state, action):
@@ -446,5 +446,4 @@ for line in action_file:
 
 action_file.close()
 
-print len(AllActions)
 

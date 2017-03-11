@@ -18,21 +18,14 @@ class AbstractInfo:
 
 ### abstract 
 class AbstractPlayer:
-    def receiveValidActions(self, actions):
-        raise NotImplementedError("The receiveValidActions function hasn't been implemented")
-    def receiveInformation(self,info):
-        raise NotImplementedError("The receiveInformation function hasn't been implemented")
-    
+    def receiveInfo(self,info):
+        raise NotImplementedError("The receiveInfo function hasn't been implemented") 
     def takeAction(self):
         raise NotImplementedError("The takeAction function hasn't been implemented") 
-
     def InvalidAction(self, action):
         raise NotImplementedError("The InvalidAction function hasn't been implemented")
-
     def ValidAction(self, action):
         raise NotImplementedError("The ValidAction function hasn't been implemented")
-
-
     def reset(self):
         raise NotImplementedError("The reset function hasn't been implemented")
 
@@ -51,15 +44,15 @@ class AbstractEnv:
 
     
 
-class AbstractUtils:
+class Utils:
    
 
     @classmethod
-    def is_action_valid(public_state, action):
+    def is_action_valid(cls, public_state, action):
         raise NotImplementedError("The is_action_valid hasn't been implemented")
 
     @classmethod
-    def squeeze_valid_action(env, player):
+    def squeeze_valid_action(cls, env, player):
         action = player.takeAction()
         count  = 0
 
@@ -76,16 +69,21 @@ class AbstractUtils:
         return action
 
     @classmethod
-    def round(env, players):
+    def round(cls, env, players):
     
         isTerminal, _, infos = env.init(players)
 
+        for i in xrange(len(players)):
+            players.receiveInformation(infos[i])
+        
         count = 0
         while isTerminal == False: 
             turn = infos[-1].public_state.turn 
         
             action = self.squeeze_valid_action(env, players[turn])
             isTerminal, scores, infos = env.forward(action)
+            for i in xrange(len(players)):
+                players.receiveInformation(infos[i])
 
             count += 1
             if count > 10000:

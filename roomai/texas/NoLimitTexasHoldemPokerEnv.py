@@ -3,11 +3,11 @@
 
 import random
 import copy
-import roomai.utils
+import roomai.abstract
 
 from NoLimitTexasHoldemPokerUtil import *
 
-class NoLimitTexasHoldemPokerEnv(roomai.utils.AbstractEnv):
+class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
         self.blind_id = None
