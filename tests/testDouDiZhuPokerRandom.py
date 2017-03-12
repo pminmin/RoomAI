@@ -5,9 +5,11 @@ import unittest
 
 class DouDiZhuPokerRandomPlayerTester(unittest.TestCase):
     
+    
     def testPlayersRepeat(self):
         for i in xrange(10000):
             self.testPlayers()
+    
 
     def testPlayers(self):
 
@@ -22,7 +24,12 @@ class DouDiZhuPokerRandomPlayerTester(unittest.TestCase):
         count = 0
         while isTerminal == False: 
             turn = infos[-1].public_state.turn 
-        
+            print "##############"
+            print env.private_state.hand_cards[turn].cards, players[turn].hand_cards.cards              
+            actions =roomai.doudizhu.Utils.candidate_actions(players[turn].hand_cards, env.public_state)
+            for a in actions:
+                print a.masterCards, a.slaveCards
+            print "##############"
             action = players[turn].takeAction()
             isTerminal, scores, infos = env.forward(action)
             for i in xrange(len(players)):
@@ -33,4 +40,3 @@ class DouDiZhuPokerRandomPlayerTester(unittest.TestCase):
                 raise Exception("A round has more than 10000 epoches")
 
         print scores
-

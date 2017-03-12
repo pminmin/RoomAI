@@ -44,8 +44,7 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
             
 
     def update_cards(self, turn, action):
-        self.private_state.hand_cards[turn].remove_cards(action.masterCards)
-        self.private_state.hand_cards[turn].remove_cards(action.slaveCards)
+        self.private_state.hand_cards[turn].remove_action(action)
 
 
     def update_phase_bid2play(self):

@@ -90,3 +90,13 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         env.public_state.license_action = Action([1,1],[])
         actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
         self.assertEqual(len(actions),28)
+
+    def testHandCards(self):
+        a = [0,0,0,1]
+        hand_cards = HandCards(a);
+        hand_cards.remove_cards([0])
+        self.assertEqual(hand_cards.cards[0], 2)   
+        hand_cards.add_cards([2,3])
+        self.assertEqual(hand_cards.cards[2], 1)
+        hand_cards.remove_cards([2])
+        self.assertEqual(hand_cards.cards[2], 0)    

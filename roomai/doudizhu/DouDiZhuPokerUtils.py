@@ -52,6 +52,7 @@ class HandCards:
 
     def add_cards(self, cards):
         for c in cards:
+            if c < 0 or c >= 15: continue
             self.num_cards += 1
             self.count2num[self.cards[c]] -= 1
             self.cards[c] += 1
@@ -60,11 +61,11 @@ class HandCards:
 
     def remove_cards(self, cards):
         for c in cards:
+            if c < 0 or c >= 15: continue
             self.num_cards     -=1
             self.count2num[self.cards[c]] -= 1
             self.cards[c] -=1
-            if self.cards[c] != 0:
-                self.count2num[self.cards[c]] += 1
+            self.count2num[self.cards[c]] += 1
 
     def remove_action(self, action):
         self.remove_cards(action.masterCards)
@@ -437,10 +438,6 @@ for line in action_file:
     for c in ss:
         if c != "":
             s.append(int(c))
-
-    if line in AllActions:
-        print line
-        print AllActions[line].masterCards, AllActions[line].slaveCards
 
     AllActions[line] = Action(m,s)
 
