@@ -20,8 +20,8 @@ env.public_state.is_response = False
 env.public_state.phase       = PhaseSpace.play
 
 actions = Utils.candidate_actions(hand_cards, env.public_state)
+actions.append(Action([ActionSpace.cheat],[]))
 for a in actions:
-    print a.masterCards, a.slaveCards
     sys.stdout.flush()
 
     mStr = ""
@@ -32,6 +32,4 @@ for a in actions:
         sStr += "%d,"%(c)
     actions_file.write("%s\t%s\n"%(mStr,sStr))
 
-print len(actions)
 actions_file.close()
-print "end"

@@ -81,7 +81,8 @@ class Action:
         self.isMasterStraight   = None
         self.maxMasterCard      = None
         self.pattern            = None
-
+        self.idx                = None 
+        
         Utils.action2pattern(self)
 
 
@@ -121,7 +122,7 @@ class Info(roomai.abstract.AbstractInfo):
         #In the info sent to players, the private info always be None.
         self.private_state      = None
 
-class Utils(roomai.Utils):
+class Utils:
 
     @classmethod
     def is_action_valid(cls, hand_cards, public_state, action):
@@ -296,8 +297,27 @@ class Utils(roomai.Utils):
 
             return list(itertools.combinations(candidates, numDiscreteV)) 
 
+    @classmethod
+    def lookup_action(cls, masterCards, slaveCards):
+        masterCards.sort()
+        slaveCards.sort()
 
-    
+        mStr = ""
+        for c in masterCards:
+            mStr += "%d,"%(c)
+        sStr = ""
+        for c in slaveCards:
+            sStr += "%d,"%(c)
+
+        line = "%s\t%s\n"%(mStr,sStr)
+        line = line.replace(" ","")
+        line = line.strip()
+
+        if line in AllActions:
+            return AllActions[line]
+        else:            
+            raise Exception(line + "is not in AllActions") 
+
     @classmethod
     def candidate_actions(cls, hand_cards, public_state):
 
@@ -336,23 +356,23 @@ class Utils(roomai.Utils):
             if SlaveVNum  > 0:
                 SlaveCount   = SlaveNum /SlaveVNum
 
-
+            
 
             if "i_invalid" == pattern[0]:
                  continue
-
+            
             if "i_cheat" == pattern[0]:
-                actions.append(Action([ActionSpace.cheat],[]))
+                actions.append(cls.lookup_action([ActionSpace.cheat],[]))
                 continue    
 
             if "i_bid" == pattern[0]:
-                actions.append(Action([ActionSpace.bid],[]))
+                actions.append(cls.lookup_action([ActionSpace.bid],[]))
                 continue
 
             if pattern[0] == "x_rocket":
                 if  hand_cards.cards[ActionSpace.r] == 1 and \
                     hand_cards.cards[ActionSpace.R] == 1:
-                    action = Action([ActionSpace.r, ActionSpace.R],[])
+                    action = cls.lookup_action([ActionSpace.r, ActionSpace.R],[])
                     actions.append(action)
                 continue       
 
@@ -379,7 +399,7 @@ class Utils(roomai.Utils):
                 m.sort()
               
                 if  SlaveVNum == 0:
-                    actions.append(Action(copy.deepcopy(m), []))
+                    actions.append(cls.lookup_action(copy.deepcopy(m), []))
                     continue
 
                 sCardss = Utils.extractDiscrete(hand_cards, SlaveVNum, SlaveCount, mCards)
@@ -388,7 +408,7 @@ class Utils(roomai.Utils):
                     for sc in sCards:
                         s.extend([sc for i in xrange(SlaveCount)])
                     s.sort()
-                    actions.append(Action(copy.deepcopy(m), s))
+                    actions.append(cls.lookup_action(copy.deepcopy(m), s))
 
         return actions
 
@@ -413,7 +433,6 @@ for line in file1:
     line = line.split("#")[0]
     if len(line) == 0:  continue
     lines = line.split(",")
-
     for i in xrange(1,len(lines)):
         lines[i] = int(lines[i])
     AllPatterns[lines[0]] = lines
@@ -439,8 +458,9 @@ for line in action_file:
         if c != "":
             s.append(int(c))
 
-    AllActions[line] = Action(m,s)
-
+    action              = Action(m,s)
+    action.idx          = len(AllActions)
+    AllActions[line]    = action
 action_file.close()
 
 

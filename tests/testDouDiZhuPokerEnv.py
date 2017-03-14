@@ -48,10 +48,10 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         env.private_state.keep_cards = [12, 13, 14]
         env.public_state.turn = 0
         
-        # landlord 0:4,1:4,2:4,3:4      12:1 
-        # peasant1 4:4,5:4,6:4,7:4      12:1
-        # peasant2 8:4,9:4,10:4,11:4    12:1
-        # remaining 12:1 13:1 14:1
+        # 0:4,1:4,2:4,3:4      12:1 
+        # 4:4,5:4,6:4,7:4      12:1
+        # 8:4,9:4,10:4,11:4    12:1
+        # 12:1 13:1 14:1
 
         action = Action([ActionSpace.r],[])
         self.assertFalse(env.isActionValid(action))
@@ -76,7 +76,8 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         # peasant   0:4, 1:4, 2:4,  3:4  12:1 
         # peasant   4:4, 5:4, 6:4,  7:4  12:1
         # landlord  8:4, 9:4, 10:4, 11:4 12:2 13:1 14:1     
-      
+       
+
         #landlord = 2 
         #########################play phase#################
         ##3 turn = 2 license_id = 2
@@ -84,9 +85,9 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         self.assertEqual(env.public_state.license_playerid,2)
         action = Action([8],[])
         isTerminal, scores, infos = env.forward(action)
-        # landlord 4:4, 1:4, 2:4,  3:4  12:1
-        # peasant1 4:4, 5:4, 6:4,  7:4  12:1
-        # peasant2 8:3, 9:4, 10:4, 11:4 12:2     
+        # peasant1 0:4, 1:4, 2:4,  3:4  12:1
+        # peasant2 4:4, 5:4, 6:4,  7:4  12:1
+        # landlord 8:3, 9:4, 10:4, 11:4 12:2     
 
         ## 4 turn = 0 license_id = 2
         self.assertEqual(env.public_state.turn,0)
@@ -98,11 +99,12 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         self.assertEqual(infos[3].public_state.turn,1)        
         action = Action([8,8,8,8],[9,10])
         self.assertFalse(env.isActionValid(action)) 
-        # landlord 0:3, 1:4, 2:4,  3:4  12:1
-        # peasant1 4:4, 5:4, 6:4,  7:4  12:1
-        # peasant2 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1  
+        # peasant1 0:3, 1:4, 2:4,  3:4  12:1
+        # peasant2 4:4, 5:4, 6:4,  7:4  12:1
+        # landlord 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1  
+        print env.private_state.hand_cards[2].cards
 
-        ## 5 turn == 1 license_id =0
+        ## 5 turn = 1 license_id = 2
         self.assertEqual(env.public_state.epoch,5)
         action = Action([ActionSpace.cheat],[])
         isTerminal, scores, infos = env.forward(action)
@@ -110,7 +112,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         # peasant1 4:4, 5:4, 6:4,  7:4  12:1
         # peasant2 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1
 
-        ## 6 turn == 2 license_id =0
+        ## 6 turn == 2 license_id = 2
         self.assertEqual(env.public_state.license_playerid, 0)
         self.assertEqual(env.public_state.turn, 2)
         action = Action([ActionSpace.cheat],[])
@@ -119,7 +121,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         # peasant1 4:4, 5:4, 6:4,  7:4  12:1
         # peasant2 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1  
         
-        ## 7 turn == 0 license_id = 0
+        ## 7 turn == 0 license_id = 2
         self.assertEqual(env.public_state.license_playerid, 0)
         self.assertEqual(env.public_state.turn, 0)
         action = Action([ActionSpace.cheat],[])
@@ -129,23 +131,24 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         self.assertEqual(infos[3].private_state.hand_cards[0].cards[0], 0)
         self.assertEqual(infos[3].private_state.hand_cards[0].cards[1], 4)
         self.assertEqual(infos[3].private_state.hand_cards[0].cards[12], 0)
-        # landlord 0:0, 1:4, 2:4,  3:4  12:0 
-        # peasant1 4:3, 5:4, 6:4,  7:4  12:1
-        # peasant2 8:4, 9:4, 10:4, 11:4 12:2 13:1 14:1  
+        # peasant1 0:0, 1:4, 2:4,  3:4  12:0 
+        # peasant2 4:3, 5:4, 6:4,  7:4  12:1
+        # landlord 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1  
+        print env.private_state.hand_cards[0].cards
 
-        ## 8 turn == 1 license_id =0
+        ## 8 turn == 1 license_id = 2
         action = Action([ActionSpace.cheat],[])
         env.forward(action)
         ## 9 turn = 2  license_id = 0
         action = Action([ActionSpace.cheat],[])
         env.forward(action)
-        # landlord 0:0, 1:4, 2:4,  3:4  12:0 
-        # peasant1 4:3, 5:4, 6:4,  7:4  12:1
-        # peasant2 8:4, 9:4, 10:4, 11:4 12:2 13:1 14:1  
+        # peasant1 0:0, 1:4, 2:4,  3:4  12:0 
+        # peasant2 4:3, 5:4, 6:4,  7:4  12:1
+        # landlord 8:4, 9:4, 10:4, 11:4 12:2 13:1 14:1  
 
 
         #10 turn = 0 license_id = 0
-        action = Action([0,0,0],[])
+        action = Action([],[])
         env.forward(action) 
         ## 11 turn == 1 license_id =0
         action = Action([ActionSpace.cheat],[])
@@ -153,15 +156,18 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         ## 12 turn = 2  license_id = 0
         action = Action([ActionSpace.cheat],[])
         env.forward(action)
-        # landlord 0:0, 1:4, 2:4,  3:4  12:0 
-        # peasant1 4:3, 5:4, 6:4,  7:4  12:1
-        # peasant2 8:4, 9:4, 10:4, 11:4 12:2  
-        
+        # peasant1 0:0, 1:4, 2:4,  3:4  12:0 
+        # peasant2 4:3, 5:4, 6:4,  7:4  12:1
+        # landlord 8:4, 9:4, 10:4, 11:4 12:2  
+        self.assertEqual(env.private_state.hand_cards[0].cards[0],0)
+
         # 13 turn =0 license_id = 0
         action = Action([1,1,2,2,3,3],[])
         self.assertTrue(env.isActionValid(action))
         env.forward(action)
-
+        # peasant1 0:0 1:2 2:2 3:2 12:0
+        # peasant2 4:3 5:4 6:4 7:4 12:1
+        # landlord 8:4 9:4 10:4 11:4 12:2
 
         ## 14 turn == 1 license_id =0
         action = Action([ActionSpace.cheat],[])
@@ -172,6 +178,9 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         # landlord 0:0, 1:2, 2:2,  3:2  12:0 
         # peasant1 4:3, 5:4, 6:4,  7:4  12:1
         # peasant2 8:4, 9:4, 10:4, 11:4 12:2  
+        print env.private_state.hand_cards[0].cards
+        self.assertEqual(env.private_state.hand_cards[0].cards[0],0)
+        self.assertEqual(env.private_state.hand_cards[0].cards[1],2)
 
         # 16 turn =0 license_id = 0
         action = Action([1,1,2,2,3,3],[])

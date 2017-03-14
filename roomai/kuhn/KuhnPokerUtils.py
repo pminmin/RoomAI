@@ -25,7 +25,7 @@ class Info(roomai.abstract.AbstractInfo):
         self.id            = -1
         self.card          = -1
 
-class Utils(roomai.Utils):
+class Utils:
     #@overide
     def is_action_valid(public_state, action):
         if  isinstance(public_state, PublicState) and \
