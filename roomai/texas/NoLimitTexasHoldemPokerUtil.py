@@ -42,7 +42,7 @@ AllCardsPattern["2_2_1"] = \
 AllCardsPattern["2_1_1_1"] = \
 ["2_1_1_1",             False, True,  False, [2,1,1,1], 92, []]
 
-def Cards2Pattern(hand_cards, remaining_cards):
+def cards2pattern(hand_cards, remaining_cards):
     point2cards = dict()
     for c in hand_cards + remaining_cards:
         if c.point in point2cards:  point2cards[c.point].append(c)
