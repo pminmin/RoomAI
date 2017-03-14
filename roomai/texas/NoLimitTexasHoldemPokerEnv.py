@@ -17,25 +17,37 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.blind_id = id1    
 
     
-    def state2info(self, infos):
+    def state2info(self):
+        infos = [Info(), Info(), Info()]
         for i in xrange(len(infos)):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[len(infos)-1].private_state = copy.deepcopy(self.private_state)        
 
+    def judge_winner_with_cards(self):
+        for i in xrange(self.public_state.num_public_cards, len(self.private_state.keep_cards)):
+            self.public_state.public_cards.append(self.private_state.keep_cards[i])
+        self.public_state.num_public_cards = len(self.public_state.public_cards)
+        
+        pattern0 = cards2pattern(self.private_state.hand_cards[0], self.public_state.public_cards)
+        pattern1 = cards2pattern(self.private_state.hand_cards[1], self.public_state.public_cards)
+
+        if pattern0[5] > pattern1[5]:
+
+        elif pattern0[5] < pattern1[5]:
+        
+        else: #=
+
+        return scores
 
     #@override
-    def init(self, players):
+    def init(self):
         isTerminal = False
         scores     = []
-        infos      = [Info(), Info(), Info()]
-
-        if len(players) != 2:
-            raise Exception("NoLimitTexasHoldemPoker is a game with two players.")
-
+        
         self.public_state       = PublicState()
         self.public_state.chips = [0,0]
         if self.blind_id == None:
-            self.public_state.blind_id  = int(random.random() * len(players))
+            self.public_state.blind_id  = int(random.random() * 2)
         else:
             self.public_state.blind_id  = self.blind_id
         self.public_state.chips[self.public_state.blind_id] =  5        
@@ -56,20 +68,42 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.private_state.keep_cards       = allcards[4:9]         
         
         #gen info
-        self.state2infos(infos)
-        for i in xrange(len(players)-1):
+        infos = self.state2infos()
+        for i in xrange(2):
             infos[i].player_id = i
         
         return isTerminal, scores, infos
 
-    #@Override
-    def isActionValid(self, action):
-        pass
-
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
-        pass
+        isTerminal = False
+        turn = self.public_state.turn
+
+        if action.option == ActionSpace.quit:
+            if self.public_state.previous_action.option in [ActionSpace.check, ActionSpace.bet]:
+                isTerminal      = True
+                scores          = [0,0]
+                scores[turn]    = sum(chips)                
+                scores[1-turn]  = -sum(chips)
+            else:   #quit
+
+        elif action.option == ActionSpace.check:
+            if self.public_state.previous_action.option == ActionSpace.check:
+                self.judge_winner            
+
+            elif self.public_state.previous_action.option == ActionSpace.bet:
+            
+            else:   ##self.public_state.previous_action.option == ActionSpace.quit
+
+        elif action.option == ActionSpace.bet:
+            if self.public_state.previous_action.option in [ActionSpace.check, ActionSpace.bet]:
+            
+            else:   #quit
+            self.public_state.chips[turn] += action.price
+            self.public_state.previous_id  = self.public_state.turn
+            self.
+                      
 
         
 

@@ -24,7 +24,7 @@ def compareCard(c1,c2):
 
 
 AllCardsPattern = dict() 
-#name, isStraight, isSamePoint, isSameSuit, [SizeOfPair1, SizeOfPair2](desc), rank, cards
+#name, isStraight, isPair, isSameSuit, [SizeOfPair1, SizeOfPair2,..](desc), rank, cards
 AllCardsPattern["Straight_SameSuit"] = \
 ["Straight_SameSuit",   True,  False, True,  [], 100, []]   
 AllCardsPattern["4_1"] = \
@@ -198,11 +198,14 @@ def Cards2Pattern(hand_cards, remaining_cards):
         pattern[6].sort(compareCard)
         return pattern
 
+class ActionSpace:
+    quit    = 0
+    check   = 1
+    bet     = 2
+
 class Action:
     def __init__(self):
-        self.quit   = 0 
-        self.cheat  = 1
-        self.bet    = 2
+        self.option = -1
         self.price  = 0
 
 
@@ -210,6 +213,7 @@ class Action:
 class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
         self.public_cards       = [] ##public keep_cards
+        self.num_public_cards   = 0
         self.turn               = -1
         self.chips              = [0,0]
         self.blind_id           = -1  

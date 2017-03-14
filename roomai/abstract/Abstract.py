@@ -39,11 +39,11 @@ class AbstractEnv:
     def forward(self, actions):
         raise NotImplementedError("The receiveAction hasn't been implemented")
 
-    def init(self, players):
+    def init(self):
         raise NotImplementedError("The init function hasn't been implemented")
 
     
-
+'''
 class Utils:
    
 
@@ -91,4 +91,4 @@ class Utils:
 
         return scores
 
-
+'''
