@@ -427,7 +427,7 @@ def get_file(path):
 
 path = os.path.split(os.path.realpath(__file__))[0]
 AllPatterns  = dict();
-file1 = get_file(path+"/patterns.txt")
+file1 = get_file(path+"/patterns.py")
 for line in file1:
     line = line.replace(" ","").strip()
     line = line.split("#")[0]
@@ -439,7 +439,7 @@ for line in file1:
 file1.close()
 
 AllActions = dict();
-action_file = get_file(path+"/actions.txt")
+action_file = get_file(path+"/actions.py")
 for line in action_file:
     line  = line.replace(" ","").strip()
     lines = line.split("\t")
