@@ -9,5 +9,5 @@ setup(  name        = "roomai",
         author      = "AlgorithmDog",
         author_email= "lili1987mail@gmail.com",
         license     = "MIT",
-        packages    = ["roomai","roomai.doudizhu","roomai.kuhn"],
+        packages    = ["roomai","roomai.doudizhu","roomai.kuhn","roomai.abstract","roomai.texas"],
         zip_safe    = False)
