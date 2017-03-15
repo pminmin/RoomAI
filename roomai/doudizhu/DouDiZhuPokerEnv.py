@@ -64,10 +64,7 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
         return Utils.is_action_valid(hand_cards, public_state, action)
 
     #@Overide
-    def init(self, players):
-         
-        if len(players) != 3:
-            raise Exception("The DouDiZhuPoker is a game with two players, len(players) = %d"%(len(players)))
+    def init(self):
 
         ## init the info
         infos  = [Info(), Info(), Info(), Info()]; 
