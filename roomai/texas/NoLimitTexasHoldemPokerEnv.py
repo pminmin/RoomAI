@@ -32,11 +32,12 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         pattern1 = cards2pattern(self.private_state.hand_cards[1], self.public_state.public_cards)
 
         if pattern0[5] > pattern1[5]:
+            pass
 
         elif pattern0[5] < pattern1[5]:
-        
+            pass
         else: #=
-
+            pass
         return scores
 
     #@override
@@ -87,22 +88,24 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
                 scores[turn]    = sum(chips)                
                 scores[1-turn]  = -sum(chips)
             else:   #quit
+                pass
 
         elif action.option == ActionSpace.check:
             if self.public_state.previous_action.option == ActionSpace.check:
                 self.judge_winner            
 
             elif self.public_state.previous_action.option == ActionSpace.bet:
-            
+                pass
             else:   ##self.public_state.previous_action.option == ActionSpace.quit
-
+                pass
         elif action.option == ActionSpace.bet:
             if self.public_state.previous_action.option in [ActionSpace.check, ActionSpace.bet]:
-            
+                pass
             else:   #quit
+                pass
             self.public_state.chips[turn] += action.price
             self.public_state.previous_id  = self.public_state.turn
-            self.
+            
                       
 
         
