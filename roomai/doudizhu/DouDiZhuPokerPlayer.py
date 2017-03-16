@@ -16,7 +16,7 @@ class DouDiZhuPokerRandomPlayer(roomai.abstract.AbstractPlayer):
             self.id1 = info.init_id
         if info.init_cards != []:
             self.hand_cards = info.init_cards
-        if info.init_addcards != []:
+        if info.init_addcards != [] and info.public_state.landlord_id == self.id1:
             self.hand_cards.add_cards(info.init_addcards)
         
         self.public_state = info.public_state

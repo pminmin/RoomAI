@@ -114,10 +114,10 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
                     self.update_phase_bid2play()
                     turnNotChange = True
                    
-                    landlord_id = self.public_state.landlord_id
                     additive_cards = self.private_state.keep_cards
-                    infos[landlord_id].init_addcards = copy.deepcopy(additive_cards)
-        
+                    for i in xrange(3):
+                        infos[i].init_addcards = copy.deepcopy(additive_cards)
+                     
 
         else: #phase == play
 
