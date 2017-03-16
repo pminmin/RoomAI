@@ -432,7 +432,7 @@ def get_file(path):
     if ".zip" in path:
         lines = path.split(".zip")
         zip1  = zipfile.ZipFile(lines[0] + ".zip")
-        return zip1.read(lines[1])
+        return zip1.read(lines[1][1:len(lines[1]))
     else:
         return open(path)
 
