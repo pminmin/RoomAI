@@ -214,6 +214,7 @@ class Action:
 
 class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
+        self.epoch              = 0
         self.big_blind_id       = None
         self.small_blind_id     = None
         self.public_cards       = [] ##public keep_cards
@@ -234,7 +235,15 @@ class Info(roomai.abstract.AbstractInfo):
         self.private_state  = PrivateState()
 
 
-
+class Utils:
+    @classmethod
+    def compare_hand_cards(cls, public_state, hand_card0, hand_card1):
+        pattern0 = cards2pattern(hand_card0, public_state.public_cards)
+        pattern1 = cards2pattern(hand_card1, public_state.public_cards)
+        
+        diff = comparePattern(pattern0, pattern1)
+        return diff
+        
 
         
 
