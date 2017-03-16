@@ -432,7 +432,9 @@ def get_file(path):
     if ".zip" in path:
         lines = path.split(".zip")
         zip1  = zipfile.ZipFile(lines[0] + ".zip")
-        return zip1.read(lines[1][1:len(lines[1]))
+        len1  = len(lines[1])
+        path  = lines[1][1:len1]
+        return zip1.open(path)
     else:
         return open(path)
 
@@ -440,6 +442,7 @@ path = os.path.split(os.path.realpath(__file__))[0]
 AllPatterns  = dict();
 file1 = get_file(path+"/patterns.py")
 for line in file1:
+    print line
     line = line.replace(" ","").strip()
     line = line.split("#")[0]
     if len(line) == 0:  continue
