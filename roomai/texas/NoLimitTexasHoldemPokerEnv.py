@@ -99,7 +99,8 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
                 
                 num = self.public_state.num_public_cards
                 if num < 5:
-                    self.public_state.public_cards.append(self.private_state.keep_cards[num])                               self.public_state.num_public_cards = num + 1
+                    self.public_state.public_cards.append(self.private_state.keep_cards[num])
+                    self.public_state.num_public_cards = num + 1
                     
                 else:
                     hand_cards = self.private_state.hand_cards
