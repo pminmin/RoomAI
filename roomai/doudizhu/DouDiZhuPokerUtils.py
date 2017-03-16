@@ -87,6 +87,7 @@ class Action:
 
 
 
+
 class PrivateState(roomai.abstract.AbstractPrivateState):
     def __init__(self):
         self.hand_cards     = [[],[],[]]
@@ -146,12 +147,12 @@ class Utils:
         if phase == PhaseSpace.play:
             if action.pattern[0] == "i_bid":    return False
 
-            if license_id == turn:
+            if public_state.is_response == False:
                 if action.pattern[0] == "i_cheat": return False
                 return True
 
             else:
-                if action.pattern[0] == "i_cheat":  return False
+                if action.pattern[0] == "i_cheat":  return True
 
                 if action.pattern[6] > license_act.pattern[6]:  return True
                 elif action.pattern[6] < license_act.pattern[6]:    return False
@@ -339,7 +340,8 @@ class Utils:
                     patterns.append(AllPatterns["x_rocket"])     #rank = 100
                 patterns.append(AllPatterns["i_cheat"])
 
-
+        is_response = public_state.is_response
+        license_act = public_state.license_action
         actions = []             
         for pattern in patterns:    
 
@@ -354,37 +356,42 @@ class Utils:
             if MasterNum > 0:
                 MasterCount  = MasterNum/MasterVNum
             if SlaveVNum  > 0:
-                SlaveCount   = SlaveNum /SlaveVNum
-
-            
+                SlaveCount   = SlaveNum /SlaveVNum 
 
             if "i_invalid" == pattern[0]:
                  continue
             
             if "i_cheat" == pattern[0]:
-                actions.append(cls.lookup_action([ActionSpace.cheat],[]))
+                action = cls.lookup_action([ActionSpace.cheat],[])
+                if cls.is_action_valid(hand_cards, public_state, action) == True:
+                    actions.append(action)
                 continue    
 
             if "i_bid" == pattern[0]:
-                actions.append(cls.lookup_action([ActionSpace.bid],[]))
+                action = cls.lookup_action([ActionSpace.bid],[])
+                if cls.is_action_valid(hand_cards, public_state, action) == True:
+                    actions.append(cls.lookup_action([ActionSpace.bid],[]))
                 continue
 
             if pattern[0] == "x_rocket":
                 if  hand_cards.cards[ActionSpace.r] == 1 and \
                     hand_cards.cards[ActionSpace.R] == 1:
                     action = cls.lookup_action([ActionSpace.r, ActionSpace.R],[])
-                    actions.append(action)
+                    if cls.is_action_valid(hand_cards, public_state, action) == True:
+                        actions.append(action)
                 continue       
+
 
             if pattern[1] + pattern[4] > hand_cards.num_cards:
                 continue
-
             sum1 = 0
             for count in xrange(MasterCount,5,1):
                 sum1 += hand_cards.count2num[count]
             if sum1 < MasterVNum:
                 continue
             
+
+            ### action with cards
             mCardss = []
             if isStraight == 1:
                 mCardss = Utils.extractStraight(hand_cards, MasterVNum, MasterCount, [])
@@ -399,7 +406,9 @@ class Utils:
                 m.sort()
               
                 if  SlaveVNum == 0:
-                    actions.append(cls.lookup_action(copy.deepcopy(m), []))
+                    action = cls.lookup_action(m,[])
+                    if cls.is_action_valid(hand_cards, public_state, action) == True:
+                        actions.append(action)
                     continue
 
                 sCardss = Utils.extractDiscrete(hand_cards, SlaveVNum, SlaveCount, mCards)
@@ -408,7 +417,9 @@ class Utils:
                     for sc in sCards:
                         s.extend([sc for i in xrange(SlaveCount)])
                     s.sort()
-                    actions.append(cls.lookup_action(copy.deepcopy(m), s))
+                    action = cls.lookup_action(m,s)
+                    if cls.is_action_valid(hand_cards, public_state, action) == True:
+                        actions.append(action)
 
         return actions
 
@@ -421,14 +432,17 @@ def get_file(path):
     if ".zip" in path:
         lines = path.split(".zip")
         zip1  = zipfile.ZipFile(lines[0] + ".zip")
-        return zip1.read(lines[2])
+        len1  = len(lines[1])
+        path  = lines[1][1:len1]
+        return zip1.open(path)
     else:
         return open(path)
 
 path = os.path.split(os.path.realpath(__file__))[0]
 AllPatterns  = dict();
-file1 = get_file(path+"/patterns.txt")
+file1 = get_file(path+"/patterns.py")
 for line in file1:
+    print line
     line = line.replace(" ","").strip()
     line = line.split("#")[0]
     if len(line) == 0:  continue
@@ -439,7 +453,7 @@ for line in file1:
 file1.close()
 
 AllActions = dict();
-action_file = get_file(path+"/actions.txt")
+action_file = get_file(path+"/actions.py")
 for line in action_file:
     line  = line.replace(" ","").strip()
     lines = line.split("\t")

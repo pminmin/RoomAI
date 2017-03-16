@@ -63,7 +63,7 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
 
     def testCandidateAction(self):
         env = DouDiZhuPokerEnv();
-        env.init([None,None,None])
+        env.init()
         env.public_state.is_response = False
         env.public_state.phase = PhaseSpace.play
         
@@ -88,7 +88,9 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         env.public_state.is_response = True
         env.public_state.license_action = Action([1,1],[])
         actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
-        self.assertEqual(len(actions),28)
+        for a in actions:
+            print a.masterCards, a.slaveCards
+        self.assertEqual(len(actions),26)
 
     def testHandCards(self):
         a = [0,0,0,1]

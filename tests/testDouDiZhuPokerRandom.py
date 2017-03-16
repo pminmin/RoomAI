@@ -16,7 +16,7 @@ class DouDiZhuPokerRandomPlayerTester(unittest.TestCase):
         players = [roomai.createPlayer("DouDiZhuRandomPlayer") for i in xrange(3)]
         env     = roomai.createEnv("DouDiZhuEnv")
 
-        isTerminal, _, infos = env.init(players)
+        isTerminal, _, infos = env.init()
 
         for i in xrange(len(players)):
             players[i].receiveInfo(infos[i])

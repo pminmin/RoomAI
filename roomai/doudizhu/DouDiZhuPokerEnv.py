@@ -64,10 +64,7 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
         return Utils.is_action_valid(hand_cards, public_state, action)
 
     #@Overide
-    def init(self, players):
-         
-        if len(players) != 3:
-            raise Exception("The DouDiZhuPoker is a game with two players, len(players) = %d"%(len(players)))
+    def init(self):
 
         ## init the info
         infos  = [Info(), Info(), Info(), Info()]; 
@@ -117,10 +114,10 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
                     self.update_phase_bid2play()
                     turnNotChange = True
                    
-                    landlord_id = self.public_state.landlord_id
                     additive_cards = self.private_state.keep_cards
-                    infos[landlord_id].init_addcards = copy.deepcopy(additive_cards)
-        
+                    for i in xrange(3):
+                        infos[i].init_addcards = copy.deepcopy(additive_cards)
+                     
 
         else: #phase == play
 

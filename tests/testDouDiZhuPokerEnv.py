@@ -10,13 +10,9 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
     def testNormal(self):
         env = DouDiZhuPokerEnv()
 
-        p = []
-        with self.assertRaises(Exception):
-            env.init(p)
-
 
         p = [0,0,0]
-        env.init(p)
+        env.init()
 
         cards = [0 for i in xrange(15)]
         
@@ -35,7 +31,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
     def testFoward(self):
         env = DouDiZhuPokerEnv()
         p = [0,0,0]
-        env.init(p)
+        env.init()
 
         ### init
         hand_cards = [[],[],[]]
