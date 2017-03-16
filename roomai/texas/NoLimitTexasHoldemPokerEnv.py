@@ -10,8 +10,7 @@ from NoLimitTexasHoldemPokerUtil import *
 class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
-        self.blind_id = None
-       
+        self.blind_id = None 
  
     def set_blind_id(id1):
         self.blind_id = id1    

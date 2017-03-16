@@ -214,11 +214,11 @@ class Action:
 
 class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
+        self.big_blind_id       = None
+        self.small_blind_id     = None
         self.public_cards       = [] ##public keep_cards
-        self.num_public_cards   = 0
         self.turn               = -1
-        self.chips              = [0,0]
-        self.blind_id           = -1  
+        self.chips              = []
         self.previous_id        = -1
         self.previous_action    = None        
 
