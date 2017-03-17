@@ -10,54 +10,41 @@ from NoLimitTexasHoldemPokerUtil import *
 class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
-        self.blind_id = None 
+        self.num_players    = 3 
+        self.big_blind_id   = int(random.random() * 3)
+        self.small_blind_id = (self.big_blind_id + 1 ) % 3  
  
-    def set_blind_id(id1):
-        self.blind_id = id1    
-
-    
     def state2info(self):
         infos = [Info(), Info(), Info()]
         for i in xrange(len(infos)):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[len(infos)-1].private_state = copy.deepcopy(self.private_state)        
 
-    def compare_hand_cards(self):
-        for i in xrange(self.public_state.num_public_cards, len(self.private_state.keep_cards)):
-            self.public_state.public_cards.append(self.private_state.keep_cards[i])
-        self.public_state.num_public_cards = len(self.public_state.public_cards)
-        
-        pattern0 = cards2pattern(self.private_state.hand_cards[0], self.public_state.public_cards)
-        pattern1 = cards2pattern(self.private_state.hand_cards[1], self.public_state.public_cards)
-
-        diff = comparePattern(pattern0, pattern1)
-        
-        if diff   > 0:      return 0
-        elif diff < 0:      return 1
-        else:               return self.previous_id 
-                      
     def compute_scores(self, win_id):
-        sum1    = sum(self.chips)
-        scores  = [0,0]
-        scores[win_id] =  sum1
-        scores[win_id] = -sum1 
+        num_players = len(self.private_state.hand_cards)
+        scores      = [0 for i in xrange(num_players)]
+        sum1        = sum(self.chips)
+        scores[win_id] = sum1
+        for i in xrange(len(self.private_state.hand_cards)):
+            if i == win_id: continue
+            scores[i] =  -self.public_state.chips[i]
+        return scores
  
     #@override
     def init(self):
         isTerminal = False
         scores     = []
         
-        self.public_state       = PublicState()
-        self.public_state.chips = [0,0]
-        if self.blind_id == None:
-            self.public_state.blind_id  = int(random.random() * 2)
-        else:
-            self.public_state.blind_id  = self.blind_id
-        self.public_state.chips[self.public_state.blind_id] =  5        
-        self.public_state.turn                              =  2 - self.public_state.blind_id
-        self.public_state.public_cards                      = []
-        self.public_state.previous_id                       = -1
-        self.public_state.previous_action                   = None
+        self.public_state               = PublicState()
+        self.public_state.chips         = [0 for i in xrange(self.num_players)]
+        self.public_state.big_blind_id  = self.big_blind_id
+        self.public_state.small_blind_id= self.small_blind_id
+        self.public_state.chips[self.public_state.big_blind_id]     = 10
+        self.public_state.chips[self.public_state.small_blind_id]   = 5        
+        self.public_state.turn                                      = (self.public_state.small_blind_id + 1)%self.num_players
+        self.public_state.public_cards                              = []
+        self.public_state.previous_id                               = -1
+        self.public_state.previous_action                           = None
 
         self.private_state = PrivateState() 
         allcards = []
@@ -65,10 +52,10 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
             for j in xrange(4):
                 allcards.append(Card(i,j))
         random.shuffle(allcards)        
-        self.private_state.hand_cards       = [[],[]]
-        self.private_state.hand_cards[0]    = allcards[0:2]
-        self.private_state.hand_cards[1]    = allcards[2:4]
-        self.private_state.keep_cards       = allcards[4:9]         
+        self.private_state.hand_cards       = [[] for i in xrange(self.num_players)]
+        for i in xrange(self.num_players):
+            self.private_state.hand_cards[i]    = allcards[i*2:(i+1)*2]
+        self.private_state.keep_cards   = allcards[self.num_players*2:self.num_players*2+5]         
         
         #gen info
         infos = self.state2infos()
