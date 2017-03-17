@@ -303,6 +303,9 @@ class Utils:
         masterCards.sort()
         slaveCards.sort()
 
+        ##gen model
+        #return Action(masterCards, slaveCards)
+
         mStr = ""
         for c in masterCards:
             mStr += "%d,"%(c)
@@ -316,7 +319,7 @@ class Utils:
 
         if line in AllActions:
             return AllActions[line]
-        else:            
+        else:             
             raise Exception(line + "is not in AllActions") 
 
     @classmethod

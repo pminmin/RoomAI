@@ -4,7 +4,7 @@ sys.path.append(".")
 from roomai.doudizhu import *
 
 print "start"
-actions_file            = open("actions.txt","w")
+actions_file            = open("actions.py","w")
 
 cards = []
 for i in xrange(13):
@@ -15,12 +15,13 @@ cards.append(14)
 hand_cards = HandCards(cards)
 
 env = DouDiZhuPokerEnv()
-env.init([None,None,None])
+env.init()
 env.public_state.is_response = False
 env.public_state.phase       = PhaseSpace.play
 
 actions = Utils.candidate_actions(hand_cards, env.public_state)
 actions.append(Action([ActionSpace.cheat],[]))
+actions.append(Action([ActionSpace.bid],[]))
 for a in actions:
     sys.stdout.flush()
 
