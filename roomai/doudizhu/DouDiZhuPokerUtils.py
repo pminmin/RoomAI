@@ -521,7 +521,6 @@ path = os.path.split(os.path.realpath(__file__))[0]
 AllPatterns  = dict();
 file1 = get_file(path+"/patterns.py")
 for line in file1:
-    print line
     line = line.replace(" ","").strip()
     line = line.split("#")[0]
     if len(line) == 0:  continue
