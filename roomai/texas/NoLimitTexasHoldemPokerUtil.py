@@ -201,9 +201,11 @@ def cards2pattern(hand_cards, remaining_cards):
         return pattern
 
 class ActionSpace:
-    quit    = 0
-    check   = 1
-    bet     = 2
+    Fold        = 0
+    Call        = 1
+    Check       = 2
+    Raise       = 3
+    Re-Raise    = 4
 
 class Action:
     def __init__(self):
@@ -215,9 +217,9 @@ class Action:
 class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
         self.epoch              = 0
-        self.big_blind_id       = None
-        self.small_blind_id     = None
+        self.dealer_id          = 0
         self.public_cards       = [] ##public keep_cards
+        self.is_quit            = []
         self.turn               = -1
         self.chips              = []
         self.previous_id        = -1

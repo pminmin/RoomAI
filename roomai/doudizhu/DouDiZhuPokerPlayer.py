@@ -23,7 +23,7 @@ class DouDiZhuPokerRandomPlayer(roomai.abstract.AbstractPlayer):
 
     #@override
     def takeAction(self):
-        candidates = Utils.candidate_actions(self.hand_cards, self.public_state)
+        candidates = Utils.candidate_actions(self.hand_cards, self.public_state).values()
         idx = int(random.random() * len(candidates))
         action = candidates[idx]
         self.hand_cards.remove_action(action)

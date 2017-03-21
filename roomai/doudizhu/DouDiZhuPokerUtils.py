@@ -17,6 +17,11 @@ class PhaseSpace:
     bid  = 0
     play = 1
 
+class ScopeSpace:
+    iresponse_stage = 0
+    response_stage  = 1
+    all_stage       = 2
+
 class ActionSpace:
     three   = 0;
     four    = 1;
@@ -76,17 +81,39 @@ class Action:
         self.masterCards        = copy.deepcopy(masterCards)
         self.slaveCards         = copy.deepcopy(slaveCards)
 
-        self.masterValues2Count = None
-        self.slaveValues2Count  = None
+        self.masterPoints2Count = None
+        self.slavePoints2Count  = None
         self.isMasterStraight   = None
-        self.maxMasterCard      = None
+        self.maxMasterPoint     = None
+        self.minMasterPoint     = None
         self.pattern            = None
-        self.idx                = None 
-        
         Utils.action2pattern(self)
 
+                
+        if self.pattern[0] in ["i_invalid","i_bid"]:
+            self.scope = ScopeSpace.all_stage
+        
+        elif self.pattern[0] == "i_cheat":
+            self.scope = ScopeSpace.response_stage
 
+        elif self.pattern[0] == "x_rocket":
+            self.scope  = ScopeSpace.all_stage
 
+        else:
+            self.scope              = ScopeSpace.all_stage
+            ##boom
+            if self.pattern[0] == "p_3_1_0_1_0" and \
+                self.masterCards[0] == self.slaveCards[0]:
+                self.scope = ScopeSpace.response_stage
+            
+            ##3 plane
+            if  self.pattern[0] == "p_9_3_1_3_0" and \
+                self.slavePoints2Count[self.slaveCards[0]]  == 3 and \
+                (self.minMasterPoint -1 == self.slaveCards[0] or \
+                 self.maxMasterPoint +1 == self.slaveCards[0]):
+                self.scope = ScopeSpace.response_stage
+                
+            
 
 class PrivateState(roomai.abstract.AbstractPrivateState):
     def __init__(self):
@@ -125,8 +152,11 @@ class Info(roomai.abstract.AbstractInfo):
 
 class Utils:
 
+    gen_allactions = False
     @classmethod
     def is_action_valid(cls, hand_cards, public_state, action):
+        if cls.gen_allactions == True:
+            return True
 
         if action.pattern[0] == "i_invalid":
             return False
@@ -148,15 +178,18 @@ class Utils:
             if action.pattern[0] == "i_bid":    return False
 
             if public_state.is_response == False:
-                if action.pattern[0] == "i_cheat": return False
+                if action.scope == ScopeSpace.response_stage: return False
                 return True
 
-            else:
+            else: #response
+                if action.scope == ScopeSpace.iresponse_stage:  return False
+
                 if action.pattern[0] == "i_cheat":  return True
 
+                ## not_cheat
                 if action.pattern[6] > license_act.pattern[6]:  return True
                 elif action.pattern[6] < license_act.pattern[6]:    return False
-                elif action.maxMasterCard - license_act.maxMasterCard > 0:  return True
+                elif action.maxMasterPoint - license_act.maxMasterPoint > 0:  return True
                 else:   return False
 
 
@@ -167,41 +200,45 @@ class Utils:
             if action.pattern[0] == "i_bid":    return True
             if action.pattern[0] == "i_invalid":    return False
 
-            for a in action.masterValues2Count:
-                flag = flag and (action.masterValues2Count[a] <= hand_cards.cards[a])
-            for a in action.slaveValues2Count:
-                flag = flag and (action.slaveValues2Count[a] <= hand_cards.cards[a])
+            for a in action.masterPoints2Count:
+                flag = flag and (action.masterPoints2Count[a] <= hand_cards.cards[a])
+            for a in action.slavePoints2Count:
+                flag = flag and (action.slavePoints2Count[a] <= hand_cards.cards[a])
             return flag
+
 
     @classmethod
     def action2pattern(cls,action):
 
-        action.masterValues2Count   = dict()
+        action.masterPoints2Count   = dict()
         for c in action.masterCards:
-            if c in action.masterValues2Count:
-                action.masterValues2Count[c] += 1
+            if c in action.masterPoints2Count:
+                action.masterPoints2Count[c] += 1
             else:
-                action.masterValues2Count[c]  = 1
+                action.masterPoints2Count[c]  = 1
 
-        action.slaveValues2Count    = dict()
+        action.slavePoints2Count    = dict()
         for c in action.slaveCards:
-            if c in action.slaveValues2Count:
-                action.slaveValues2Count[c] += 1
+            if c in action.slavePoints2Count:
+                action.slavePoints2Count[c] += 1
             else:
-                action.slaveValues2Count[c]  = 1
+                action.slavePoints2Count[c]  = 1
 
         action.isMasterStraight = 0
         num = 0
-        for v in action.masterValues2Count:
-            if (v + 1) in action.masterValues2Count and (v+1) < ActionSpace.two: 
+        for v in action.masterPoints2Count:
+            if (v + 1) in action.masterPoints2Count and (v+1) < ActionSpace.two: 
                 num += 1
-        if num == len(action.masterValues2Count) -1 and len(action.masterValues2Count) != 1:
+        if num == len(action.masterPoints2Count) -1 and len(action.masterPoints2Count) != 1:
             action.isMasterStraight = 1
 
-        action.maxMasterCard = -1
-        for c in action.masterValues2Count:
-            if action.maxMasterCard < c:
-                action.maxMasterCard = c
+        action.maxMasterPoint = -1
+        action.minMasterPoint = 100
+        for c in action.masterPoints2Count:
+            if action.maxMasterPoint < c:
+                action.maxMasterPoint = c
+            if action.minMasterPoint > c:
+                action.minMasterPoint = c
 
         
         ########################
@@ -223,7 +260,7 @@ class Utils:
 
         # is twoKings
         elif len(action.masterCards) == 2 \
-            and len(action.masterValues2Count) == 2\
+            and len(action.masterPoints2Count) == 2\
             and len(action.slaveCards) == 0 \
             and action.masterCards[0] in [ActionSpace.r, ActionSpace.R] \
             and action.masterCards[1] in [ActionSpace.r, ActionSpace.R]:
@@ -232,27 +269,20 @@ class Utils:
         else:
 
             ## process masterCards
-            masterValues = action.masterValues2Count
-            if len(masterValues) > 0:
-                count = masterValues[action.masterCards[0]]
-                for c in masterValues:
-                    if masterValues[c] != count:    
+            masterPoints = action.masterPoints2Count
+            if len(masterPoints) > 0:
+                count = masterPoints[action.masterCards[0]]
+                for c in masterPoints:
+                    if masterPoints[c] != count:    
                         action.pattern = AllPatterns["i_invalid"]
 
 
-            ## process slave card
-            action.slaveValues = action.slaveValues2Count
-            if len(action.slaveValues) > 0:
-                count = action.slaveValues[action.slaveCards[0]]
-                for c in action.slaveValues:
-                    if action.slaveValues[c] != count: 
-                        action.pattern = AllPatterns["i_invalid"]
 
            
             if action.pattern == None:
-                pattern = "p_%d_%d_%d_%d_%d"%(  len(action.masterCards), len(masterValues),\
+                pattern = "p_%d_%d_%d_%d_%d"%(  len(action.masterCards), len(masterPoints),\
                                                 action.isMasterStraight,\
-                                                len(action.slaveCards),  len(action.slaveValues))
+                                                len(action.slaveCards),  0)
 
                 if pattern in AllPatterns:
                     action.pattern = AllPatterns[pattern]
@@ -264,47 +294,107 @@ class Utils:
         return action
 
     @classmethod
-    def extractStraight(cls, hand_cards, numStraightV, count, exclude):
-            cardss = []
+    def extractMasterCards(cls, hand_cards, numPoint, count, pattern):
+        is_straight = pattern[3]
+        cardss = []
+        ss = []
 
-            if numStraightV == 0:
+        if numPoint == 0:
                 return cardss
+
+        if is_straight == 1:
             c = 0
             for i in xrange(11,-1,-1): 
-                if i in exclude:
-                    c  = 0 
-                elif hand_cards.cards[i] >= count:
+                if hand_cards.cards[i] >= count:
                     c += 1
                 else:
                     c  = 0        
 
-                if c >= numStraightV:
-                    cardss.append(range(i,i+numStraightV))
-
-            return cardss          
-
-    @classmethod        
-    def extractDiscrete(cls, hand_cards, numDiscreteV, count, exclude):
-            cardss  = []
-            if numDiscreteV == 0:
-                return cardss
-
+                if c >= numPoint:
+                    ss.append(range(i,i+numPoint))
+        else:
             candidates = []
             for c in xrange(len(hand_cards.cards)):
-                if (hand_cards.cards[c] >= count) and (c not in exclude):
+                if hand_cards.cards[c] >= count:
                     candidates.append(c)
-            if len(candidates) < numDiscreteV:  
-                return cardss
+            if len(candidates) < numPoint:
+                    return []
+            ss =  list(itertools.combinations(candidates, numPoint))
+       
+        for set1 in ss:
+            s = []
+            for c in set1:
+                for i in xrange(count):
+                    s.append(c)
+            s.sort()
+            cardss.append(s) 
 
-            return list(itertools.combinations(candidates, numDiscreteV)) 
+        return cardss
+
+    @classmethod        
+    def extractSlaveCards(cls, hand_cards, numCards, used_cards, pattern):
+            used = [0 for i in xrange(15)]
+            for p in used_cards:
+                used[p] += 1
+
+            numMaster       = pattern[1]
+            numMasterPoint  = pattern[2]
+            numSlave        = pattern[4]
+
+            candidates = []
+            res1       = []
+            res        = []
+                        
+            if numMaster / numMasterPoint == 3:
+
+                if numSlave / numMasterPoint == 1: # single
+                    for c in xrange(len(hand_cards.cards)):
+                        for i in xrange(hand_cards.cards[c] - used[c]):
+                            candidates.append(c)
+                    if len(candidates) >= numCards:
+                        res1 = list(set(list(itertools.combinations(candidates, numCards))))
+                    for sCard in res1:  res.append([x for x in sCard])                
+
+                elif numSlave / numMasterPoint == 2: #pair
+                    for c in xrange(len(hand_cards.cards)):
+                        for i in xrange((hand_cards.cards[c] - used[c])/2):
+                            candidates.append(c)
+                    if len(candidates) >= numCards / 2:
+                        res1 = list(set(list(itertools.combinations(candidates, numCards/2))))
+                    for sCard in res1:
+                        tmp = [x for x in sCard]
+                        tmp.extend([x for x in sCard])   
+                        res.append(tmp)                 
+
+            elif numMaster/ numMasterPoint == 4:
+
+                if numSlave / numMasterPoint == 2: #single
+                    for c in xrange(len(hand_cards.cards)):
+                        for i in xrange(hand_cards.cards[c] - used[c]):
+                            candidates.append(c)
+                    if len(candidates) >= numCards:
+                        res1 = list(set(list(itertools.combinations(candidates, numCards))))
+                    for sCard in res1:  res.append([x for x in sCard])                
+                        
+
+                elif numSlave / numMasterPoint == 4: # pair
+                    for c in xrange(len(hand_cards.cards)):
+                        for i in xrange((hand_cards.cards[c] - used[c])/2):
+                            candidates.append(c)
+                    if len(candidates) >= numCards / 2:
+                        res1 = list(set(list(itertools.combinations(candidates, numCards/2))))
+                    for sCard in res1:
+                        tmp = [x for x in sCard]
+                        tmp.extend([x for x in sCard])   
+                        res.append(tmp)                 
+
+            return res
+        
 
     @classmethod
     def lookup_action(cls, masterCards, slaveCards):
         masterCards.sort()
         slaveCards.sort()
-
-        ##gen model
-        #return Action(masterCards, slaveCards)
 
         mStr = ""
         for c in masterCards:
@@ -316,9 +406,12 @@ class Utils:
         line = "%s\t%s\n"%(mStr,sStr)
         line = line.replace(" ","")
         line = line.strip()
+        
+        if cls.gen_allactions == True:
+            return line, Action(masterCards, slaveCards)
 
         if line in AllActions:
-            return AllActions[line]
+            return line,AllActions[line]
         else:             
             raise Exception(line + "is not in AllActions") 
 
@@ -345,85 +438,68 @@ class Utils:
 
         is_response = public_state.is_response
         license_act = public_state.license_action
-        actions = []             
+        actions     = dict()           
+
         for pattern in patterns:    
+            numMaster       = pattern[1]
+            numMasterPoint  = pattern[2]
+            isStraight      = pattern[3]
+            numSlave        = pattern[4]
+            MasterCount     = -1
+            SlaveCount      = -1
 
-            MasterNum   = pattern[1]
-            MasterVNum  = pattern[2]
-            isStraight  = pattern[3]
-            SlaveNum    = pattern[4]
-            SlaveVNum   = pattern[5]
-            MasterCount  = -1
-            SlaveCount   = -1
-
-            if MasterNum > 0:
-                MasterCount  = MasterNum/MasterVNum
-            if SlaveVNum  > 0:
-                SlaveCount   = SlaveNum /SlaveVNum 
+            if numMaster > 0:
+                MasterCount  = numMaster/numMasterPoint
 
             if "i_invalid" == pattern[0]:
                  continue
             
             if "i_cheat" == pattern[0]:
-                action = cls.lookup_action([ActionSpace.cheat],[])
+                key,action = cls.lookup_action([ActionSpace.cheat],[])
                 if cls.is_action_valid(hand_cards, public_state, action) == True:
-                    actions.append(action)
+                    actions[key] = action
                 continue    
 
             if "i_bid" == pattern[0]:
-                action = cls.lookup_action([ActionSpace.bid],[])
+                key,action = cls.lookup_action([ActionSpace.bid],[])
                 if cls.is_action_valid(hand_cards, public_state, action) == True:
-                    actions.append(cls.lookup_action([ActionSpace.bid],[]))
+                    actions[key] = action
                 continue
 
             if pattern[0] == "x_rocket":
                 if  hand_cards.cards[ActionSpace.r] == 1 and \
                     hand_cards.cards[ActionSpace.R] == 1:
-                    action = cls.lookup_action([ActionSpace.r, ActionSpace.R],[])
+                    key,action = cls.lookup_action([ActionSpace.r, ActionSpace.R],[])
                     if cls.is_action_valid(hand_cards, public_state, action) == True:
-                        actions.append(action)
+                        actions[key] = action
                 continue       
-
+            
 
             if pattern[1] + pattern[4] > hand_cards.num_cards:
                 continue
             sum1 = 0
             for count in xrange(MasterCount,5,1):
                 sum1 += hand_cards.count2num[count]
-            if sum1 < MasterVNum:
+            if sum1 < numMasterPoint:
                 continue
-            
-
+           
             ### action with cards
             mCardss = []
-            if isStraight == 1:
-                mCardss = Utils.extractStraight(hand_cards, MasterVNum, MasterCount, [])
-            else:
-                mCardss = Utils.extractDiscrete(hand_cards, MasterVNum, MasterCount, [])
-
+            mCardss = Utils.extractMasterCards(hand_cards, numMasterPoint, MasterCount, pattern)
+            
 
             for mCards in mCardss:
-                m = []
-                for mc in mCards:
-                    m.extend([mc for i in xrange(MasterCount)])
-                m.sort()
-              
-                if  SlaveVNum == 0:
-                    action = cls.lookup_action(m,[])
+                if  numSlave == 0:
+                    key,action = cls.lookup_action(mCards,[])
                     if cls.is_action_valid(hand_cards, public_state, action) == True:
-                        actions.append(action)
+                        actions[key] = action
                     continue
-
-                sCardss = Utils.extractDiscrete(hand_cards, SlaveVNum, SlaveCount, mCards)
+               
+                sCardss = Utils.extractSlaveCards(hand_cards, numSlave, mCards, pattern)
                 for sCards in sCardss:
-                    s = []
-                    for sc in sCards:
-                        s.extend([sc for i in xrange(SlaveCount)])
-                    s.sort()
-                    action = cls.lookup_action(m,s)
+                    key, action = cls.lookup_action(mCards, sCards)
                     if cls.is_action_valid(hand_cards, public_state, action) == True:
-                        actions.append(action)
-
+                        actions[key] = action
         return actions
 
 
@@ -476,7 +552,6 @@ for line in action_file:
             s.append(int(c))
 
     action              = Action(m,s)
-    action.idx          = len(AllActions)
     AllActions[line]    = action
 action_file.close()
 

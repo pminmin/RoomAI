@@ -6,11 +6,11 @@ from roomai.doudizhu import *
 
 class DouDiZhuPokerUtilTester(unittest.TestCase):
 
-
+    
     def testAction2Patterns(self):
         
         a = Action([1,1,1],[2])
-        self.assertEqual(a.pattern[0], "p_3_1_0_1_1")
+        self.assertEqual(a.pattern[0], "p_3_1_0_1_0")
 
         a = Action([1,1,1,2,3,3],[])
         self.assertEqual(a.pattern[0], "i_invalid")
@@ -57,9 +57,27 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         self.assertEqual(hand_cards.count2num[3],1)
         self.assertEqual(hand_cards.num_cards,4)
         ##[2,2,2,3]
+    
+    def test_extractMaster(self):
+        cards = []
+        for i in xrange(13):
+            for j in xrange(4):
+                cards.append(i)
+        cards.append(13)
+        cards.append(14)
 
-    def test_extractStraight(self):
-        a = 0 
+        hand_cards = HandCards(cards)
+
+        ## extract straight
+        ss = Utils.extractMasterCards(hand_cards, 5, 3, Action([0,0,0,1,1,1,2,2,2],[]).pattern)
+
+
+        ## extract slave
+        ss = Utils.extractSlaveCards(hand_cards, 5, [1,1,1,1], Action([1,1,1,1],[]).pattern)
+        for s in ss:
+            for i in s:
+                self.assertTrue(i!=1)
+        
 
     def testCandidateAction(self):
         env = DouDiZhuPokerEnv();
@@ -71,13 +89,21 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         hand_cards1 = HandCards([1,1,1,2,2,3,3,4,4,5,6,8,8,8,8,9,9,10,10,10,10,13,14])
         #self.assertEqual(hand_cards1.num_cards,32)
 
- 
+         
         actions = Utils.candidate_actions(hand_cards1, env.public_state)
-        for a in actions:
+        for key in actions:
+            a = actions[key]
             flag = Utils.is_action_from_handcards(hand_cards1,a)
             self.assertTrue(flag)     
             self.assertTrue(a.pattern[0] != "i_invalid") 
         
+    
+    def testCandidatesAction1(self):
+
+        env = DouDiZhuPokerEnv();
+        env.init()
+        env.public_state.is_response = False
+        env.public_state.phase = PhaseSpace.play
 
         hand_cards2 = []
         for i in xrange(13):
@@ -88,10 +114,24 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         env.public_state.is_response = True
         env.public_state.license_action = Action([1,1],[])
         actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
-        for a in actions:
-            print a.masterCards, a.slaveCards
+        for key in actions:
+            a = actions[key]
         self.assertEqual(len(actions),26)
 
+        
+        env.public_state.is_response = True
+        env.public_state.license_action = Action([1,1,1,1],[0,0])
+        actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
+        for key in actions:
+            a = actions[key]
+
+        env.public_state.is_response = False
+        env.public_state.license_action = Action([1,1],[])
+        actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
+        for key in actions:
+            a = actions[key]
+
+    
     def testHandCards(self):
         a = [0,0,0,1]
         hand_cards = HandCards(a);
@@ -101,3 +141,4 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         self.assertEqual(hand_cards.cards[2], 1)
         hand_cards.remove_cards([2])
         self.assertEqual(hand_cards.cards[2], 0)    
+    

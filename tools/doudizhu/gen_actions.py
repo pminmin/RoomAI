@@ -20,10 +20,20 @@ env.public_state.is_response = False
 env.public_state.phase       = PhaseSpace.play
 
 actions = Utils.candidate_actions(hand_cards, env.public_state)
-actions.append(Action([ActionSpace.cheat],[]))
-actions.append(Action([ActionSpace.bid],[]))
-for a in actions:
-    sys.stdout.flush()
+line, action = Utils.lookup_action([ActionSpace.cheat],[])
+actions[line] = action
+line, action = Utils.lookup_action([ActionSpace.bid],[])
+actions[line] = action
+
+res = dict()
+
+for key in actions:
+    a = actions[key]
+    if a.pattern[0] != "i_invalid":
+        res[key] = a
+
+for key in res:
+    a = actions[key]
 
     mStr = ""
     for c in a.masterCards:

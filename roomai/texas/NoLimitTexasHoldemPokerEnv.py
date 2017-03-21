@@ -29,7 +29,11 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
             if i == win_id: continue
             scores[i] =  -self.public_state.chips[i]
         return scores
- 
+    
+    def a_round_end(self):
+        
+     
+
     #@override
     def init(self):
         isTerminal = False
@@ -41,10 +45,12 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.small_blind_id= self.small_blind_id
         self.public_state.chips[self.public_state.big_blind_id]     = 10
         self.public_state.chips[self.public_state.small_blind_id]   = 5        
-        self.public_state.turn                                      = (self.public_state.small_blind_id + 1)%self.num_players
-        self.public_state.public_cards                              = []
-        self.public_state.previous_id                               = -1
-        self.public_state.previous_action                           = None
+        self.public_state.turn              = self.public_state.small_blind_id
+        self.public_state.license_id        = self.public_state.big_blind_id
+        self.public_state.is_quit           = [False for i in xrange(self.num_players)] 
+        self.public_state.public_cards      = []
+        self.public_state.previous_id       = -1
+        self.public_state.previous_action   = None
 
         self.private_state = PrivateState() 
         allcards = []
@@ -68,45 +74,24 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
     #@Overide
     def forward(self, action):
         isTerminal = False
+        ps         = self.public_state
         turn = self.public_state.turn
 
         if action.option == ActionSpace.quit:
-            if self.public_state.previous_action.option in [ActionSpace.check, ActionSpace.bet]:
-                isTerminal      = True
-                scores          = [0,0]
-                scores[turn]    = sum(chips)                
-                scores[1-turn]  = -sum(chips)
-            else:   #quit
-                win_id = 1-turn
-                scores = self.compute_scores(win_id) 
+            self.is_quit[turn] = True
+            if (turn + 1)%ps.num_players == ps.license_id:
+                    
 
         elif action.option == ActionSpace.check:
-            if self.public_state.previous_action.option == ActionSpace.check:
-                
-                num = self.public_state.num_public_cards
-                if num < 5:
-                    self.public_state.public_cards.append(self.private_state.keep_cards[num])
-                    self.public_state.num_public_cards = num + 1
-                    
-                else:
-                    hand_cards = self.private_state.hand_cards
-                    win_id = compare_hand_cards(hand_cards[0], hand_cards[1])
-                    scores = compute_scores(win_id)
-
-            elif self.public_state.previous_action.option == ActionSpace.bet:
-                self.chips[turn] = self.chips[1-turn]    
-            
-            else:   ##self.public_state.previous_action.option == ActionSpace.quit
-                pass
-        elif action.option == ActionSpace.bet:
-            if self.public_state.previous_action.option in [ActionSpace.check, ActionSpace.bet]:
-                pass
-            else:   #quit
-                pass
-            self.public_state.chips[turn] += action.price
-            self.public_state.previous_id  = self.public_state.turn
-            
-                      
-
+            pass
         
-
+        elif action.option == ActionSpace.bet:
+            pass            
+                      
+        
+        turn += 1
+        while ps.is_quit[turn] == True:
+            turn += 1
+        if turn == ps.license_id:
+             
+        
