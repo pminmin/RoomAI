@@ -3,7 +3,7 @@ import random
 import math
 import roomai.abstract
 
-class Action:
+class ActionSpace:
     bet   = 0;
     cheat = 1;
 
@@ -12,7 +12,7 @@ class PublicState(roomai.abstract.AbstractPublicState):
         self.turn                       = 0
         self.first                      = 0
         self.epoch                      = 0
-        self.action_list                = 0
+        self.action_list                = []
 
 class PrivateState(roomai.abstract.AbstractPrivateState):
     def __init__(self):
@@ -22,7 +22,7 @@ class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
         self.public_state  = None
         self.private_state = None
-        self.id            = -1
+        self.player_id     = -1
         self.card          = -1
 
 class Utils:

@@ -2,19 +2,26 @@
 #coding:utf-8
 import random
 import roomai.abstract
+import roomai.kuhn
 
 class KuhnPokerAlwaysBetPlayer(roomai.abstract.AbstractPlayer):
-    def receiveInformation(self,p):
+    def __init__(self):
         pass
-    def receiveValidActions(self,actions):
-        self.actions = actions
-    def receiveResult(self, result):
+           
+    def receiveInfo(self,info):
+        pass     
+
+    def InvalidAction(self, action)
         pass
+
+    def ValidAction(self, action)
+        pass
+
+    def takeAction(self):
+        return roomai.kuhn.Action.bet
+
     def reset(self):
         pass
-    def takeAction(self):
-        return self.actions.bet;
-   
    
 a = """
 class KuhnPokerCounterfactualRegretPlayer(AbstractPlayer):

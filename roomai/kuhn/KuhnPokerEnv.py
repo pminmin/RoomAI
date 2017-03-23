@@ -25,9 +25,9 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.action_list   = []
         
         infos = self.gen_infos(2)
-        infos[0].id = 0
+        infos[0].player_id = 0
         infos[0].card = card0
-        infos[1].id = 1
+        infos[1].player_id = 1
         infos[1].card = card1
         
         return False, [], infos 
