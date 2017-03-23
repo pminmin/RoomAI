@@ -7,6 +7,12 @@ RoomAI is a toolkit for developing and comparing imperfect information game bots
 
 ## 1. Get Started
 
+`
+#!/bin/python
+import roomai.abstract
+class KuhnPokerPlayer(roomai.abstract.AbstractPlayer)
+`
+
 ## 2. KuhnPoker
 
 ## 3. DouDiZhuPoker
