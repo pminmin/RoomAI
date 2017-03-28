@@ -35,7 +35,9 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
         for i in xrange(4):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[3].private_state    = copy.deepcopy(self.private_state)
-    
+
+        turn = self.public_state.turn
+        infos[turn].available_actions = Utils.candidate_actions(self.private_state.hand_cards[turn],self.public_state)
 
     def update_license(self, turn, action):
         if action.pattern[0] != "i_cheat":

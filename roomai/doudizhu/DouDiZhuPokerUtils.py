@@ -121,9 +121,7 @@ class PrivateState(roomai.abstract.AbstractPrivateState):
         self.keep_cards     = []
 
 class PublicState(roomai.abstract.AbstractPublicState):
-
     def __init__(self):
-
         self.landlord_candidate_id  = -1
         self.landlord_id            = -1
         self.license_playerid       = -1
@@ -142,13 +140,14 @@ class PublicState(roomai.abstract.AbstractPublicState):
 class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
         ### init
-        self.init_id            = -1
-        self.init_cards         = []
-        self.init_addcards      = []
+        self.init_id            = None
+        self.init_cards         = None
+        self.init_addcards      = None
 
         self.public_state       = None
         #In the info sent to players, the private info always be None.
         self.private_state      = None
+        self.available_actions  = None
 
 class Utils:
 

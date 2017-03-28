@@ -1,20 +1,10 @@
-#!/bin/python
-import roomai
-import roomai.doudizhu
 import unittest
+import roomai.kuhn
 
-class DouDiZhuPokerRandomPlayerTester(unittest.TestCase):
-    
-    
-    def testPlayersRepeat(self):
-        for i in xrange(100):
-            self.testPlayers()
-    
-
-    def testPlayers(self):
-
-        players = [roomai.doudizhu.DouDiZhuPokerRandomPlayer() for i in xrange(3)]
-        env     = roomai.doudizhu.DouDiZhuPokerEnv()
+class KuhnTester(unittest.TestCase):
+    def testKuhn(self):
+        players = [roomai.kuhn.KuhnPokerAlwaysBetPlayer() for i in xrange(3)]
+        env     = roomai.kuhn.KuhnPokerEnv()
 
         isTerminal, _, infos = env.init()
 
@@ -22,9 +12,9 @@ class DouDiZhuPokerRandomPlayerTester(unittest.TestCase):
             players[i].receiveInfo(infos[i])
 
         count = 0
-        while isTerminal == False: 
+        while isTerminal == False:
             turn = infos[-1].public_state.turn
-            actions =roomai.doudizhu.Utils.candidate_actions(players[turn].hand_cards, env.public_state)
+            actions = [roomai.kuhn.ActionSpace.cheat, roomai.kuhn.ActionSpace.bet]
             action = players[turn].takeAction()
             isTerminal, scores, infos = env.forward(action)
             for i in xrange(len(players)):
@@ -33,4 +23,3 @@ class DouDiZhuPokerRandomPlayerTester(unittest.TestCase):
             count += 1
             if count > 10000:
                 raise Exception("A round has more than 10000 epoches")
-

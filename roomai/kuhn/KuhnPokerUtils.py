@@ -20,14 +20,8 @@ class PrivateState(roomai.abstract.AbstractPrivateState):
 
 class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
-        self.public_state  = None
-        self.private_state = None
-        self.player_id     = -1
-        self.card          = -1
-
-class Utils:
-    #@overide
-    def is_action_valid(public_state, action):
-        if  isinstance(public_state, PublicState) and \
-            isinstance(action,Action):
-            return True       
+        self.public_state       = None
+        self.private_state      = None
+        self.available_actions  = None
+        self.player_id          = None
+        self.card               = None
