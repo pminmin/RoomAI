@@ -39,6 +39,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.action_list.append(action)
         infos = self.gen_infos(2)
 
+
         if self.public_state.epoch == 1:
             return False, [], infos
 
@@ -46,6 +47,8 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
             scores = self.evaluteTwo()
             if scores[0] != -1:
                 return True, scores, infos
+            else:
+                return False,[],infos
 
         elif self.public_state.epoch == 3:
             scores = self.evaluteThree()
