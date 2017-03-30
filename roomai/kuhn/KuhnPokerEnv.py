@@ -59,10 +59,10 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
     #@Overide
     @classmethod
-    def round(cls, env, players):
+    def round(cls, env, players,num_round):
 
         total_scores = [0,0]
-        for i in xrange(1000):
+        for i in xrange(num_round):
             isTerminal, _, infos = env.init()
 
             for i in xrange(len(players)):
@@ -80,7 +80,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
                 total_scores[i] += scores[i]
 
         for i in xrange(len(total_scores)):
-            total_scores[i] /= 1000.0
+            total_scores[i] /= num_round * 1.0
 
         return total_scores
 

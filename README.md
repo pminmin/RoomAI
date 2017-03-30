@@ -7,13 +7,15 @@ RoomAI is a toolkit for developing and comparing imperfect information game bots
 
 ## 1. Get Started
 
-you can install roomai with pip 
+
+### 1.1 Installation
+
+you can install roomai with pip
 
 <pre>
 pip install roomai
 </pre>
 
-### 1.1 Installation
 
 ### 1.2 Developing an AI-bot and Testing It with Enviroments
 
@@ -48,11 +50,13 @@ if __name__ == "__main__":
         print scores
 </pre>
 
-## 2. KuhnPoker
+## 2  Basic Concepts
 
-## 3. DouDiZhuPoker
+## 3. KuhnPoker
 
-## 4. Texas
+## 4. DouDiZhuPoker
+
+## 5. Texas
 
 # License
 

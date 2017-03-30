@@ -55,5 +55,5 @@ class AbstractEnv:
         raise NotImplementedError("The receiveAction hasn't been implemented")
 
     @classmethod
-    def round(cls, env, players):
+    def round(cls, env, players, num_round):
         raise NotImplementedError("The round function hasn't been implemented")

@@ -35,7 +35,7 @@ AllCardsPattern = dict()
 #0     1           2       3           4                                    5     6     
 #name, isStraight, isPair, isSameSuit, [SizeOfPair1, SizeOfPair2,..](desc), rank, cards
 AllCardsPattern["Straight_SameSuit"] = \
-["Straight_SameSuit",   True,  False, True,  [],        100, []]   
+["Straight_SameSuit",   True,  False, True,  [],        100, []]
 AllCardsPattern["4_1"] = \
 ["4_1",                 False, True,  False, [4,1],     98,  []]
 AllCardsPattern["3_2"] = \
@@ -200,42 +200,42 @@ def cards2pattern(hand_cards, remaining_cards):
             if num == 3:    break
         return pattern
 
-class ActionSpace:
+class OptionSpace:
+    # 弃牌
     Fold        = 0
-    Call        = 1
-    Check       = 2
+    # 过牌
+    Check       = 1
+    # 更注
+    Call        = 2
+    # 加注
     Raise       = 3
-    Re-Raise    = 4
 
 class Action:
-    def __init__(self):
-        self.option = -1
-        self.price  = 0
-
-
+    def __init__(self, option1, price):
+        self.option = option1
+        self.price  = price
 
 class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
-        self.epoch              = 0
-        self.dealer_id          = 0
-        self.public_cards       = [] ##public keep_cards
-        self.is_quit            = []
-        self.turn               = -1
-        self.chips              = []
-        self.previous_id        = -1
+        self.stage              = None
+        self.dealer_id          = None
+        self.public_cards       = None ##public keep_cards
+        self.is_quit            = None
+        self.turn               = None
+        self.pots               = None
+        self.previous_id        = None
         self.previous_action    = None        
 
 class PrivateState(roomai.abstract.AbstractPrivateState):
     def __init__(self):
-        self.keep_cards = []
-        self.hand_cards = []
+        self.keep_cards = None
+        self.hand_cards = None
 
 class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
         self.player_id      = -1
         self.public_state   = PublicState()
         self.private_state  = PrivateState()
-
 
 class Utils:
     @classmethod

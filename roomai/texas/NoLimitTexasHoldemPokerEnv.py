@@ -75,15 +75,15 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         ps         = self.public_state
         turn = self.public_state.turn
 
-        if action.option == ActionSpace.quit:
+        if action.option == OptionSpace.quit:
             self.is_quit[turn] = True
             if (turn + 1)%ps.num_players == ps.license_id:
                     
 
-        elif action.option == ActionSpace.check:
+        elif action.option == OptionSpace.check:
             pass
         
-        elif action.option == ActionSpace.bet:
+        elif action.option == OptionSpace.bet:
             pass            
                       
         
@@ -94,5 +94,5 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
              
 
     @classmethod
-    def round(cls, env, players):
+    def round(cls, env, players, num_round):
 

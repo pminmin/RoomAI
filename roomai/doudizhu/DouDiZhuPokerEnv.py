@@ -156,9 +156,9 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
 
     #@override
     @classmethod
-    def round(cls, env, players):
+    def round(cls, env, players, num_round):
         total_scores = [0, 0, 0]
-        for i in xrange(1000):
+        for i in xrange(num_round):
             isTerminal, _, infos = env.init()
 
             for i in xrange(len(players)):
@@ -166,7 +166,6 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
 
             while isTerminal == False:
                 turn = infos[-1].public_state.turn
-                actions = [roomai.kuhn.ActionSpace.cheat, roomai.kuhn.ActionSpace.bet]
                 action = players[turn].takeAction()
                 isTerminal, scores, infos = env.forward(action)
                 for i in xrange(len(players)):
@@ -176,6 +175,6 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
                 total_scores[i] += scores[i]
 
         for i in xrange(len(total_scores)):
-            total_scores[i] /= 1000.0
+            total_scores[i] /= num_round * 1.0
 
         return total_scores
