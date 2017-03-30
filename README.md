@@ -7,11 +7,46 @@ RoomAI is a toolkit for developing and comparing imperfect information game bots
 
 ## 1. Get Started
 
-`
+you can install roomai with pip 
+
+<pre>
+pip install roomai
+</pre>
+
+### 1.1 Installation
+
+### 1.2 Developing an AI-bot and Testing It with Enviroments
+
+<pre>
 #!/bin/python
-import roomai.abstract
-class KuhnPokerPlayer(roomai.abstract.AbstractPlayer)
-`
+from roomai.kuhn import *;
+import random
+class KuhnPokerExamplePlayer(roomai.abstract.AbstractPlayer):
+    def __init__(self):
+        self.available_actions  = None
+
+    #@override
+    def receiveInfo(self, info):
+        if info.available_actions is not None:
+            self.available_actions = info.available_actions
+
+    #@override
+    def takeAction(self):
+        idx = int(random.random() * len(self.available_actions))
+        return self.available_actions[idx]
+
+    #@overide
+    def reset(self):
+        pass
+
+
+if __name__ == "__main__":
+        players = [KuhnPokerExamplePlayer() for i in xrange(2)]
+        env = KuhnPokerEnv()
+        scores = KuhnPokerEnv.round(env, players)
+
+        print scores
+</pre>
 
 ## 2. KuhnPoker
 

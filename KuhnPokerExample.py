@@ -26,17 +26,6 @@ if __name__ == "__main__":
         players = [KuhnPokerExamplePlayer() for i in xrange(2)]
         env = KuhnPokerEnv()
 
-        isTerminal, _, infos = env.init()
-
-        for i in xrange(len(players)):
-            players[i].receiveInfo(infos[i])
-
-        while isTerminal == False:
-            turn = infos[-1].public_state.turn
-            actions = [roomai.kuhn.ActionSpace.cheat, roomai.kuhn.ActionSpace.bet]
-            action = players[turn].takeAction()
-            isTerminal, scores, infos = env.forward(action)
-            for i in xrange(len(players)):
-                players[i].receiveInfo(infos[i])
+        scores = KuhnPokerEnv.round(env, players)
 
         print scores

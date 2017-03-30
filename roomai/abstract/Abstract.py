@@ -48,13 +48,12 @@ class AbstractPlayer:
 
 class AbstractEnv:
 
-    def __init__(self):
-        self.public_state   = None
-        self.private_state  = None
-
-    def forward(self, actions):
-        raise NotImplementedError("The receiveAction hasn't been implemented")
-
     def init(self):
         raise NotImplementedError("The init function hasn't been implemented")
 
+    def forward(self, action):
+        raise NotImplementedError("The receiveAction hasn't been implemented")
+
+    @classmethod
+    def round(cls, env, players):
+        raise NotImplementedError("The round function hasn't been implemented")

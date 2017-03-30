@@ -11,9 +11,9 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
         self.num_players    = 3 
-        self.big_blind_id   = int(random.random() * 3)
-        self.small_blind_id = (self.big_blind_id + 1 ) % 3  
- 
+        self.dealer_id      = int(random.random * self.num_players)
+        self.chips          = [0.0 for i in xrange(self.num_players)]
+
     def state2info(self):
         infos = [Info(), Info(), Info()]
         for i in xrange(len(infos)):
@@ -29,11 +29,9 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
             if i == win_id: continue
             scores[i] =  -self.public_state.chips[i]
         return scores
-    
-    def a_round_end(self):
-        
-     
 
+
+    # Before init, you need set the num_players, dealer_id, and chips
     #@override
     def init(self):
         isTerminal = False
@@ -94,4 +92,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
             turn += 1
         if turn == ps.license_id:
              
-        
+
+    @classmethod
+    def round(cls, env, players):
+
