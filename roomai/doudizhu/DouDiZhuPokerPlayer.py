@@ -1,7 +1,7 @@
 #!/bin/python
 import roomai
 import random
-from DouDiZhuPokerUtils import *
+from roomai.doudizhu.DouDiZhuPokerUtils import *
 
 class DouDiZhuPokerRandomPlayer(roomai.abstract.AbstractPlayer):
     

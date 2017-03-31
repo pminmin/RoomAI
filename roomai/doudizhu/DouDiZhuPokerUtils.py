@@ -395,24 +395,24 @@ class Utils:
         masterCards.sort()
         slaveCards.sort()
 
-        mStr = ""
-        for c in masterCards:
-            mStr += "%d,"%(c)
-        sStr = ""
-        for c in slaveCards:
-            sStr += "%d,"%(c)
+        key_int = (masterCards + slaveCards)
+        key_int.sort()
+        key = ",".join([str(i) for i in key_int])
 
-        line = "%s\t%s\n"%(mStr,sStr)
-        line = line.replace(" ","")
-        line = line.strip()
-        
         if cls.gen_allactions == True:
-            return line, Action(masterCards, slaveCards)
+            return key, Action(masterCards, slaveCards)
 
-        if line in AllActions:
-            return line,AllActions[line]
+        if key in AllActions:
+            return key,AllActions[key]
         else:             
-            raise Exception(line + "is not in AllActions") 
+            raise Exception(key + "is not in AllActions") 
+
+    @classmethod
+    def lookup_action_by_key(cls, key):
+        if key in AllActions:
+            return key,AllActions[key]
+        else:
+            raise Exception(key + "is not in AllActions")
 
     @classmethod
     def candidate_actions(cls, hand_cards, public_state):
@@ -549,8 +549,13 @@ for line in action_file:
         if c != "":
             s.append(int(c))
 
-    action              = Action(m,s)
-    AllActions[line]    = action
+    action  = Action(m,s)
+
+    key_int = (m + s)
+    key_int.sort()
+    key     = ",".join([str(i) for i in key_int])
+    AllActions[key]    = action
+
 action_file.close()
 
 

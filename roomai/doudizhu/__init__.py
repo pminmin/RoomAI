@@ -1,5 +1,5 @@
 #!/bin/python
 
-from DouDiZhuPokerEnv    import *
-from DouDiZhuPokerPlayer import *
-from DouDiZhuPokerUtils  import *
+from roomai.doudizhu.DouDiZhuPokerEnv    import *
+from roomai.doudizhu.DouDiZhuPokerPlayer import *
+from roomai.doudizhu.DouDiZhuPokerUtils  import *

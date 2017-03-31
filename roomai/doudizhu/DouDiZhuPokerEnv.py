@@ -5,7 +5,7 @@ import roomai.abstract
 import random
 import copy
 
-from DouDiZhuPokerUtils import *
+from roomai.doudizhu.DouDiZhuPokerUtils import *
 
 class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
 
