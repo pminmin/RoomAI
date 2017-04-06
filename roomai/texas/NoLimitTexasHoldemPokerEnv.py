@@ -50,7 +50,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.pots              = [0 for i in xrange(self.num_players)]
         self.public_state.chips             = self.chips
         self.public_state.stage             = StageSpace.firstStage
-        self.public_state.max_bet_holder    = (big+1)%self.num_players
+        self.public_state.max_bet_holder    = big
         self.public_state.previous_id       = None
         self.public_state.previous_action   = None
 
@@ -126,8 +126,13 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
     def is_ready_for_showdown(self):
         pu = self.public_state
+
         if pu.num_players - 1 == pu.num_allin + pu.num_quit:
             return True
+        if  pu.stage == StageSpace.fourthStage and \
+            self.next_valid_player(pu.turn) == pu.max_bet_holder:
+            return True
+
         else:
             return False
 
