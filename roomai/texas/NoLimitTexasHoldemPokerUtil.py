@@ -144,7 +144,7 @@ def cards2pattern(hand_cards, remaining_cards):
             numStraight  = 1
 
         if numStraight  == 5:
-            pattern = AllCards["Straight_DiffSuit"]
+            pattern = AllCardsPattern["Straight_DiffSuit"]
             for p in xrange(idx,idx+5):
                 point = sorted_point[p]
                 pattern[6].append(point2cards[point][0])
@@ -169,7 +169,7 @@ def cards2pattern(hand_cards, remaining_cards):
 
     ##2_2_1
     if len(num2point[2]) >= 2:
-        pattern    = AllCards["2_2_1"]
+        pattern    = AllCardsPattern["2_2_1"]
         p21  = num2point[2][len(num2point[2])-1]
         for c in point2cards[p21]:
             pattern[6].append(c)
@@ -200,6 +200,12 @@ def cards2pattern(hand_cards, remaining_cards):
             if num == 3:    break
         return pattern
 
+class StageSpace:
+    firstStage  = 1
+    secondStage = 2
+    thirdStage  = 3
+    fourthStage = 4
+
 class OptionSpace:
     # 弃牌
     Fold        = 0
@@ -221,8 +227,14 @@ class PublicState(roomai.abstract.AbstractPublicState):
         self.dealer_id          = None
         self.public_cards       = None ##public keep_cards
         self.is_quit            = None
+        self.num_quit           = None
+        self.is_allin           = None
+        self.num_allin          = None
+        self.num_players        = None
         self.turn               = None
+        self.chips              = None
         self.pots               = None
+        self.max_bet_holder     = None
         self.previous_id        = None
         self.previous_action    = None        
 
@@ -233,9 +245,10 @@ class PrivateState(roomai.abstract.AbstractPrivateState):
 
 class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
-        self.player_id      = -1
-        self.public_state   = PublicState()
-        self.private_state  = PrivateState()
+        self.player_id          = None
+        self.public_state       = None
+        self.private_state      = None
+        self.available_actions  = None
 
 class Utils:
     @classmethod

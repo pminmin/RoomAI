@@ -36,20 +36,30 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
     def init(self):
         isTerminal = False
         scores     = []
-        
-        self.public_state               = PublicState()
-        self.public_state.chips         = [0 for i in xrange(self.num_players)]
-        self.public_state.big_blind_id  = self.big_blind_id
-        self.public_state.small_blind_id= self.small_blind_id
-        self.public_state.chips[self.public_state.big_blind_id]     = 10
-        self.public_state.chips[self.public_state.small_blind_id]   = 5        
-        self.public_state.turn              = self.public_state.small_blind_id
-        self.public_state.license_id        = self.public_state.big_blind_id
-        self.public_state.is_quit           = [False for i in xrange(self.num_players)] 
-        self.public_state.public_cards      = []
-        self.public_state.previous_id       = -1
+
+        ## public info
+        small = (self.dealer_id + 1) % self.num_players
+        big   = (self.dealer_id + 1) % self.num_players
+
+        self.public_state                   = PublicState()
+        self.public_state.dealer_id         = self.dealer_id
+        self.public_state.is_quit           = [False for i in xrange(self.num_players)]
+        self.public_state.num_quit          = 0
+        self.public_state.is_allin          = [False for i in xrange(self.num_players)]
+        self.public_state.num_allin         = 0
+        self.public_state.pots              = [0 for i in xrange(self.num_players)]
+        self.public_state.chips             = self.chips
+        self.public_state.stage             = StageSpace.firstStage
+        self.public_state.max_bet_holder    = (big+1)%self.num_players
+        self.public_state.previous_id       = None
         self.public_state.previous_action   = None
 
+        self.public_state.pots[small]   = 5
+        self.public_state.pots[big]     = 10
+        self.public_state.chips[small] -= 5
+        self.public_state.chips[big]   -= 10
+
+        # private info
         self.private_state = PrivateState() 
         allcards = []
         for i in xrange(13):
@@ -71,28 +81,62 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
-        isTerminal = False
-        ps         = self.public_state
-        turn = self.public_state.turn
+        pu = self.public_state
+        pr = self.private_state
 
-        if action.option == OptionSpace.quit:
-            self.is_quit[turn] = True
-            if (turn + 1)%ps.num_players == ps.license_id:
-                    
+        if pu.stage == StageSpace.firstStage:
 
-        elif action.option == OptionSpace.check:
-            pass
-        
-        elif action.option == OptionSpace.bet:
-            pass            
-                      
-        
-        turn += 1
-        while ps.is_quit[turn] == True:
-            turn += 1
-        if turn == ps.license_id:
-             
+        elif pu.stage == StageSpace.secondStage:
 
+        elif pu.stage == StageSpace.thirdStage:
+
+        elif pu.stage == StageSpace.fourthStage:
+
+        else:
+            raise Exception("public.stage(%d) not in [1,2,3,4]"%(pu.stage))
+
+
+
+    #override
     @classmethod
     def round(cls, env, players, num_round):
+        total_scores = [0, 0, 0]
+        for i in xrange(num_round):
+            isTerminal, _, infos = env.init()
 
+            for i in xrange(len(players)):
+                players[i].receiveInfo(infos[i])
+
+            while isTerminal == False:
+                turn = infos[-1].public_state.turn
+                action = players[turn].takeAction()
+                isTerminal, scores, infos = env.forward(action)
+                for i in xrange(len(players)):
+                    players[i].receiveInfo(infos[i])
+
+            for i in xrange(len(scores)):
+                total_scores[i] += scores[i]
+
+        for i in xrange(len(total_scores)):
+            total_scores[i] /= num_round * 1.0
+
+        return total_scores
+
+    ### if next_valid_player == max_bet_holder, it is time to enter into the next stage
+
+    def is_ready_for_showdown(self):
+        pu = self.public_state
+        if pu.num_players - 1 == pu.num_allin + pu.num_quit:
+            return True
+        else:
+            return False
+
+    def next_player(self,i):
+        return (i+1)%self.num_players
+
+    def next_valid_player(self,i):
+        pu = self.public_state
+        p = self.next_player(i)
+        while (pu.is_quit[p] or pu.is_allin[p]) and p != pu.max_bet_holder:
+            p = self.next_player(p)
+        return p
