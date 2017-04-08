@@ -225,16 +225,29 @@ class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
         self.stage              = None
         self.dealer_id          = None
-        self.public_cards       = None ##public keep_cards
+        self.public_cards       = None
         self.is_quit            = None
         self.num_quit           = None
         self.is_allin           = None
         self.num_allin          = None
         self.num_players        = None
+
+        # who is expected to take a action
         self.turn               = None
+
+        #chips is array which contains the chips of all players
         self.chips              = None
-        self.pots               = None
-        self.max_bet_holder     = None
+
+        #bets is array which contains the bets from all players
+        self.bets               = None
+
+        #max_bet = max(bets)
+        self.max_bet            = None
+
+        # it is time to enter into the next stage or showdown,
+        # when next_player == flag_for_nextstage
+        self.flag_for_nextstage = None
+
         self.previous_id        = None
         self.previous_action    = None        
 

@@ -39,23 +39,25 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
         ## public info
         small = (self.dealer_id + 1) % self.num_players
-        big   = (self.dealer_id + 1) % self.num_players
+        big   = (self.dealer_id + 2) % self.num_players
 
-        self.public_state                   = PublicState()
-        self.public_state.dealer_id         = self.dealer_id
-        self.public_state.is_quit           = [False for i in xrange(self.num_players)]
-        self.public_state.num_quit          = 0
-        self.public_state.is_allin          = [False for i in xrange(self.num_players)]
-        self.public_state.num_allin         = 0
-        self.public_state.pots              = [0 for i in xrange(self.num_players)]
-        self.public_state.chips             = self.chips
-        self.public_state.stage             = StageSpace.firstStage
-        self.public_state.max_bet_holder    = big
-        self.public_state.previous_id       = None
-        self.public_state.previous_action   = None
+        self.public_state                       = PublicState()
+        self.public_state.dealer_id             = self.dealer_id
+        self.public_state.is_quit               = [False for i in xrange(self.num_players)]
+        self.public_state.num_quit              = 0
+        self.public_state.is_allin              = [False for i in xrange(self.num_players)]
+        self.public_state.num_allin             = 0
+        self.public_state.bets                  = [0 for i in xrange(self.num_players)]
+        self.public_state.chips                 = self.chips
+        self.public_state.stage                 = StageSpace.firstStage
+        self.public_state.turn                  = self.next_player(big)
+        self.public_state.flag_for_nextstage    = self.next_player(big)
 
-        self.public_state.pots[small]   = 5
-        self.public_state.pots[big]     = 10
+        self.public_state.previous_id           = None
+        self.public_state.previous_action       = None
+
+        self.public_state.bets[small]   = 5
+        self.public_state.bets[big]     = 10
         self.public_state.chips[small] -= 5
         self.public_state.chips[big]   -= 10
 
@@ -81,21 +83,61 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
+        self.process_action(action)
+
         pu = self.public_state
         pr = self.private_state
+        pu.turn = self.next_player(pu.turn)
 
-        if pu.stage == StageSpace.firstStage:
+        if self.is_showdown():
 
-        elif pu.stage == StageSpace.secondStage:
+        ## it is time to enter into the next stage
+        if pu.turn == pu.flag_for_nextstage:
+            if pu.stage == StageSpace.firstStage:
+                pu.public_cards.append(pr.keep_cards[0:3])
+                pu.stage = StageSpace.secondStage
 
-        elif pu.stage == StageSpace.thirdStage:
+            elif pu.stage == StageSpace.secondStage:
+                pu.public_cards.append(pr.keep_cards[3])
 
-        elif pu.stage == StageSpace.fourthStage:
+            elif pu.stage == StageSpace.thirdStage:
+                pu.public_cards.append(pr.keep_cards[4])
+
+            elif pu.stage == StageSpace.fourthStage:
+
+
+            else:
+                raise Exception("public.stage(%d) not in [1,2,3,4]"%(pu.stage))
+
+
+    def process_action(self, action):
+        pu = self.public_state
+        if action.option == OptionSpace.Fold:
+            pu.is_quit[pu.turn]  = True
+            pu.num_quit         += 1
+
+        elif action.option == OptionSpace.Check:
+            pass
+
+        elif action.option == OptionSpace.Call:
+            if pu.bets[pu.turn] < pu.max_bet:
+                pu.chips[pu.turn] -= (pu.max_bet - pu.bets[pu.turn])
+                pu.bets[pu.turn]   =  pu.max_bet
+
+        elif action.option == OptionSpace.Raise:
+            if pu.bets[pu.turn] < pu.max_bet:
+                pu.chips[pu.turn] -= (pu.max_bet - pu.bets[pu.turn])
+                pu.bets[pu.turn]   =  pu.max_bet
+
+            pu.chips[pu.turn] -= action.price
+            pu.bets[pu.turn]  += action.price
+
+            pu.max_bet         = pu.bets[pu.turn]
+
+            pu.flag_for_nextstage = pu.turn
 
         else:
-            raise Exception("public.stage(%d) not in [1,2,3,4]"%(pu.stage))
-
-
+            raise Exception("action.option(%d) not in [Fold(0), Check(1), Call(2), Raise(3)]")
 
     #override
     @classmethod
@@ -122,26 +164,29 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
         return total_scores
 
-    ### if next_valid_player == max_bet_holder, it is time to enter into the next stage
 
-    def is_ready_for_showdown(self):
+    def is_showdown(self):
+        '''
+        :return: 
+        A boolean variable indicates whether is it time to showdown
+        '''
         pu = self.public_state
 
         if pu.num_players - 1 == pu.num_allin + pu.num_quit:
             return True
         if  pu.stage == StageSpace.fourthStage and \
-            self.next_valid_player(pu.turn) == pu.max_bet_holder:
+            pu.turn == pu.flag_for_nextstage:
             return True
 
         else:
             return False
 
-    def next_player(self,i):
-        return (i+1)%self.num_players
 
-    def next_valid_player(self,i):
+    def next_player(self,i):
         pu = self.public_state
-        p = self.next_player(i)
-        while (pu.is_quit[p] or pu.is_allin[p]) and p != pu.max_bet_holder:
-            p = self.next_player(p)
+
+        p = (i+1)%pu.num_players
+        while (pu.is_quit[p] or pu.is_allin[p]) and p != pu.flag_for_nextstage:
+            p = (p+1)%pu.num_players
+
         return p
