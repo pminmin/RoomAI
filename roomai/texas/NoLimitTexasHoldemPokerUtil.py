@@ -231,6 +231,7 @@ class PublicState(roomai.abstract.AbstractPublicState):
         self.is_allin           = None
         self.num_allin          = None
         self.num_players        = None
+        self.big_blind_bet      = None
 
         # who is expected to take a action
         self.turn               = None
@@ -258,7 +259,10 @@ class PrivateState(roomai.abstract.AbstractPrivateState):
 
 class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
-        self.player_id          = None
+        self.init_player_id          = None
+        self.init_hand_cards         = None
+        #player_id and hand_cards will be sent to players at the begining of game
+
         self.public_state       = None
         self.private_state      = None
         self.available_actions  = None

@@ -59,30 +59,20 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
     #@Overide
     @classmethod
-    def round(cls, env, players,num_round):
+    def round(cls, env, players):
+        isTerminal, scores, infos = env.init()
 
-        total_scores = [0,0]
-        for i in xrange(num_round):
-            isTerminal, _, infos = env.init()
+        for i in xrange(len(players)):
+            players[i].receiveInfo(infos[i])
 
+        while isTerminal == False:
+            turn = infos[-1].public_state.turn
+            action = players[turn].takeAction()
+            isTerminal, scores, infos = env.forward(action)
             for i in xrange(len(players)):
                 players[i].receiveInfo(infos[i])
 
-            while isTerminal == False:
-                turn = infos[-1].public_state.turn
-                actions = [roomai.kuhn.ActionSpace.cheat, roomai.kuhn.ActionSpace.bet]
-                action = players[turn].takeAction()
-                isTerminal, scores, infos = env.forward(action)
-                for i in xrange(len(players)):
-                    players[i].receiveInfo(infos[i])
-
-            for i in xrange(len(scores)):
-                total_scores[i] += scores[i]
-
-        for i in xrange(len(total_scores)):
-            total_scores[i] /= num_round * 1.0
-
-        return total_scores
+        return scores
 
     def gen_infos(self,num):
         infos = [Info(), Info(), Info()]
