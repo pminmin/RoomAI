@@ -51,7 +51,7 @@ if __name__ == "__main__":
 </pre>
 
 ## 2  Basic Concepts
-
+There are some basic concepts in RoomAI: Player 、Env、 Info、 Public_State, Private_State and Action. Player is an AI-player, Env is a game environment. Player receives Info consisted of Public_State、 Private_State and available Actions, and takes a action. Env forwards with this action.
 
 ### Info
 
@@ -85,6 +85,8 @@ class AbstractInfo:
 </pre>
 
 ### Player
+Player is 
+
 <pre>
 class AbstractPlayer:
 
@@ -112,7 +114,7 @@ class AbstractPlayer:
 
 ### Env
 
-Env is the game environments
+Env is the game environment.
 
 <pre>
 class AbstractEnv:
@@ -131,19 +133,20 @@ class AbstractEnv:
 The round function holds a competition for the players, and computes the scores. A typical implementation of this function is shown as follows.
 
 <pre>
-        isTerminal, scores, infos = env.init()
+def round(cls, env, players):
+   isTerminal, scores, infos = env.init()
 
+   for i in xrange(len(players)):
+       players[i].receiveInfo(infos[i])
+
+   while isTerminal == False:
+        turn = infos[-1].public_state.turn
+        action = players[turn].takeAction()
+        isTerminal, scores, infos = env.forward(action)
         for i in xrange(len(players)):
             players[i].receiveInfo(infos[i])
 
-        while isTerminal == False:
-            turn = infos[-1].public_state.turn
-            action = players[turn].takeAction()
-            isTerminal, scores, infos = env.forward(action)
-            for i in xrange(len(players)):
-                players[i].receiveInfo(infos[i])
-                
-       return scores
+   return scores
                 
 </pre>
 
