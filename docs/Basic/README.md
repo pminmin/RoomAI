@@ -2,6 +2,8 @@
 ##  Basic Concepts
 There are some basic concepts in RoomAI: Player 、Env、 Info、 Public_State, Private_State and Action. Player is an AI-player, Env is a game environment. Player receives Info consisted of Public_State、 Private_State and available Actions, and takes a action. Env forwards with this action.
 
+![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png)
+
 ### Info
 
 <pre>
