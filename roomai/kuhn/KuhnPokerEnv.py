@@ -60,6 +60,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
     #@Overide
     @classmethod
     def round(cls, env, players):
+
         isTerminal, scores, infos = env.init()
 
         for i in xrange(len(players)):
