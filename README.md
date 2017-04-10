@@ -52,7 +52,6 @@ if __name__ == "__main__":
 
 ## 2  [Basic Concepts](https://github.com/roomai/RoomAI/tree/master/docs/Basic)
 
-
 ## 3. KuhnPoker
 
 ## 4. DouDiZhuPoker
