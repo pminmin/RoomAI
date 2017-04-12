@@ -144,7 +144,7 @@ def cards2pattern(hand_cards, remaining_cards):
             numStraight  = 1
 
         if numStraight  == 5:
-            pattern = AllCards["Straight_DiffSuit"]
+            pattern = AllCardsPattern["Straight_DiffSuit"]
             for p in xrange(idx,idx+5):
                 point = sorted_point[p]
                 pattern[6].append(point2cards[point][0])
@@ -169,7 +169,7 @@ def cards2pattern(hand_cards, remaining_cards):
 
     ##2_2_1
     if len(num2point[2]) >= 2:
-        pattern    = AllCards["2_2_1"]
+        pattern    = AllCardsPattern["2_2_1"]
         p21  = num2point[2][len(num2point[2])-1]
         for c in point2cards[p21]:
             pattern[6].append(c)
@@ -200,6 +200,12 @@ def cards2pattern(hand_cards, remaining_cards):
             if num == 3:    break
         return pattern
 
+class StageSpace:
+    firstStage  = 1
+    secondStage = 2
+    thirdStage  = 3
+    fourthStage = 4
+
 class OptionSpace:
     # 弃牌
     Fold        = 0
@@ -226,13 +232,30 @@ class PublicState(roomai.abstract.AbstractPublicState):
         self.stage              = None
         self.num_players        = None
         self.dealer_id          = None
-        self.public_cards       = None ##public keep_cards
+        self.public_cards       = None
         self.is_quit            = None
-        self.is_allin           = None
         self.num_quit           = None
+        self.is_allin           = None
         self.num_allin          = None
+        self.num_players        = None
+        self.big_blind_bet      = None
+
+        # who is expected to take a action
         self.turn               = None
-        self.pots               = None
+
+        #chips is array which contains the chips of all players
+        self.chips              = None
+
+        #bets is array which contains the bets from all players
+        self.bets               = None
+
+        #max_bet = max(bets)
+        self.max_bet            = None
+
+        # it is time to enter into the next stage or showdown,
+        # when next_player == flag_for_nextstage
+        self.flag_for_nextstage = None
+
         self.previous_id        = None
         self.previous_action    = None        
 
@@ -243,9 +266,13 @@ class PrivateState(roomai.abstract.AbstractPrivateState):
 
 class Info(roomai.abstract.AbstractInfo):
     def __init__(self):
-        self.player_id      = -1
-        self.public_state   = PublicState()
-        self.private_state  = PrivateState()
+        self.init_player_id          = None
+        self.init_hand_cards         = None
+        #player_id and hand_cards will be sent to players at the begining of game
+
+        self.public_state       = None
+        self.private_state      = None
+        self.available_actions  = None
 
 class Utils:
     @classmethod
