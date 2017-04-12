@@ -15,10 +15,10 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.chips          = [0.0 for i in xrange(self.num_players)]
 
     def state2info(self):
-        infos = [Info(), Info(), Info()]
+        infos = [Info() for i in xrange(self.num_players)]
         for i in xrange(len(infos)):
-            infos[i].public_state = copy.deepcopy(self.public_state)
-        infos[len(infos)-1].private_state = copy.deepcopy(self.private_state)        
+            infos[i].public_state = self.public_state
+        infos[len(infos)-1].private_state = self.private_state
 
     def compute_scores(self, win_id):
         num_players = len(self.private_state.hand_cards)
@@ -36,20 +36,29 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
     def init(self):
         isTerminal = False
         scores     = []
-        
-        self.public_state               = PublicState()
-        self.public_state.chips         = [0 for i in xrange(self.num_players)]
-        self.public_state.big_blind_id  = self.big_blind_id
-        self.public_state.small_blind_id= self.small_blind_id
-        self.public_state.chips[self.public_state.big_blind_id]     = 10
-        self.public_state.chips[self.public_state.small_blind_id]   = 5        
-        self.public_state.turn              = self.public_state.small_blind_id
-        self.public_state.license_id        = self.public_state.big_blind_id
-        self.public_state.is_quit           = [False for i in xrange(self.num_players)] 
+
+        #init the public state
+        self.public_state                   = PublicState()
+        self.public_state.num_players       = self.num_players
+        self.public_state.chips             = self.chips
+        self.public_state.stage             = StageSpace.firstStage
+        self.public_state.is_quit           = [False for i in xrange(self.num_players)]
+        self.public_state.num_quit          = 0
+        self.public_state.is_allin          = [False for i in xrange(self.num_players)]
+        self.public_state.num_allin         = 0
         self.public_state.public_cards      = []
-        self.public_state.previous_id       = -1
+        self.public_state.previous_id       = None
         self.public_state.previous_action   = None
 
+        self.public_state.pots = [0 for i in xrange(self.num_players)]
+        small_blind_id =  (self.dealer_id+1)%self.num_players
+        big_blind_id   =  (self.dealer_id+2)%self.num_players
+        self.public_state.pots[small_blind_id] += 5
+        self.public_state.pots[big_blind_id]   += 10
+
+        self.public_state.turn              = (big_blind_id+1)%self.num_players
+
+        # init the private state
         self.private_state = PrivateState() 
         allcards = []
         for i in xrange(13):
@@ -71,28 +80,59 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
-        isTerminal = False
-        ps         = self.public_state
-        turn = self.public_state.turn
 
-        if action.option == OptionSpace.quit:
-            self.is_quit[turn] = True
-            if (turn + 1)%ps.num_players == ps.license_id:
-                    
+        if is_action_valid(action) == False:
+            raise  Exception("invalid action")
 
-        elif action.option == OptionSpace.check:
-            pass
-        
-        elif action.option == OptionSpace.bet:
-            pass            
-                      
-        
-        turn += 1
-        while ps.is_quit[turn] == True:
-            turn += 1
-        if turn == ps.license_id:
+        pu = self.public_state
+        pr = self.private_state
+
+        if pu.stage == StageSpace.firstStage:
+            turn = pu
+            if action.option == OptionSpace.Fold:
+                pu.is_quit[turn] = True
+                pu.num_quit += 1
+            elif action.option == OptionSpace.Check:
+                pass
+            elif action.option == OptionSpace.Call:
+                previous_id = pu.previous_id;
+                money = pu.pots[previous_id]
+                pu.pots[turn] = money
+            elif action.option == OptionSpace.Raise:
+                pass
+
+            if is_ready_for_showdown() == True:
+                adf = 0
+            elif is_ready_for_nextstage() == True:
+                afd = 0
+            else:
+                pu.turn = self.next_turn()
+
+       elif self.public_state.stage == StageSpace.secondStage:
+
+       elif self.public_state.stage == StageSpace.thirdStage:
+
+       elif self.public_state.stage == StageSpace.fourthStage:
+
+       else:
+           raise
              
 
     @classmethod
     def round(cls, env, players, num_round):
+        pass
+    def is_ready_for_nextstage(self):
+        pass
 
+    def is_ready_for_showdown(self):
+        pass
+    def is_action_valid(self,action):
+        pass
+    def next_turn(self):
+        pu = self.public_state
+
+        turn = self.public_state.turn
+        n_turn = (turn + 1) % pu.num_players
+        while pu.is_quit[n_turn] == True or pu.is_allin[n_turn] == True:
+            n_turn = (n_turn + 1) % pu.num_players
+        return n_turn

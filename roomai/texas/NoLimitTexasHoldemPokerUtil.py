@@ -210,6 +210,12 @@ class OptionSpace:
     # 加注
     Raise       = 3
 
+class StageSpace:
+    firstStage  = 1
+    secondStage = 2
+    thirdStage  = 3
+    fourthStage = 4
+
 class Action:
     def __init__(self, option1, price):
         self.option = option1
@@ -218,9 +224,13 @@ class Action:
 class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
         self.stage              = None
+        self.num_players        = None
         self.dealer_id          = None
         self.public_cards       = None ##public keep_cards
         self.is_quit            = None
+        self.is_allin           = None
+        self.num_quit           = None
+        self.num_allin          = None
         self.turn               = None
         self.pots               = None
         self.previous_id        = None

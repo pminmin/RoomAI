@@ -17,10 +17,6 @@ class PhaseSpace:
     bid  = 0
     play = 1
 
-class ScopeSpace:
-    iresponse_stage = 0
-    response_stage  = 1
-    all_stage       = 2
 
 class ActionSpace:
     three   = 0;
@@ -89,30 +85,7 @@ class Action:
         self.pattern            = None
         Utils.action2pattern(self)
 
-                
-        if self.pattern[0] in ["i_invalid","i_bid"]:
-            self.scope = ScopeSpace.all_stage
-        
-        elif self.pattern[0] == "i_cheat":
-            self.scope = ScopeSpace.response_stage
 
-        elif self.pattern[0] == "x_rocket":
-            self.scope  = ScopeSpace.all_stage
-
-        else:
-            self.scope              = ScopeSpace.all_stage
-            ##boom
-            if self.pattern[0] == "p_3_1_0_1_0" and \
-                self.masterCards[0] == self.slaveCards[0]:
-                self.scope = ScopeSpace.response_stage
-            
-            ##3 plane
-            if  self.pattern[0] == "p_9_3_1_3_0" and \
-                self.slavePoints2Count[self.slaveCards[0]]  == 3 and \
-                (self.minMasterPoint -1 == self.slaveCards[0] or \
-                 self.maxMasterPoint +1 == self.slaveCards[0]):
-                self.scope = ScopeSpace.response_stage
-                
             
 
 class PrivateState(roomai.abstract.AbstractPrivateState):
@@ -177,14 +150,11 @@ class Utils:
             if action.pattern[0] == "i_bid":    return False
 
             if public_state.is_response == False:
-                if action.scope == ScopeSpace.response_stage: return False
+                if action.pattern[0] == "i_cheat": return False
                 return True
 
             else: #response
-                if action.scope == ScopeSpace.iresponse_stage:  return False
-
                 if action.pattern[0] == "i_cheat":  return True
-
                 ## not_cheat
                 if action.pattern[6] > license_act.pattern[6]:  return True
                 elif action.pattern[6] < license_act.pattern[6]:    return False
@@ -345,18 +315,17 @@ class Utils:
             res        = []
                         
             if numMaster / numMasterPoint == 3:
-
                 if numSlave / numMasterPoint == 1: # single
                     for c in xrange(len(hand_cards.cards)):
-                        for i in xrange(hand_cards.cards[c] - used[c]):
-                            candidates.append(c)
+                        if used[c] == 0:
+                            for i in xrange((hand_cards.cards[c] - used[c])): candidates.append(c)
                     if len(candidates) >= numCards:
                         res1 = list(set(list(itertools.combinations(candidates, numCards))))
                     for sCard in res1:  res.append([x for x in sCard])                
 
                 elif numSlave / numMasterPoint == 2: #pair
                     for c in xrange(len(hand_cards.cards)):
-                        for i in xrange((hand_cards.cards[c] - used[c])/2):
+                        if (hand_cards.cards[c] - used[c]) >= 2 and used[c] == 0:
                             candidates.append(c)
                     if len(candidates) >= numCards / 2:
                         res1 = list(set(list(itertools.combinations(candidates, numCards/2))))
@@ -369,8 +338,8 @@ class Utils:
 
                 if numSlave / numMasterPoint == 2: #single
                     for c in xrange(len(hand_cards.cards)):
-                        for i in xrange(hand_cards.cards[c] - used[c]):
-                            candidates.append(c)
+                        if  used[c] == 0:
+                            for i in xrange((hand_cards.cards[c] - used[c])):candidates.append(c)
                     if len(candidates) >= numCards:
                         res1 = list(set(list(itertools.combinations(candidates, numCards))))
                     for sCard in res1:  res.append([x for x in sCard])                
@@ -378,7 +347,7 @@ class Utils:
 
                 elif numSlave / numMasterPoint == 4: # pair
                     for c in xrange(len(hand_cards.cards)):
-                        for i in xrange((hand_cards.cards[c] - used[c])/2):
+                        if (hand_cards.cards[c] - used[c]) >= 2 and used[c] == 0:
                             candidates.append(c)
                     if len(candidates) >= numCards / 2:
                         res1 = list(set(list(itertools.combinations(candidates, numCards/2))))

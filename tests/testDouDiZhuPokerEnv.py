@@ -121,6 +121,10 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         self.assertEqual(env.public_state.license_playerid, 0)
         self.assertEqual(env.public_state.turn, 0)
         action = Action([ActionSpace.cheat],[])
+        print action.pattern[0]
+        print env.public_state.is_response
+        print env.public_state.license_playerid
+        print env.public_state.license_action.masterCards, env.public_state.license_action.slaveCards
         self.assertFalse(env.isActionValid(action))
         action = Action([0,0,0],[12])
         isTerminal, scores, infos = env.forward(action)
