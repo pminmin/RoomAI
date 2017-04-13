@@ -158,7 +158,8 @@ class Utils:
                 ## not_cheat
                 if action.pattern[6] > license_act.pattern[6]:  return True
                 elif action.pattern[6] < license_act.pattern[6]:    return False
-                elif action.maxMasterPoint - license_act.maxMasterPoint > 0:  return True
+                elif action.maxMasterPoint - license_act.maxMasterPoint > 0:
+                    return True
                 else:   return False
 
 
@@ -317,8 +318,8 @@ class Utils:
             if numMaster / numMasterPoint == 3:
                 if numSlave / numMasterPoint == 1: # single
                     for c in xrange(len(hand_cards.cards)):
-                        if used[c] == 0:
-                            for i in xrange((hand_cards.cards[c] - used[c])): candidates.append(c)
+                        if used[c] == 0 and ((hand_cards.cards[c] - used[c])) >= 1:
+                            candidates.append(c)
                     if len(candidates) >= numCards:
                         res1 = list(set(list(itertools.combinations(candidates, numCards))))
                     for sCard in res1:  res.append([x for x in sCard])                
@@ -338,8 +339,8 @@ class Utils:
 
                 if numSlave / numMasterPoint == 2: #single
                     for c in xrange(len(hand_cards.cards)):
-                        if  used[c] == 0:
-                            for i in xrange((hand_cards.cards[c] - used[c])):candidates.append(c)
+                        if used[c] == 0 and (hand_cards.cards[c] - used[c]) >= 1:
+                            candidates.append(c)
                     if len(candidates) >= numCards:
                         res1 = list(set(list(itertools.combinations(candidates, numCards))))
                     for sCard in res1:  res.append([x for x in sCard])                

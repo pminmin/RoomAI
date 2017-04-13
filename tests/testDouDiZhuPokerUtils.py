@@ -116,6 +116,7 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
         for key in actions:
             a = actions[key]
+            print key, a.masterCards, a.slaveCards
         self.assertEqual(len(actions),26)
 
         
