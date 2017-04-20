@@ -258,9 +258,9 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
             scores                = [0 for i in xrange(pu.num_players)]
             playerid_pattern_bets = [] #for not_quit players
             for i in xrange(pu.num_players):
-                if pu.is_quit[i] == False:
-                    hand_pattern = Utils.card2pattern(pr.hand_cards[i], pu.public_cards)
-                    playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
+                if pu.is_quit[i] == True: continue
+                hand_pattern = Utils.card2pattern(pr.hand_cards[i], pu.public_cards)
+                playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
             playerid_pattern_bets.sort(key=lambda x:x[1], cmp=Utils.compare_patterns)
 
             pot_line = 0
@@ -270,22 +270,21 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
                 if previous == None:
                     tmp.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
+                elif Utils.compare_handcards(pu, pr.hand_cards,pr.hand_cards) == 0:
+                    tmp.append(playerid_pattern_bets[i])
+                    previous = playerid_pattern_bets[i]
                 else:
-                    if Utils.compare_handcards(pu, pr.hand_cards,pr.hand_cards) == 0:
-                        tmp.append(playerid_pattern_bets[i])
-                        previous = playerid_pattern_bets[i]
-                    else:
-                        tmp.sort(key = lambda x:x[2])
-                        for i in xrange(len(tmp)):
-                            num1 = len(tmp) - i
-                            sum1 = 0
-                            for p in xrange(pu.num_players):    sum1      += max(0, pu.bets[p] - pot_line)
-                            for p in xrange(i, len(tmp)):       scores[p] += sum1 / num1
-                            scores[pu.dealer_id] += sum1 % num1
-                            if pot_line <= pu.bets[tmp[i][0]]: pot_line = pu.bets[tmp[i][0]]
+                    tmp.sort(key = lambda x:x[2])
+                    for i in xrange(len(tmp)):
+                        num1 = len(tmp) - i
+                        sum1 = 0
+                        for p in xrange(pu.num_players):    sum1      += max(0, pu.bets[p] - pot_line)
+                        for p in xrange(i, len(tmp)):       scores[p] += sum1 / num1
+                        scores[pu.dealer_id] += sum1 % num1
+                        if pot_line <= pu.bets[tmp[i][0]]: pot_line = pu.bets[tmp[i][0]]
 
-                        previous = None
-                        tmp      = []
+                    previous = None
+                    tmp      = []
 
             if len(tmp) > 0:
                 tmp.sort(key = lambda  x:x[2])
