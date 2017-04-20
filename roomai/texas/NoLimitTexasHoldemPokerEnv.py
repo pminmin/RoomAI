@@ -226,10 +226,10 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         return Utils.available_actions(self.public_state)
 
 
-    def is_end(self):
+    def is_compute_score(self):
         '''
         :return: 
-        A boolean variable indicates whether is it time to end
+        A boolean variable indicates whether is it time to compute scores
         '''
         pu = self.public_state
 
@@ -251,23 +251,57 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         ## compute score before showdown, the winner takes all
         if pu.num_players  - 1 == pu.num_quit:
             scores = [0 for i in xrange(pu.num_players)]
-            for i in xrange(pu.num_players):
-                if i == pu.flag_nextstage:
-                    scores[i]    = sum(pu.bets) - pu.bets[i]
-                    pu.chips[i] += scores[i]
-                else:
-                    scores[i]   -= pu.bets[i]
-            return scores
+            scores[pu.flag_nextstage] = sum(pu.bets)
+
         ## compute score after showdown
         else:
-            allin_pattern_players = []
+            scores                = [0 for i in xrange(pu.num_players)]
+            playerid_pattern_bets = [] #for not_quit players
             for i in xrange(pu.num_players):
-                if pu.is_allin[i] == True:
+                if pu.is_quit[i] == False:
                     hand_pattern = Utils.card2pattern(pr.hand_cards[i], pu.public_cards)
-                    allin_pattern_players.append((hand_pattern,i))
-            allin_pattern_players.sort(Utils.comparePattern)
+                    playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
+            playerid_pattern_bets.sort(key=lambda x:x[1], cmp=Utils.compare_patterns)
+
+            pot_line = 0
+            previous = None
+            tmp      = []
+            for i in xrange(len(playerid_pattern_bets)-1,-1,-1):
+                if previous == None:
+                    tmp.append(playerid_pattern_bets[i])
+                    previous = playerid_pattern_bets[i]
+                else:
+                    if Utils.compare_handcards(pu, pr.hand_cards,pr.hand_cards) == 0:
+                        tmp.append(playerid_pattern_bets[i])
+                        previous = playerid_pattern_bets[i]
+                    else:
+                        tmp.sort(key = lambda x:x[2])
+                        for i in xrange(len(tmp)):
+                            num1 = len(tmp) - i
+                            sum1 = 0
+                            for p in xrange(pu.num_players):    sum1      += max(0, pu.bets[p] - pot_line)
+                            for p in xrange(i, len(tmp)):       scores[p] += sum1 / num1
+                            scores[pu.dealer_id] += sum1 % num1
+                            if pot_line <= pu.bets[tmp[i][0]]: pot_line = pu.bets[tmp[i][0]]
+
+                        previous = None
+                        tmp      = []
+
+            if len(tmp) > 0:
+                tmp.sort(key = lambda  x:x[2])
+                for i in xrange(len(tmp)):
+                    num1 = len(tmp) - i
+                    sum1 = 0
+                    for p in xrange(pu.num_players):    sum1      += max(0, pu.bets[p] - pot_line)
+                    for p in xrange(i, len(tmp)):       scores[p] += sum1 / num1
+                    scores[pu.dealer_id] += sum1 % num1
+                    if pot_line <= pu.bets[tmp[i][0]]: pot_line = pu.bets[tmp[i][0]]
 
 
+        for p in xrange(pu.num_players):
+            pu.chips[p] += scores[p]
+            scores[p]   -= pu.bets[p]
+        return scores
 
 
     def action_fold(self, action):
