@@ -18,21 +18,20 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
         cards = []
         for i in xrange(13):
             for j in xrange(4):
-                cards.append(i)
-        cards.append(13)
-        cards.append(14)
+                cards.append(ActionSpace.key_to_str[i])
+        cards.append(ActionSpace.key_to_str[13])
+        cards.append(ActionSpace.key_to_str[14])
         random.shuffle(cards)
 
         hand_cards =[0, 0, 0]
         for i in xrange(3):
-            hand_cards_str = cards[i*17:(i+1)*17]
-            for i in xrange(len(hand_cards_str)):
-                hand_cards_str[i] = str(hand_cards_str[i])
-            hand_cards[i] = HandCards("".join(hand_cards_str))
+            tmp = cards[i*17:(i+1)*17]
+            tmp.sort()
+            hand_cards[i] = HandCards("".join(tmp))
 
-        keep_cards = cards[len(cards)-3:len(cards)]
+        keep_cards = HandCards([cards[-1],cards[-2],cards[-3]])
         self.private_state.hand_cards =  hand_cards;
-        self.private_state.keep_cards =  keep_cards 
+        self.private_state.keep_cards =  keep_cards;
      
     def states2infos(self, infos):
         for i in xrange(4):

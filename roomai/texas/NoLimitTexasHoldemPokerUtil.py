@@ -7,11 +7,11 @@ class Card:
     def __init__(self, point, suit):
         self.point = point
         self.suit  = suit
-def compareCard(c1,c2):
-    if c1.point != c2.point:
-        return c1.point - c2.point
-    else:
-        return c1.suit - c2.suit
+    def compareTo(self,c2):
+        if self.point != c2.point:
+            return self.point - c2.point
+        else:
+            return self.suit - c2.suit
     
 #point
 #0, 1, 2, 3, ..., 7,  8, 9, 10, 11,  12
@@ -21,15 +21,6 @@ def compareCard(c1,c2):
 #
 #suit
 #0, 1, 2, 3
-
-def comparePattern(p1,p2):
-    if p1[5] != p2[5]:
-        return p1[5] - p2[5]
-    else:
-        for i in xrange(5):
-            if p1[6][i] != p2[6][i]:
-                return p1[6][i] - p2[6][i]
-        return 0
 
 AllCardsPattern = dict() 
 #0     1           2       3           4                                    5     6     
@@ -57,14 +48,14 @@ def cards2pattern(hand_cards, remaining_cards):
         if c.point in point2cards:  point2cards[c.point].append(c)
         else:   point2cards[c.point] = [c]
     for p in point2cards:
-        point2cards[p].sort(compareCard)
+        point2cards[p].sort(Card().compareCard)
 
     suit2cards  = dict()
     for c in hand_cards + remaining_cards:
         if c.suit in suit2cards:    suit2cards[c.suit].append(c)
         else:   suit2cards[c.suit] = [c]
     for s in suit2cards:
-        suit2cards[s].sort(compareCard)
+        suit2cards[s].sort(Card().compareCard)
 
     num2point = [[],[],[],[],[]]
     for p in point2cards:
@@ -215,6 +206,8 @@ class OptionSpace:
     Call        = 2
     # 加注
     Raise       = 3
+    # all in
+    AllIn       = 4
 
 class StageSpace:
     firstStage  = 1
@@ -249,12 +242,14 @@ class PublicState(roomai.abstract.AbstractPublicState):
         #bets is array which contains the bets from all players
         self.bets               = None
 
-        #max_bet = max(bets)
+        #max_bet = max(self.bets)
         self.max_bet            = None
+        #the raise acount
+        self.raise_account      = None
 
         # it is time to enter into the next stage or showdown,
         # when next_player == flag_for_nextstage
-        self.flag_for_nextstage = None
+        self.flag_nextstage = None
 
         self.previous_id        = None
         self.previous_action    = None        
@@ -270,9 +265,9 @@ class Info(roomai.abstract.AbstractInfo):
         self.init_hand_cards         = None
         #player_id and hand_cards will be sent to players at the begining of game
 
-        self.public_state       = None
-        self.private_state      = None
-        self.available_actions  = None
+        self.public_state            = None
+        self.private_state           = None
+        self.available_actions       = None
 
 class Utils:
     @classmethod
@@ -280,9 +275,57 @@ class Utils:
         pattern0 = cards2pattern(hand_card0, public_state.public_cards)
         pattern1 = cards2pattern(hand_card1, public_state.public_cards)
         
-        diff = comparePattern(pattern0, pattern1)
+        diff = cls.comparePattern(pattern0, pattern1)
         return diff
-        
 
-        
+    @classmethod
+    def comparePattern(cls, p1, p2):
+            if p1[5] != p2[5]:
+                return p1[5] - p2[5]
+            else:
+                for i in xrange(5):
+                    if p1[6][i] != p2[6][i]:
+                        return p1[6][i] - p2[6][i]
+                return 0
+
+    @classmethod
+    def available_actions(cls, public_state):
+        return True
+
+    @classmethod
+    def is_action_valid(cls, public_state, action):
+        ps = public_state
+
+        if ps.is_allin[ps.turn] == True or ps.is_quit[ps.turn] == True:
+            return False
+        if ps.bets[ps.turn] == 0:
+            return False
+
+        if action.option == OptionSpace.Fold:
+            return True
+
+        elif action.option == OptionSpace.Check:
+            if ps.bets[ps.turn] == ps.max_bets:
+                return True
+            else:
+                return False
+
+        elif action.option == OptionSpace.Call:
+            if action.price == ps.max_bet - ps.bets[ps.turn]:
+                return True
+            else:
+                return False
+
+        elif action.option == OptionSpace.Raise:
+            raise_account = action.price - (ps.max_bet - ps.bets[ps.turn])
+            if raise_account == 0:    return False
+            if raise_account % ps.raise_account == 0:   return True
+            else:   return False
+
+
+        elif action.option == OptionSpace.AllIn:
+            return True
+        else:
+            raise Exception("Invalid action.option(%d)".format(action.option))
+
 

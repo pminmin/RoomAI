@@ -28,6 +28,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state                       = PublicState()
         self.public_state.dealer_id             = self.dealer_id
         self.public_state.big_blind_bet         = self.big_blind_bet
+        self.public_state.raise_account         = self.big_blind_bet
         self.public_state.is_quit               = [False for i in xrange(self.num_players)]
         self.public_state.num_quit              = 0
         self.public_state.is_allin              = [False for i in xrange(self.num_players)]
@@ -36,7 +37,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.chips                 = self.chips
         self.public_state.stage                 = StageSpace.firstStage
         self.public_state.turn                  = self.next_player(big)
-        self.public_state.flag_for_nextstage    = self.next_player(big)
+        self.public_state.flag_nextstage    = self.next_player(big)
 
         self.public_state.previous_id           = None
         self.public_state.previous_action       = None
@@ -49,6 +50,8 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
             self.public_state.chips[big]    = 0
             self.public_state.is_allin[big] = True
             self.public_state.num_allin    += 1
+        self.public_state.max_bet       = self.public_state.bets[big]
+        self.public_state.raise_account = self.big_blind_bet
 
         if self.public_state.chips[small] > self.big_blind_bet / 2:
             self.public_state.chips[small] -= self.big_blind_bet /2
@@ -72,8 +75,11 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.private_state.keep_cards   = allcards[self.num_players*2:self.num_players*2+5]         
         
         #gen info
-        infos = self.state2infos()
-        for i in xrange(2):
+        infos = [Info() for i in xrange(self.public_state.num_players)]
+        for i in xrange(len(infos)):
+            infos[i].public_state = copy.deepcopy(self.public_state)
+        infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
+        for i in xrange(len(infos)-1):
             infos[i].init_player_id  = i
             infos[i].init_hand_cards = self.private_state.hand_cards[i]
         
@@ -97,16 +103,18 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
             self.action_call(action)
         elif action.option == OptionSpace.Raise:
             self.action_raise(action)
+        elif action.option == OptionSpace.AllIn:
+            self.action_allin(action)
         else:
-            raise Exception("action.option(%d) not in [Fold(0), Check(1), Call(2), Raise(3)]")
+            raise Exception("action.option(%d) not in [Fold(0), Check(1), Call(2), Raise(3), AllIn(4)]")
 
-        # if it is time to showdown
-        if self.is_showdown():
+        # if it is time to computing_score
+        if self.is_end():
             isTerminal = True
-            scores = self.showdown()
+            scores = self.compute_score()
 
         # if it is time to enter into the next stage
-        if self.next_player(pu.turn) == pu.flag_for_nextstage:
+        if self.next_player(pu.turn) == pu.flag_nextstage:
             add_cards = []
             if pu.stage == StageSpace.firstStage:   add_cards = pr.keep_cards[0:3]
             if pu.stage == StageSpace.secondStage:  add_cards = pr.keep_cards[3]
@@ -119,8 +127,11 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         pu.previous_action               = action
         pu.turn                          = self.next_player(pu.turn)
 
-        infos                            = self.state2info()
-        infos[pu.turn].available_actions = self.available_action_options()
+        infos = [Info() for i in xrange(self.public_state.num_players)]
+        for i in xrange(len(infos)):
+            infos[i].public_state = copy.deepcopy(self.public_state)
+        infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
+        infos[pu.turn].available_actions = self.available_actions()
         return isTerminal, scores, infos
 
     #override
@@ -130,9 +141,11 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         count        = 0
 
         ## the first match
-        env.chips       = [1000 for i in xrange(len(players))]
-        env.num_players = len(players)
-        env.dealer_id   = int(random.random * len(players))
+        env.chips           = [5000 for i in xrange(len(players))]
+        env.num_players     = len(players)
+        env.dealer_id       = int(random.random * len(players))
+        env.big_blind_bet   = 100
+
         isTerminal, _, infos = env.init()
         for i in xrange(len(players)):
             players[i].receiveInfo(infos[i])
@@ -162,7 +175,8 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
             if len(next_players_id) == 1: break;
 
-            if count % 10 == 0: env.big_blind_bet = env.big_blind_bet * 2
+            if count % 10 == 0:
+                env.big_blind_bet = env.big_blind_bet + 100
             env.chips       = next_chips
             env.dealer_id   = next_dealer_id
             env.num_players = len(next_players_id)
@@ -192,7 +206,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         pu = self.public_state
 
         p = (i+1)%pu.num_players
-        while (pu.is_quit[p] or pu.is_allin[p]) and p != pu.flag_for_nextstage:
+        while (pu.is_quit[p] or pu.is_allin[p]) and p != pu.flag_nextstage:
             p = (p+1)%pu.num_players
 
         return p
@@ -202,37 +216,59 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         :return: A boolean variable, which indicates whether is the action valid on the current state
         '''
 
-    def available_action_options(self):
+        return Utils.is_action_valid(self.public_state, action)
+
+    def available_actions(self):
         '''
         :return: 
             A dict contains all available actions options
         '''
+        return Utils.available_actions(self.public_state)
 
-    def state2info(self):
-        infos = [Info() for i in xrange(self.public_state.num_players)]
-        for i in xrange(len(infos)):
-            infos[i].public_state = copy.deepcopy(self.public_state)
-        infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
 
-    def is_showdown(self):
+    def is_end(self):
         '''
         :return: 
-        A boolean variable indicates whether is it time to showdown
+        A boolean variable indicates whether is it time to end
         '''
         pu = self.public_state
 
-        if pu.num_players - 1 == pu.num_allin + pu.num_quit:
+        if pu.num_players - 1 ==  pu.num_quit:
             return True
-        if pu.stage == StageSpace.fourthStage and \
-                        self.next_player(pu.turn) == pu.flag_for_nextstage:
+        #need showdown
+        if pu.stage == StageSpace.fourthStage and self.next_player(pu.turn) == pu.flag_nextstage:
             return True
 
         return False
 
-    def showdown(self):
+    def compute_score(self):
+        '''
+        :return: a score array
+        '''
         pu = self.public_state
-        scores = [0 for i in xrange(pu.num_players)]
-        return scores
+        pr = self.private_state
+
+        ## compute score before showdown, the winner takes all
+        if pu.num_players  - 1 == pu.num_quit:
+            scores = [0 for i in xrange(pu.num_players)]
+            for i in xrange(pu.num_players):
+                if i == pu.flag_nextstage:
+                    scores[i]    = sum(pu.bets) - pu.bets[i]
+                    pu.chips[i] += scores[i]
+                else:
+                    scores[i]   -= pu.bets[i]
+            return scores
+        ## compute score after showdown
+        else:
+            allin_pattern_players = []
+            for i in xrange(pu.num_players):
+                if pu.is_allin[i] == True:
+                    hand_pattern = Utils.card2pattern(pr.hand_cards[i], pu.public_cards)
+                    allin_pattern_players.append((hand_pattern,i))
+            allin_pattern_players.sort(Utils.comparePattern)
+
+
+
 
     def action_fold(self, action):
         pu = self.public_state
@@ -244,26 +280,20 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
 
     def action_call(self, action):
         pu = self.public_state
-        if pu.bets[pu.turn] < pu.max_bet:
-            pu.chips[pu.turn] -= (pu.max_bet - pu.bets[pu.turn])
-            pu.bets[pu.turn] = pu.max_bet
+        pu.chips[pu.turn] -= action.price
+        pu.bets[pu.turn]  += action.price
 
-        if pu.chips[pu.turn] == 0:
-            pu.num_allin += 1
-            pu.is_allin[pu.turn] = True
 
     def action_raise(self, action):
         pu = self.public_state
-
-        if pu.bets[pu.turn] < pu.max_bet:
-            pu.chips[pu.turn] -= (pu.max_bet - pu.bets[pu.turn])
-            pu.bets[pu.turn]   = pu.max_bet
         pu.chips[pu.turn] -= action.price
-        pu.bets[pu.turn] += action.price
+        pu.bets[pu.turn]  += action.price
+        pu.max_bet         = pu.bets[pu.turn]
+        pu.flag_nextstage  = pu.turn
 
-        if pu.chips[pu.turn] == 0:
-            pu.num_allin += 1
-            pu.is_allin[pu.turn] = True
-
-        pu.max_bet = pu.bets[pu.turn]
-        pu.flag_for_nextstage = pu.turn
+    def action_allin(self, action):
+        pu = self.public_state
+        pu.bets[pu.turn]      += action.price
+        pu.max_bet             = action.price
+        pu.flag_nextstage      = pu.turn
+        pu.chips[pu.turn]      = 0

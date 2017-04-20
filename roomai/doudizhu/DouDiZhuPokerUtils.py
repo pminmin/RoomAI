@@ -105,13 +105,13 @@ class Utils:
         if len(action.masterCards) == 1 \
                 and len(action.slaveCards) == 0 \
                 and action.masterCards[0] == ActionSpace.cheat:
-            action.pattern = PatternSpace.AllPatterns["i_cheat"]
+            action.pattern = AllPatterns["i_cheat"]
 
         # is roblord
         elif len(action.masterCards) == 1 \
                 and len(action.slaveCards) == 0 \
                 and action.masterCards[0] == ActionSpace.bid:
-            action.pattern = PatternSpace.AllPatterns["i_bid"]
+            action.pattern = AllPatterns["i_bid"]
 
         # is twoKings
         elif len(action.masterCards) == 2 \
@@ -119,7 +119,7 @@ class Utils:
                 and len(action.slaveCards) == 0 \
                 and action.masterCards[0] in [ActionSpace.r, ActionSpace.R] \
                 and action.masterCards[1] in [ActionSpace.r, ActionSpace.R]:
-            action.pattern = PatternSpace.AllPatterns["x_rocket"]
+            action.pattern = AllPatterns["x_rocket"]
 
         else:
 
@@ -129,17 +129,17 @@ class Utils:
                 count = masterPoints[action.masterCards[0]]
                 for c in masterPoints:
                     if masterPoints[c] != count:
-                        action.pattern = PatternSpace.AllPatterns["i_invalid"]
+                        action.pattern = AllPatterns["i_invalid"]
 
             if action.pattern == None:
                 pattern = "p_%d_%d_%d_%d_%d" % (len(action.masterCards), len(masterPoints), \
                                                 action.isMasterStraight, \
                                                 len(action.slaveCards), 0)
 
-                if pattern in PatternSpace.AllPatterns:
-                    action.pattern = PatternSpace.AllPatterns[pattern]
+                if pattern in AllPatterns:
+                    action.pattern = AllPatterns[pattern]
                 else:
-                    action.pattern = PatternSpace.AllPatterns["i_invalid"]
+                    action.pattern = AllPatterns["i_invalid"]
 
         return action
 
@@ -245,21 +245,24 @@ class Utils:
         slaveCards.sort()
 
         key_int = (masterCards + slaveCards)
-        key_int.sort()
-        key = ",".join([str(i) for i in key_int])
+        key_str = []
+        for i in key_int:
+            key_str.append(ActionSpace.key_to_str[i])
+        key_str.sort()
+        key = "".join(key_str)
 
         if cls.gen_allactions == True:
             return key, Action(masterCards, slaveCards)
 
-        if key in ActionSpace.AllActions:
-            return key, ActionSpace.AllActions[key]
+        if key in AllActions:
+            return key, AllActions[key]
         else:
             raise Exception(key + "is not in AllActions")
 
     @classmethod
     def lookup_action_by_key(cls, key):
-        if key in ActionSpace.AllActions:
-            return key, ActionSpace.AllActions[key]
+        if key in AllActions:
+            return key, AllActions[key]
         else:
             raise Exception(key + "is not in AllActions")
 
@@ -268,21 +271,21 @@ class Utils:
 
         patterns = []
         if public_state.phase == PhaseSpace.bid:
-            patterns.append(PatternSpace.AllPatterns["i_cheat"])
-            patterns.append(PatternSpace.AllPatterns["i_bid"])
+            patterns.append(AllPatterns["i_cheat"])
+            patterns.append(AllPatterns["i_bid"])
         else:
             if public_state.is_response == False:
-                for p in PatternSpace.AllPatterns:
+                for p in AllPatterns:
                     if p != "i_cheat" and p != "i_invalid":
-                        patterns.append(PatternSpace.AllPatterns[p])
+                        patterns.append(AllPatterns[p])
             else:
                 patterns.append(public_state.license_action.pattern)
                 if public_state.license_action.pattern[6] == 1:
-                    patterns.append(PatternSpace.AllPatterns["p_4_1_0_0_0"])  # rank = 10
-                    patterns.append(PatternSpace.AllPatterns["x_rocket"])  # rank = 100
+                    patterns.append(AllPatterns["p_4_1_0_0_0"])  # rank = 10
+                    patterns.append(AllPatterns["x_rocket"])  # rank = 100
                 if public_state.license_action.pattern[6] == 10:
-                    patterns.append(PatternSpace.AllPatterns["x_rocket"])  # rank = 100
-                patterns.append(PatternSpace.AllPatterns["i_cheat"])
+                    patterns.append(AllPatterns["x_rocket"])  # rank = 100
+                patterns.append(AllPatterns["i_cheat"])
 
         is_response = public_state.is_response
         license_act = public_state.license_action
@@ -359,14 +362,11 @@ class PhaseSpace:
     bid  = 0
     play = 1
 
-class PatternSpace:
-    AllPatterns = dict()
 
 class ActionSpace:
-    AllActions    = dict()
-    str_to_action = {'3':0,'4':1,'5':2,'6':3,'7':4,'8':5,'9':6,'T':7,'J':8,'Q':9,'K':10,'A':11,'2':12,'r':13,'R':14,'x':15,'b':16}
+    str_to_key  = {'3':0, '4':1, '5':2, '6':3, '7':4, '8':5, '9':6, 'T':7, 'J':8, 'Q':9, 'K':10, 'A':11, '2':12, 'r':13, 'R':14, 'x':15, 'b':16}
     # x means check, b means bid
-    action_to_str = {0:'3',1:'4',2:'5',3:'6',4:'7',5:'8',6:'9',7:'T',8:'J',9:'Q',10:'K',11:'A',12:'2',13:'r',14:'R',15:'x',16:'b'} 
+    key_to_str  = {0: '3', 1:'4', 2:'5', 3:'6', 4:'7', 5:'8', 6:'9', 7:'T', 8:'J', 9:'Q', 10:'K', 11:'A', 12:'2', 13:'r', 14:'R', 15:'x', 16:'b'}
     three       = 0;
     four        = 1;
     five        = 2;
@@ -391,44 +391,54 @@ class HandCards:
     def __init__(self, cardstr):
         self.cards      = [0 for i in xrange(ActionSpace.total_normal_cards)]
         for c in cardstr:
-            idx = ActionSpace.str_to_action[c]
+            idx = ActionSpace.str_to_key[c]
             self.cards[idx] += 1
             if idx >= ActionSpace.total_normal_cards:
                 raise Exception("%s is invalid for a handcard"%(cardstr))
         
-        self.num_cards  = sum(self.cards)
-        self.card2num    = [0 for i in xrange(ActionSpace.total_normal_cards)]
-        for card in self.cards:
-            self.card2num[card] += 1
+        self.num_cards    = sum(self.cards)
+        self.count2num    = [0 for i in xrange(ActionSpace.total_normal_cards)]
+        for count in self.cards:
+            self.count2num[count] += 1
+
+        strs = []
+        for h in xrange(len(self.cards)):
+            for count in xrange(self.cards[h]):
+                strs.append(ActionSpace.key_to_str[h])
+        strs.sort()
+        self.String = "".join(strs)
+
 
     def toString(self):
-        strs = []
-        for h in self.cards:
-            for count in self.cards[h]:
-                strs.append(ActionSpace.action_to_str[h])
-        strs.sort()
-        return "".join(strs)
+        return self.String
+
+    def add_cards_str(self, str):
+        self.add_cards(HandCards(str))
 
     def add_cards(self, cards):
-        for c in cards:
-            if c < 0 or c >= 15: continue
-            self.num_cards += 1
+        for c in xrange(len(cards.cards)):
+            count                         = cards.cards[c]
+            self.num_cards                += count
             self.count2num[self.cards[c]] -= 1
-            self.cards[c] += 1
+            self.cards[c]                 += count
             self.count2num[self.cards[c]] += 1
 
+    def remove_cards_str(self, str):
+        self.remove_cards(HandCards(str))
 
     def remove_cards(self, cards):
-        for c in cards:
-            if c < 0 or c >= 15: continue
-            self.num_cards     -=1
+        for c in xrange(len(cards.cards)):
+            count = cards.cards[c]
+            self.num_cards                -=count
             self.count2num[self.cards[c]] -= 1
-            self.cards[c] -=1
+            self.cards[c]                 -=count
             self.count2num[self.cards[c]] += 1
 
     def remove_action(self, action):
-        self.remove_cards(action.masterCards)
-        self.remove_cards(action.slaveCards)        
+        str = action.toString()
+        if str == 'x' or str == 'b':
+            str = ''
+        self.remove_cards(HandCards(str))
 
 class Action:
     def __init__(self, masterCards, slaveCards):
@@ -443,13 +453,22 @@ class Action:
         self.pattern            = None
         Utils.action2pattern(self)
 
-    def toString(self):
         key_int = (self.masterCards + self.slaveCards)
-        key_int.sort()
-        key = ",".join([str(i) for i in key_int])
+        key_str = []
+        for key in key_int:
+            key_str.append(ActionSpace.key_to_str[key])
+        key_str.sort()
+        self.String = "".join(key_str)
+
+
+    def toString(self):
+        return self.String
+
 
 
 ############## read data ################
+AllPatterns = dict()
+AllActions = dict()
 import zipfile
 def get_file(path):
     if ".zip" in path:
@@ -469,7 +488,7 @@ for line in pattern_file:
     lines = line.split(",")
     for i in xrange(1, len(lines)):
         lines[i] = int(lines[i])
-    PatternSpace.AllPatterns[lines[0]] = lines
+    AllPatterns[lines[0]] = lines
 pattern_file.close()
 
 action_file = get_file(path + "/actions.py")
@@ -491,7 +510,7 @@ for line in action_file:
         if c != "":
             s.append(int(c))
     action = Action(m, s)
-    ActionSpace.AllActions[action.toString()] = action
+    AllActions[action.toString()] = action
 action_file.close()
 
 

@@ -19,8 +19,8 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         for i in xrange(3):
             for j in xrange(15): 
                 cards[j] += env.private_state.hand_cards[i].cards[j]
-        for c in env.private_state.keep_cards:
-            cards[c] += 1
+        for j in xrange(15):
+                cards[j] += env.private_state.keep_cards.cards[j]
 
         for i in xrange(13):
             self.assertEqual(cards[i],4)
@@ -38,10 +38,11 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         for i in xrange(3):
             for j in xrange(4*i,4*(i+1)):
                 for k in xrange(4):
-                    hand_cards[i].append(j)
-            hand_cards[i].append(12)
+                    hand_cards[i].append(ActionSpace.key_to_str[j])
+            hand_cards[i].append(ActionSpace.key_to_str[12])
             env.private_state.hand_cards[i] = HandCards(hand_cards[i])
-        env.private_state.keep_cards = [12, 13, 14]
+
+        env.private_state.keep_cards = HandCards([ActionSpace.key_to_str[12], ActionSpace.key_to_str[13], ActionSpace.key_to_str[14]])
         env.public_state.turn = 0
         
         # 0:4,1:4,2:4,3:4      12:1 
