@@ -25,7 +25,10 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
 
         hand_cards =[0, 0, 0]
         for i in xrange(3):
-            hand_cards[i] = HandCards(cards[i*17:(i+1)*17])
+            hand_cards_str = cards[i*17:(i+1)*17]
+            for i in xrange(len(hand_cards_str)):
+                hand_cards_str[i] = str(hand_cards_str[i])
+            hand_cards[i] = HandCards("".join(hand_cards_str))
 
         keep_cards = cards[len(cards)-3:len(cards)]
         self.private_state.hand_cards =  hand_cards;
