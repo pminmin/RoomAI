@@ -422,7 +422,7 @@ class HandCards:
 
     def add_cards_str(self, str):
         self.add_cards(HandCards(str))
-        self.String = self.toString(self, is_recomputing=True)
+        self.String = self.toString(is_recomputing=True)
 
 
     def add_cards(self, cards):
@@ -433,11 +433,11 @@ class HandCards:
             self.cards[c]                 += count
             self.count2num[self.cards[c]] += 1
 
-        self.String = self.toString(self, is_recomputing=True)
+        self.String = self.toString(is_recomputing=True)
 
     def remove_cards_str(self, str):
         self.remove_cards(HandCards(str))
-        self.String = self.toString(self, is_recomputing=True)
+        self.String = self.toString(is_recomputing=True)
 
     def remove_cards(self, cards):
         for c in xrange(len(cards.cards)):
@@ -447,14 +447,14 @@ class HandCards:
             self.cards[c]                 -=count
             self.count2num[self.cards[c]] += 1
 
-        self.String = self.toString(self, is_recomputing=True)
+        self.String = self.toString(is_recomputing=True)
 
     def remove_action(self, action):
         str = action.toString()
         if str == 'x' or str == 'b':
             str = ''
         self.remove_cards(HandCards(str))
-        self.String = self.toString(self, is_recomputing=True)
+        self.String = self.toString(is_recomputing=True)
 
 
 class Action:
