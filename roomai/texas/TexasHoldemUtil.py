@@ -3,16 +3,27 @@
 
 import roomai.abstract
 
+point_str_to_key  = {'2':0,'3':1, '4':2, '5':3, '6':4, '7':5, '8':6, '9':7, 'T':8, 'J':9,  'Q':10, 'K':11,  'A':12}
+point_key_to_str  = {0:'2', 1:'3', 2:'4', 3:'5', 4:'6', 5:'7', 6:'8', 7:'9', 8:'T', 9:'J', 10:'Q',  11:'K',  12:'A'}
+suit_key_to_str   = {0:'Spade',    1:'Heart',       2:'Diamond',       3:'Club'}
+suit_str_to_key   = {'Spade':0,    'Heart':1,       'Diamond':2,       'Club':3}
+
 class Card:
     def __init__(self, point, suit):
-        self.point = point
-        self.suit  = suit
-    def compareTo(self,c2):
-        if self.point != c2.point:
-            return self.point - c2.point
-        else:
-            return self.suit - c2.suit
-    
+        point1 = point
+        if isinstance(point, str):
+            point1 = point_str_to_key[point]
+        suit1  = suit
+        if isinstance(suit, str):
+            suit1 = suit_str_to_key[suit]
+
+        self.point  = point1
+        self.suit   = suit1
+        self.String = "%s_%s"%(point_key_to_str[point1], suit_key_to_str[suit1])
+
+    def toString(self):
+        return self.String
+
 #point
 #0, 1, 2, 3, ..., 7,  8, 9, 10, 11,  12
 #^                ^   ^              ^       
@@ -50,26 +61,24 @@ class StageSpace:
 
 class OptionSpace:
     # 弃牌
-    Fold        = 0
+    Fold        = "fold"
     # 过牌
-    Check       = 1
+    Check       = "check"
     # 更注
-    Call        = 2
+    Call        = "call"
     # 加注
-    Raise       = 3
+    Raise       = "raise"
     # all in
-    AllIn       = 4
+    AllIn       = "allin"
 
-class StageSpace:
-    firstStage  = 1
-    secondStage = 2
-    thirdStage  = 3
-    fourthStage = 4
 
 class Action:
     def __init__(self, option1, price):
         self.option = option1
         self.price  = price
+        self.String = "%s_%d"%(self.option, self.price)
+    def toString(self):
+        return self.String
 
 class PublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
@@ -122,6 +131,13 @@ class Info(roomai.abstract.AbstractInfo):
 
 class Utils:
     @classmethod
+    def compare_cards(cls, c1, c2):
+            if c1.point != c2.point:
+                return c1.point - c2.point
+            else:
+                return c1.suit - c2.suit
+
+    @classmethod
     def cards2pattern(cls, hand_cards, remaining_cards):
         point2cards = dict()
         for c in hand_cards + remaining_cards:
@@ -130,7 +146,7 @@ class Utils:
             else:
                 point2cards[c.point] = [c]
         for p in point2cards:
-            point2cards[p].sort(Card().compareCard)
+            point2cards[p].sort(Utils.compare_cards)
 
         suit2cards = dict()
         for c in hand_cards + remaining_cards:
@@ -139,7 +155,7 @@ class Utils:
             else:
                 suit2cards[c.suit] = [c]
         for s in suit2cards:
-            suit2cards[s].sort(Card().compareCard)
+            suit2cards[s].sort(Utils.compare_cards)
 
         num2point = [[], [], [], [], []]
         for p in point2cards:
@@ -196,7 +212,7 @@ class Utils:
             if len(num2point[2]) >= 1:
                 p3 = num2point[3][0]
                 pattern[6] = point2cards[p3][0:3]
-                p2 = num2point[3][len(num2point[2]) - 1]
+                p2 = num2point[2][len(num2point[2]) - 1]
                 pattern[6].append(point2cards[p2][0])
                 pattern[6].append(point2cards[p2][1])
                 return pattern
@@ -274,9 +290,9 @@ class Utils:
             return pattern
 
     @classmethod
-    def compare_handcards(cls, public_state, hand_card0, hand_card1):
-        pattern0 = Utils.cards2pattern(hand_card0, public_state.public_cards)
-        pattern1 = Utils.cards2pattern(hand_card1, public_state.public_cards)
+    def compare_handcards(cls,hand_card0, hand_card1, keep_cards):
+        pattern0 = Utils.cards2pattern(hand_card0, keep_cards)
+        pattern1 = Utils.cards2pattern(hand_card1, keep_cards)
         
         diff = cls.compare_patterns(pattern0, pattern1)
         return diff
@@ -293,15 +309,52 @@ class Utils:
 
     @classmethod
     def available_actions(cls, public_state):
-        return True
+        pu = public_state
+        turn = pu.turn
+        key_actions = dict()
+
+        ## for fold
+        action = Action(OptionSpace.Fold,0)
+        if cls.is_action_valid(public_state, action):
+            key_actions[action.toString()] = action
+
+        ## for check
+        if pu.bets[turn] == pu.max_bet:
+            action = Action(OptionSpace.Check, 0)
+            if cls.is_action_valid(public_state, action):
+                key_actions[action.toString()] = action
+
+        ## for call
+        if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn]:
+            action = Action(OptionSpace.Call, pu.max_bet - pu.bets[turn])
+            if cls.is_action_valid(public_state, action):
+                key_actions[action.toString()] = action
+
+        ## for raise
+        if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn] + pu.raise_account:
+            num = (pu.chips[turn] - (pu.max_bet - pu.bets[turn])) / pu.raise_account
+            for i in xrange(1,num+1):
+                action = Action(OptionSpace.Raise, (pu.max_bet - pu.bets[turn]) + pu.raise_account * i)
+                if cls.is_action_valid(public_state, action):
+                    key_actions[action.toString()] = action
+
+        ## for all in
+        action = Action(OptionSpace.AllIn, pu.chips[turn])
+        if cls.is_action_valid(public_state, action):
+           key_actions[action.toString()] = action
+
+        return key_actions
 
     @classmethod
     def is_action_valid(cls, public_state, action):
         ps = public_state
 
+        if (not isinstance(public_state,PublicState)) or (not isinstance(action, Action)):
+            return False
+
         if ps.is_allin[ps.turn] == True or ps.is_quit[ps.turn] == True:
             return False
-        if ps.bets[ps.turn] == 0:
+        if ps.chips[ps.turn] == 0:
             return False
 
         if action.option == OptionSpace.Fold:
@@ -329,6 +382,6 @@ class Utils:
         elif action.option == OptionSpace.AllIn:
             return True
         else:
-            raise Exception("Invalid action.option(%d)".format(action.option))
+            raise Exception("Invalid action.option"+action.option)
 
 

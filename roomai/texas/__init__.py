@@ -1,3 +1,3 @@
 #!/bin/python
-from NoLimitTexasHoldemPokerUtil import *
-from NoLimitTexasHoldemPokerEnv  import *
+from TexasHoldemUtil import *
+from TexasHoldemEnv  import *

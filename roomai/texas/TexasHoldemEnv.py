@@ -5,14 +5,14 @@ import random
 import copy
 import roomai.abstract
 
-from NoLimitTexasHoldemPokerUtil import *
+from TexasHoldemUtil import *
 
-class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
+class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
         self.num_players    = 3 
-        self.dealer_id      = int(random.random * self.num_players)
-        self.chips          = [0.0 for i in xrange(self.num_players)]
+        self.dealer_id      = int(random.random() * self.num_players)
+        self.chips          = [1000 for i in xrange(self.num_players)]
         self.big_blind_bet  = 10
 
     # Before init, you need set the num_players, dealer_id, and chips
@@ -26,6 +26,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         big   = (self.dealer_id + 2) % self.num_players
 
         self.public_state                       = PublicState()
+        self.public_state.num_players           = self.num_players
         self.public_state.dealer_id             = self.dealer_id
         self.public_state.big_blind_bet         = self.big_blind_bet
         self.public_state.raise_account         = self.big_blind_bet
@@ -37,7 +38,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.chips                 = self.chips
         self.public_state.stage                 = StageSpace.firstStage
         self.public_state.turn                  = self.next_player(big)
-        self.public_state.flag_nextstage    = self.next_player(big)
+        self.public_state.flag_nextstage        = self.next_player(big)
 
         self.public_state.previous_id           = None
         self.public_state.previous_action       = None
@@ -106,7 +107,7 @@ class NoLimitTexasHoldemPokerEnv(roomai.abstract.AbstractEnv):
         elif action.option == OptionSpace.AllIn:
             self.action_allin(action)
         else:
-            raise Exception("action.option(%d) not in [Fold(0), Check(1), Call(2), Raise(3), AllIn(4)]")
+            raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]"%(action.option))
 
         # if it is time to computing_score
         if self.is_end():
