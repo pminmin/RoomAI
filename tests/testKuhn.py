@@ -10,12 +10,12 @@ class KuhnTester(unittest.TestCase):
             isTerminal, _, infos = env.init()
 
             for i in xrange(len(players)):
-                players[i].receiveInfo(infos[i])
+                players[i].receive_info(infos[i])
 
             while isTerminal == False:
                 turn = infos[-1].public_state.turn
-                action = players[turn].takeAction()
+                action = players[turn].take_action()
                 isTerminal, scores, infos = env.forward(action)
                 for i in xrange(len(players)):
-                    players[i].receiveInfo(infos[i])
+                    players[i].receive_info(infos[i])
 

@@ -7,12 +7,12 @@ class KuhnPokerExamplePlayer(roomai.abstract.AbstractPlayer):
         self.available_actions  = None
 
     #@override
-    def receiveInfo(self, info):
+    def receive_info(self, info):
         if info.available_actions is not None:
             self.available_actions = info.available_actions
 
     #@override
-    def takeAction(self):
+    def take_action(self):
         idx = int(random.random() * len(self.available_actions))
         return self.available_actions[idx]
     

@@ -35,7 +35,7 @@ class AbstractInfo:
 ### abstract 
 class AbstractPlayer:
 
-    def receiveInfo(self,info):
+    def receive_info(self, info):
         '''
         :param:
             info: the information produced by a game environments 
@@ -44,7 +44,7 @@ class AbstractPlayer:
         '''
         raise NotImplementedError("The receiveInfo function hasn't been implemented") 
 
-    def takeAction(self):
+    def take_action(self):
         '''
         :return: A Action produced by this player
         '''

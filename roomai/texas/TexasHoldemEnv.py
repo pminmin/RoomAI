@@ -39,6 +39,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.public_state.stage                 = StageSpace.firstStage
         self.public_state.turn                  = self.next_player(big)
         self.public_state.flag_nextstage        = self.next_player(big)
+        self.public_state.public_cards          = []
 
         self.public_state.previous_id           = None
         self.public_state.previous_action       = None
@@ -76,13 +77,15 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.private_state.keep_cards   = allcards[self.num_players*2:self.num_players*2+5]         
         
         #gen info
-        infos = [Info() for i in xrange(self.public_state.num_players)]
+        infos = [Info() for i in xrange(self.public_state.num_players+1)]
         for i in xrange(len(infos)):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
         for i in xrange(len(infos)-1):
             infos[i].init_player_id  = i
-            infos[i].init_hand_cards = self.private_state.hand_cards[i]
+            infos[i].init_hand_cards = copy.deepcopy(self.private_state.hand_cards[i])
+        turn = self.public_state.turn
+        infos[turn].available_actions = self.available_actions()
         
         return isTerminal, scores, infos
 
@@ -110,12 +113,12 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]"%(action.option))
 
         # if it is time to computing_score
-        if self.is_end():
+        if self.is_compute_score():
             isTerminal = True
             scores = self.compute_score()
 
         # if it is time to enter into the next stage
-        if self.next_player(pu.turn) == pu.flag_nextstage:
+        if self.is_nextstage():
             add_cards = []
             if pu.stage == StageSpace.firstStage:   add_cards = pr.keep_cards[0:3]
             if pu.stage == StageSpace.secondStage:  add_cards = pr.keep_cards[3]
@@ -128,7 +131,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.previous_action               = action
         pu.turn                          = self.next_player(pu.turn)
 
-        infos = [Info() for i in xrange(self.public_state.num_players)]
+        infos = [Info() for i in xrange(self.public_state.num_players+1)]
         for i in xrange(len(infos)):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
@@ -149,13 +152,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
         isTerminal, _, infos = env.init()
         for i in xrange(len(players)):
-            players[i].receiveInfo(infos[i])
+            players[i].receive_info(infos[i])
         while isTerminal == False:
             turn = infos[-1].public_state.turn
-            action = players[turn].takeAction()
+            action = players[turn].take_action()
             isTerminal, scores, infos = env.forward(action)
             for i in xrange(len(players)):
-                players[i].receiveInfo(infos[i])
+                players[i].receive_info(infos[i])
 
         for i in xrange(len(players)):  total_scores[i] += scores[i]
         count += 1
@@ -184,15 +187,15 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             isTerminal, _, infos = env.init()
             for i in xrange(len(next_players_id)):
                 idx = next_players_id[i]
-                players[idx].receiveInfo(infos[i])
+                players[idx].receive_info(infos[i])
             while isTerminal == False:
                 turn = infos[-1].public_state.turn
                 idx = next_players_id[turn]
-                action = players[idx].takeAction()
+                action = players[idx].take_action()
                 isTerminal, scores, infos = env.forward(action)
                 for i in xrange(len(next_players_id)):
                     idx = next_players_id[i]
-                    players[idx].receiveInfo(infos[i])
+                    players[idx].receive_info(infos[i])
 
             for i in xrange(len(next_players_id)):
                 idx = next_players_id[i]
@@ -212,12 +215,6 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
         return p
 
-    def is_action_valid(self, action):
-        '''
-        :return: A boolean variable, which indicates whether is the action valid on the current state
-        '''
-
-        return Utils.is_action_valid(self.public_state, action)
 
     def available_actions(self):
         '''
@@ -227,6 +224,21 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         return Utils.available_actions(self.public_state)
 
 
+    def is_action_valid(self, action):
+        '''
+        :return: A boolean variable, which indicates whether is the action valid on the current state
+        '''
+
+        return Utils.is_action_valid(self.public_state, action)
+
+    def is_nextstage(self):
+        '''
+        :return: 
+        A boolean variable indicates whether is it time to enter the next stage
+        '''
+        pu = self.public_state
+        return self.next_player(pu.turn) == pu.flag_nextstage
+
     def is_compute_score(self):
         '''
         :return: 
@@ -234,8 +246,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         '''
         pu = self.public_state
 
-        if pu.num_players - 1 ==  pu.num_quit:
+        if pu.num_players ==  pu.num_quit + pu.num_allin:
             return True
+
         #need showdown
         if pu.stage == StageSpace.fourthStage and self.next_player(pu.turn) == pu.flag_nextstage:
             return True

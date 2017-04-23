@@ -12,7 +12,7 @@ class DouDiZhuPokerRandomPlayer(roomai.abstract.AbstractPlayer):
         self.available_actions  = None
     
     #@override    
-    def receiveInfo(self,info):
+    def receive_info(self, info):
         if info.init_id is not None:
             self.id1 = info.init_id
         if info.init_cards is not None:
@@ -26,7 +26,7 @@ class DouDiZhuPokerRandomPlayer(roomai.abstract.AbstractPlayer):
         self.public_state = info.public_state
 
     #@override
-    def takeAction(self):
+    def take_action(self):
         candidates = self.available_actions.values()
         idx = int(random.random() * len(candidates))
         action = candidates[idx]

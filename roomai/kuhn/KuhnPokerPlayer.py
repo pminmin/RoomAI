@@ -8,10 +8,10 @@ class KuhnPokerAlwaysBetPlayer(roomai.abstract.AbstractPlayer):
     def __init__(self):
         pass
            
-    def receiveInfo(self,info):
+    def receive_info(self, info):
         pass     
 
-    def takeAction(self):
+    def take_action(self):
         return ActionSpace.bet
 
     def reset(self):

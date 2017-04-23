@@ -3,11 +3,28 @@
 
 import roomai.abstract
 
+class StageSpace:
+    firstStage  = 1
+    secondStage = 2
+    thirdStage  = 3
+    fourthStage = 4
+
+class OptionSpace:
+    # 弃牌
+    Fold        = "fold"
+    # 过牌
+    Check       = "check"
+    # 更注
+    Call        = "call"
+    # 加注
+    Raise       = "raise"
+    # all in
+    AllIn       = "allin"
+
 point_str_to_key  = {'2':0,'3':1, '4':2, '5':3, '6':4, '7':5, '8':6, '9':7, 'T':8, 'J':9,  'Q':10, 'K':11,  'A':12}
 point_key_to_str  = {0:'2', 1:'3', 2:'4', 3:'5', 4:'6', 5:'7', 6:'8', 7:'9', 8:'T', 9:'J', 10:'Q',  11:'K',  12:'A'}
 suit_key_to_str   = {0:'Spade',    1:'Heart',       2:'Diamond',       3:'Club'}
 suit_str_to_key   = {'Spade':0,    'Heart':1,       'Diamond':2,       'Club':3}
-
 class Card:
     def __init__(self, point, suit):
         point1 = point
@@ -24,14 +41,6 @@ class Card:
     def toString(self):
         return self.String
 
-#point
-#0, 1, 2, 3, ..., 7,  8, 9, 10, 11,  12
-#^                ^   ^              ^       
-#|                |   |              |       
-#2,               9, 10, J,  Q,  K,  A
-#
-#suit
-#0, 1, 2, 3
 
 AllCardsPattern = dict() 
 #0     1           2       3           4                                    5     6     
@@ -52,24 +61,6 @@ AllCardsPattern["2_2_1"] = \
 ["2_2_1",               False, True,  False, [2,2,1],   93,  []]
 AllCardsPattern["2_1_1_1"] = \
 ["2_1_1_1",             False, True,  False, [2,1,1,1], 92,  []]
-
-class StageSpace:
-    firstStage  = 1
-    secondStage = 2
-    thirdStage  = 3
-    fourthStage = 4
-
-class OptionSpace:
-    # 弃牌
-    Fold        = "fold"
-    # 过牌
-    Check       = "check"
-    # 更注
-    Call        = "call"
-    # 加注
-    Raise       = "raise"
-    # all in
-    AllIn       = "allin"
 
 
 class Action:

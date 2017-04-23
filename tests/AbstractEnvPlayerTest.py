@@ -10,7 +10,7 @@ class AbstractPlayerTester(unittest.TestCase):
     def test_functions(self):
         aPlayer = AbstractPlayer();
         with self.assertRaises(NotImplementedError):
-            aPlayer.receiveInfo([]);
+            aPlayer.receive_info([]);
         with self.assertRaises(NotImplementedError):
-            aPlayer.takeAction();
+            aPlayer.take_action();
 
