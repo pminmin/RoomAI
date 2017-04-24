@@ -4,16 +4,22 @@
 import random
 import copy
 import roomai.abstract
+import roomai
+import logging
 
 from TexasHoldemUtil import *
+
 
 class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
+        self.logger         = roomai.get_logger()
         self.num_players    = 3 
         self.dealer_id      = int(random.random() * self.num_players)
         self.chips          = [1000 for i in xrange(self.num_players)]
         self.big_blind_bet  = 10
+
+        logger = roomai.get_logger()
 
     # Before init, you need set the num_players, dealer_id, and chips
     #@override
@@ -86,12 +92,23 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             infos[i].init_hand_cards = copy.deepcopy(self.private_state.hand_cards[i])
         turn = self.public_state.turn
         infos[turn].available_actions = self.available_actions()
-        
+
+        if self.logger.level <= logging.DEBUG:
+            self.logger.debug("TexasHoldemEnv.init: num_players = %d, dealer_id = %d, chip = %d, big_blind_bet = %d"%(\
+                self.public_state.num_players,\
+                self.public_state.dealer_id,\
+                self.public_state.chips[0],\
+                self.public_state.big_blind_bet
+            ))
+
         return isTerminal, scores, infos
 
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
+
+        if self.logger.level <= logging.DEBUG:
+            self.logger.debug("TexasHoldemEnv.forward: action=%s"%(action.toString()))
 
         isTerminal = False
         scores     = []
@@ -100,7 +117,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pr         = self.private_state
 
         if action.option == OptionSpace.Fold:
-            self.action_call(action)
+            self.action_fold(action)
         elif action.option == OptionSpace.Check:
             self.action_check(action)
         elif action.option == OptionSpace.Call:
@@ -136,6 +153,14 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
         infos[pu.turn].available_actions = self.available_actions()
+
+        if self.logger.level <= logging.DEBUG:
+            self.logger.debug("TexasHoldemEnv.forward: num_quit+num_allin = %d+%d = %d"%(\
+                self.public_state.num_quit,\
+                self.public_state.num_allin,\
+                self.public_state.num_quit + self.public_state.num_allin\
+            ))
+
         return isTerminal, scores, infos
 
     #override
@@ -340,6 +365,10 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
     def action_allin(self, action):
         pu = self.public_state
+
+        pu.is_allin[pu.turn]   = True
+        pu.num_allin          += 1
+
         pu.bets[pu.turn]      += action.price
         pu.max_bet             = action.price
         pu.flag_nextstage      = pu.turn

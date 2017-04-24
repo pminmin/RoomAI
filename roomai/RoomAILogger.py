@@ -5,17 +5,27 @@ import sys;
 project_name = "roomai";
 
 logger = logging.getLogger(project_name);
-logger.setLevel(logging.INFO);
-
 handler = logging.StreamHandler(sys.stderr);
-handler.setLevel(logging.INFO);
-
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s");
-handler.setFormatter(formatter);
 
+logger.setLevel(logging.INFO);
+handler.setLevel(logging.INFO);
+handler.setFormatter(formatter);
 logger.addHandler(handler);
 
-def initlog(opts):
+
+def set_level(level):
+    global logger;
+    global handler;
+    logger.setLevel(level)
+    handler.setLevel(level)
+
+def get_logger():
+    global logger;
+    return logger
+
+
+def init_logger(opts):
     global logger;
     global handler;
     global project_name;
@@ -52,7 +62,7 @@ def initlog(opts):
         elif "error" == opts["level"].lowcase():
             logger.setLevel(logging.ERROR)
         elif "critical" == opts["level"].lowcase():
-            logger.setLevel(logging.critical)   
+            logger.setLevel(logging.critical)
 
     logger.addHandler(handler);
    

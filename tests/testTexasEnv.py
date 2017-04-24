@@ -1,11 +1,14 @@
 #!/bin/python
 import unittest
+import logging
 
 from roomai.texas import *
-
+import roomai
 
 class TexasEnvTester(unittest.TestCase):
     def testEnv3players(self):
+        roomai.set_level(logging.DEBUG)
+
         env = TexasHoldemEnv()
         env.num_players   = 3
         env.dealer_id     = 0

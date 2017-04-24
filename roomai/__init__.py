@@ -1,2 +1,2 @@
 #!/bin/python
-from Logger import *
+from RoomAILogger import *
