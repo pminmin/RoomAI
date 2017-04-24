@@ -67,10 +67,12 @@ class TexasEnvTester(unittest.TestCase):
         print env.public_state.bets
         print env.public_state.is_allin
         print env.public_state.is_quit
+        print env.public_state.chips
         print scores
-
-
-
+        self.assertTrue(isTerminal)
+        self.assertEqual(scores[0], 30)
+        self.assertEqual(scores[1], -10)
+        self.assertEqual(scores[2], -20)
 
 
 
