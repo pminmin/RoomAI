@@ -408,7 +408,6 @@ class HandCards:
         strs.sort()
         self.String = "".join(strs)
 
-
     def toString(self, is_recomputing=False):
         if is_recomputing == False:
             return self.String
@@ -480,7 +479,6 @@ class Action:
 
     def toString(self):
         return self.String
-
 
 
 ############## read data ################

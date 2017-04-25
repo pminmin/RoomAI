@@ -338,40 +338,39 @@ class Utils:
 
     @classmethod
     def is_action_valid(cls, public_state, action):
-        ps = public_state
+        pu = public_state
 
         if (not isinstance(public_state,PublicState)) or (not isinstance(action, Action)):
             return False
 
-        if ps.is_allin[ps.turn] == True or ps.is_quit[ps.turn] == True:
+        if pu.is_allin[pu.turn] == True or pu.is_quit[pu.turn] == True:
             return False
-        if ps.chips[ps.turn] == 0:
+        if pu.chips[pu.turn] == 0:
             return False
 
         if action.option == OptionSpace.Fold:
             return True
 
         elif action.option == OptionSpace.Check:
-            if ps.bets[ps.turn] == ps.max_bets:
+            if pu.bets[pu.turn] == pu.max_bet:
                 return True
             else:
                 return False
 
         elif action.option == OptionSpace.Call:
-            if action.price == ps.max_bet - ps.bets[ps.turn]:
+            if action.price == pu.max_bet - pu.bets[pu.turn]:
                 return True
             else:
                 return False
 
         elif action.option == OptionSpace.Raise:
-            raise_account = action.price - (ps.max_bet - ps.bets[ps.turn])
+            raise_account = action.price - (pu.max_bet - pu.bets[pu.turn])
             if raise_account == 0:    return False
-            if raise_account % ps.raise_account == 0:   return True
+            if raise_account % pu.raise_account == 0:   return True
             else:   return False
-
-
         elif action.option == OptionSpace.AllIn:
-            return True
+            if action.price == pu.chips[pu.turn]: return True
+            else:return False
         else:
             raise Exception("Invalid action.option"+action.option)
 

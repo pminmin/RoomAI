@@ -80,7 +80,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.private_state.hand_cards       = [[] for i in xrange(self.num_players)]
         for i in xrange(self.num_players):
             self.private_state.hand_cards[i]    = allcards[i*2:(i+1)*2]
-        self.private_state.keep_cards   = allcards[self.num_players*2:self.num_players*2+5]         
+        self.private_state.keep_cards   = allcards[self.num_players*2:self.num_players*2+5]
+        print "init_private_state.keep_cards", self.private_state.keep_cards
         
         #gen info
         infos = [Info() for i in xrange(self.public_state.num_players+1)]
@@ -106,9 +107,15 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
+        '''
+        :param action: 
+        :except: throw ValueError when the action is invalid at this time 
+        '''
 
-        if self.logger.level <= logging.DEBUG:
-            self.logger.debug("TexasHoldemEnv.forward: action=%s"%(action.toString()))
+        if not Utils.is_action_valid(self.public_state, action):
+            self.logger.critical("action=%s is invalid"%(action.toString()))
+            raise ValueError("action=%s is invalid"%(action.toString()))
+
 
         isTerminal = False
         scores     = []
@@ -128,6 +135,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             self.action_allin(action)
         else:
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]"%(action.option))
+        pu.previous_id     = pu.turn
+        pu.previous_action = action
+        pu.turn            = self.next_player(pu.turn)
 
         # if it is time to computing_score
         if self.is_compute_score():
@@ -137,16 +147,15 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         # if it is time to enter into the next stage
         if self.is_nextstage():
             add_cards = []
-            if pu.stage == StageSpace.firstStage:   add_cards = pr.keep_cards[0:3]
-            if pu.stage == StageSpace.secondStage:  add_cards = pr.keep_cards[3]
-            if pu.stage == StageSpace.thirdStage:   add_cards = pr.keep_cards[4]
+            if pu.stage == StageSpace.firstStage: add_cards = pr.keep_cards[0:3]
+            if pu.stage == StageSpace.secondStage:  add_cards = [pr.keep_cards[3]]
+            if pu.stage == StageSpace.thirdStage:   add_cards = [pr.keep_cards[4]]
 
-            pu.public_cards.append(add_cards)
-            pu.stage = pu.stage + 1
+            pu.public_cards.extend(add_cards)
+            pu.stage          = pu.stage + 1
+            pu.turn           = (pu.dealer_id + 1) % pu.num_players
+            pu.flag_nextstage = (pu.dealer_id + 1) % pu.num_players
 
-        pu.previous_id                   = pu.turn
-        pu.previous_action               = action
-        pu.turn                          = self.next_player(pu.turn)
 
         infos = [Info() for i in xrange(self.public_state.num_players+1)]
         for i in xrange(len(infos)):
@@ -155,10 +164,12 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         infos[pu.turn].available_actions = self.available_actions()
 
         if self.logger.level <= logging.DEBUG:
-            self.logger.debug("TexasHoldemEnv.forward: num_quit+num_allin = %d+%d = %d"%(\
+            self.logger.debug("TexasHoldemEnv.forward: num_quit+num_allin = %d+%d = %d, action = %s, stage = %d"%(\
                 self.public_state.num_quit,\
                 self.public_state.num_allin,\
-                self.public_state.num_quit + self.public_state.num_allin\
+                self.public_state.num_quit + self.public_state.num_allin,\
+                action.toString(),\
+                self.public_state.stage\
             ))
 
         return isTerminal, scores, infos
@@ -237,7 +248,6 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         p = (i+1)%pu.num_players
         while (pu.is_quit[p] or pu.is_allin[p]) and p != pu.flag_nextstage:
             p = (p+1)%pu.num_players
-
         return p
 
 
@@ -262,7 +272,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         A boolean variable indicates whether is it time to enter the next stage
         '''
         pu = self.public_state
-        return self.next_player(pu.turn) == pu.flag_nextstage
+        return pu.flag_nextstage == pu.turn
 
     def is_compute_score(self):
         '''
@@ -273,9 +283,11 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
         if pu.num_players ==  pu.num_quit + pu.num_allin:
             return True
+        if pu.num_players ==  pu.num_quit + 1:
+            return True
 
         #need showdown
-        if pu.stage == StageSpace.fourthStage and self.next_player(pu.turn) == pu.flag_nextstage:
+        if pu.stage == StageSpace.fourthStage and self.is_nextstage():
             return True
 
         return False
@@ -288,7 +300,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pr = self.private_state
 
         ## compute score before showdown, the winner takes all
-        if pu.num_players  - 1 == pu.num_quit:
+        if pu.num_players  == pu.num_quit + 1:
             scores = [0 for i in xrange(pu.num_players)]
             scores[pu.flag_nextstage] = sum(pu.bets)
 
@@ -358,6 +370,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
     def action_raise(self, action):
         pu = self.public_state
+
+        pu.raise_account   = action.price + pu.bets[pu.turn] - pu.max_bet
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
         pu.max_bet         = pu.bets[pu.turn]
@@ -370,6 +384,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.num_allin          += 1
 
         pu.bets[pu.turn]      += action.price
-        pu.max_bet             = action.price
-        pu.flag_nextstage      = pu.turn
+        if pu.bets[pu.turn] > pu.max_bet:
+            pu.max_bet         = pu.bets[pu.turn]
+            pu.flag_nextstage  = pu.turn
         pu.chips[pu.turn]      = 0

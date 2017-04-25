@@ -4,7 +4,7 @@
 import roomai.abstract
 import random
 import copy
-
+import roomai
 from roomai.doudizhu.DouDiZhuPokerUtils import *
 
 class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
@@ -12,6 +12,7 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
     def __init__(self):
         self.public_state  = PublicState()
         self.private_state = PrivateState()
+        self.logger        = roomai.get_logger()
 
     def generate_initial_cards(self):
 
@@ -95,7 +96,11 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
-        
+
+        if not self.isActionValid(action):
+            self.logger.critical("action=%s is invalid"%(action.toString()))
+            raise ValueError("action=%s is invalid"%(action.toString()))
+
         isTerminal   = False
         scores       = []
         infos        = [Info(), Info(), Info(), Info()]
