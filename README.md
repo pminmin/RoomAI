@@ -5,7 +5,7 @@ RoomAI is a toolkit for developing and comparing imperfect information game bots
 
 # Contents
 
-## 1. Get Started
+## 1. Quick Guidance
 
 
 ### 1.1 Installation
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         print scores
 </pre>
 
-## 2. [Basic Concepts](https://github.com/roomai/RoomAI/tree/master/docs/Basic)
+## 2. [Detailed Guidance](https://github.com/roomai/RoomAI/tree/master/docs/Basic)
 
 ## 3. Info Structure
 
