@@ -49,18 +49,8 @@ class AbstractPersonState:
 
 class AbstractInfo:
     def __init__(self, public_state, private_state, person_state):
-       
-        ## public state information
-        ## available for all players
         self.public_state       = None
-
-        ## private state information
-        ## unavailable for all players
         self.private_state      = None
-        
-        ## person state information. 
-        ## availabel for all players. 
-        ## For different player, the person state information is different.
         self.person_state       = None
 </pre>
 
@@ -71,7 +61,7 @@ The last info is designed for recording private_state.
 
 ##### Only the last info contains the private_state.
 
-##### All infos contain the person_state. For different player, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions.
+##### All infos contain the person_state. For different players, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions.
 
 The info is the most important concept for AI-bot developers, and is very different for different games. We list all info structures for the games supported by roomai. 
 
