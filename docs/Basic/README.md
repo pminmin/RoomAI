@@ -10,14 +10,15 @@ def round(env, players):
    :param players: the array of players
    :return: the final scores of this competition
    '''
+   
    isTerminal, scores, infos = env.init()
-
    for i in xrange(len(players)):
        players[i].receive_info(infos[i])
 
    while isTerminal == False:
         turn = infos[-1].public_state.turn
         action = players[turn].take_action()
+        
         isTerminal, scores, infos = env.forward(action)
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
@@ -25,22 +26,25 @@ def round(env, players):
    return scores                
 </pre>
 
-![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png). We define Player, Env, and Info as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
+![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png)
+
+We define Player, Env, and Info as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
 
 
-#### 1.Player
+#### 1.Info
 
-A player is an AI-bot.
+The info is the information sent by env to player, which is consisted of public states、private states and person state.
 
 <pre>
 class AbstractPublicState:
-    pass
+    # players[turn] will take a action
+    turn              = None 
 
 class AbstractPrivateState:
     pass
 
 class AbstractPersonState:
-    id                = None
+    id                = None 
     available_actions = None
 
 class AbstractInfo:
@@ -57,22 +61,27 @@ class AbstractInfo:
         ## person state information. 
         ## availabel for all players. 
         ## For different player, the person state information is different.
-        ## The personal_state contains available actions
         self.person_state       = None
 </pre>
 
 If there are n players, env.forward will return n+1 infos. The i-th info is w.r.t the i-th player except the last info.
 The last info is designed for recording private_state. 
 
-##### All infos contain public_state. 
+##### All infos contain the public_state. 
 
-##### Only the last info contains private_state.
+##### Only the last info contains the private_state.
 
-##### All infos contain personal_state. Only the info w.r.t the player who will take a action, contains available_actions.
+##### All infos contain the person_state. For different player, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions.
 
-#### 2.Env
+The info is the most important concept for AI-bot developers, and is very different for different games. We list all info structures for the games supported by roomai. 
 
-The env is a environment of a game.
+##### [KuhnPoker]()
+##### [DouDiZhu]()
+##### [Texas]()
+
+#### 2.Player
+
+A player is an AI-bot.
 
 <pre>
 class AbstractPlayer:
@@ -86,10 +95,10 @@ class AbstractPlayer:
         raise NotImplementedError("The reset function hasn't been implemented")
 </pre>
 
-#### 3.Info
 
-The info is the information sent by env to player, which is consisted of public states、private states and person state.
+#### 3.Env
 
+The env is a environment of a game.
 <pre>
 class AbstractEnv:
 
