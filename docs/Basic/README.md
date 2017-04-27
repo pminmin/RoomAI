@@ -1,28 +1,6 @@
 
 ##  Basic Concepts
 
-There are some basic concepts in RoomAI: 
-
-#### 1.Player
-
-A player is an AI-bot;
-
-#### 2.Env
-
-The env is a environment of a game;
-
-#### 3.Info
-
-The info is the information sent by env to player, which is consisted of public states、private states and person state;
-
-#### 4.Action
-
-A player takes a action, and env forwards with this action.
-
-
-
-We define Player, Env, and Info as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
-
 The basic procedure of a competition is shown as follows. All AI-bot player receive information from env, the current player takes a action, and the env forwards with this action.
 
 <pre>
@@ -48,6 +26,29 @@ def round(env, players):
 </pre>
 
 ![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png).
+
+There are some basic concepts in RoomAI: 
+
+#### 1.Player
+
+A player is an AI-bot;
+
+#### 2.Env
+
+The env is a environment of a game;
+
+#### 3.Info
+
+The info is the information sent by env to player, which is consisted of public states、private states and person state;
+
+#### 4.Action
+
+A player takes a action, and env forwards with this action.
+
+
+
+We define Player, Env, and Info as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
+
 
 ## Info
 
