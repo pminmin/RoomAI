@@ -77,12 +77,16 @@ class PublicState(roomai.abstract.AbstractPublicState):
         self.num_players        = None
         self.dealer_id          = None
         self.public_cards       = None
-        self.is_quit            = None
-        self.num_quit           = None
-        self.is_allin           = None
-        self.num_allin          = None
         self.num_players        = None
         self.big_blind_bet      = None
+
+        #state of players
+        self.is_quit                        = None
+        self.num_quit                       = None
+        self.is_allin                       = None
+        self.num_allin                      = None
+        self.is_expected_to_action          = None
+        self.num_expected_to_action         = None
 
         # who is expected to take a action
         self.turn               = None
@@ -97,10 +101,6 @@ class PublicState(roomai.abstract.AbstractPublicState):
         self.max_bet            = None
         #the raise acount
         self.raise_account      = None
-
-        # it is time to enter into the next stage or showdown,
-        # when next_player == flag_for_nextstage
-        self.flag_nextstage = None
 
         self.previous_id        = None
         self.previous_action    = None        
@@ -123,10 +123,7 @@ class Info(roomai.abstract.AbstractInfo):
 class Utils:
     @classmethod
     def compare_cards(cls, c1, c2):
-            if c1.point != c2.point:
-                return c1.point - c2.point
-            else:
-                return c1.suit - c2.suit
+        return c1.point - c2.point
 
     @classmethod
     def cards2pattern(cls, hand_cards, remaining_cards):

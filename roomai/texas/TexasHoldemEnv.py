@@ -36,15 +36,18 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.public_state.dealer_id             = self.dealer_id
         self.public_state.big_blind_bet         = self.big_blind_bet
         self.public_state.raise_account         = self.big_blind_bet
+
         self.public_state.is_quit               = [False for i in xrange(self.num_players)]
         self.public_state.num_quit              = 0
         self.public_state.is_allin              = [False for i in xrange(self.num_players)]
         self.public_state.num_allin             = 0
+        self.public_state.is_expected_to_action = [True for i in xrange(self.num_players)]
+        self.public_state.num_expected_to_action= self.public_state.num_players
+
         self.public_state.bets                  = [0 for i in xrange(self.num_players)]
         self.public_state.chips                 = self.chips
         self.public_state.stage                 = StageSpace.firstStage
         self.public_state.turn                  = self.next_player(big)
-        self.public_state.flag_nextstage        = self.next_player(big)
         self.public_state.public_cards          = []
 
         self.public_state.previous_id           = None
@@ -139,22 +142,26 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.previous_action = action
         pu.turn            = self.next_player(pu.turn)
 
-        # if it is time to computing_score
+        # computing_score
         if self.is_compute_score():
             isTerminal = True
             scores = self.compute_score()
+            ## need showdown
+            if pu.num_quit + 1 < pu.num_players:
+                pu.public_cards = pr.keep_cards[0:5]
 
-        # if it is time to enter into the next stage
-        if self.is_nextstage():
+        # enter into the next stage
+        elif self.is_nextstage():
             add_cards = []
-            if pu.stage == StageSpace.firstStage: add_cards = pr.keep_cards[0:3]
+            if pu.stage == StageSpace.firstStage:   add_cards = pr.keep_cards[0:3]
             if pu.stage == StageSpace.secondStage:  add_cards = [pr.keep_cards[3]]
             if pu.stage == StageSpace.thirdStage:   add_cards = [pr.keep_cards[4]]
 
             pu.public_cards.extend(add_cards)
-            pu.stage          = pu.stage + 1
-            pu.turn           = (pu.dealer_id + 1) % pu.num_players
-            pu.flag_nextstage = (pu.dealer_id + 1) % pu.num_players
+            pu.stage                      = pu.stage + 1
+            pu.turn                       = (pu.dealer_id + 1) % pu.num_players
+            pu.is_expected_to_action      = [True for i in xrange(pu.num_players)]
+            pu.num_expected_to_action     = self.public_state.num_players
 
 
         infos = [Info() for i in xrange(self.public_state.num_players+1)]
@@ -244,9 +251,11 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
     def next_player(self,i):
         pu = self.public_state
+        if pu.num_expected_to_action == 0:
+            return -1
 
         p = (i+1)%pu.num_players
-        while (pu.is_quit[p] or pu.is_allin[p]) and p != pu.flag_nextstage:
+        while pu.is_expected_to_action[p] == False:
             p = (p+1)%pu.num_players
         return p
 
@@ -272,7 +281,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         A boolean variable indicates whether is it time to enter the next stage
         '''
         pu = self.public_state
-        return pu.flag_nextstage == pu.turn
+        return pu.num_expected_to_action == 0
 
     def is_compute_score(self):
         '''
@@ -281,12 +290,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         '''
         pu = self.public_state
 
-        if pu.num_players ==  pu.num_quit + pu.num_allin:
-            return True
-        if pu.num_players ==  pu.num_quit + 1:
+        if pu.num_players == pu.num_quit + 1:
             return True
 
         #need showdown
+        if pu.num_players ==  pu.num_quit + pu.num_allin + 1 and pu.num_expected_to_action == 0:
+            return True
+
         if pu.stage == StageSpace.fourthStage and self.is_nextstage():
             return True
 
@@ -300,9 +310,11 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pr = self.private_state
 
         ## compute score before showdown, the winner takes all
-        if pu.num_players  == pu.num_quit + 1:
+        if pu.num_players  ==  pu.num_quit + 1:
             scores = [0 for i in xrange(pu.num_players)]
-            scores[pu.flag_nextstage] = sum(pu.bets)
+            for i in xrange(pu.num_players):
+                if pu.is_quit[i] == False:
+                    scores[i] = sum(pu.bets)
 
         ## compute score after showdown
         else:
@@ -310,44 +322,49 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             playerid_pattern_bets = [] #for not_quit players
             for i in xrange(pu.num_players):
                 if pu.is_quit[i] == True: continue
-                hand_pattern = Utils.card2pattern(pr.hand_cards[i], pu.public_cards)
+                hand_pattern = Utils.cards2pattern(pr.hand_cards[i], pr.keep_cards)
                 playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
             playerid_pattern_bets.sort(key=lambda x:x[1], cmp=Utils.compare_patterns)
 
             pot_line = 0
             previous = None
-            tmp      = []
+            tmp_playerid_pattern_bets      = []
             for i in xrange(len(playerid_pattern_bets)-1,-1,-1):
+
                 if previous == None:
-                    tmp.append(playerid_pattern_bets[i])
+                    tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
-                elif Utils.compare_handcards(pu, pr.hand_cards,pr.hand_cards) == 0:
-                    tmp.append(playerid_pattern_bets[i])
+                elif Utils.compare_patterns(playerid_pattern_bets[i][1], previous[1]) == 0:
+                    tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
                 else:
-                    tmp.sort(key = lambda x:x[2])
-                    for i in xrange(len(tmp)):
-                        num1 = len(tmp) - i
-                        sum1 = 0
-                        for p in xrange(pu.num_players):    sum1      += max(0, pu.bets[p] - pot_line)
-                        for p in xrange(i, len(tmp)):       scores[p] += sum1 / num1
+                    tmp_playerid_pattern_bets.sort(key = lambda x:x[2])
+                    for k in xrange(len(tmp_playerid_pattern_bets)):
+                        num1          = len(tmp_playerid_pattern_bets) - k
+                        sum1          = 0
+                        max_win_score = pu.bets[tmp_playerid_pattern_bets[k][0]]
+                        for p in xrange(pu.num_players):    sum1      += min(max(0, pu.bets[p] - pot_line), max_win_score)
+                        for p in xrange(k, len(tmp_playerid_pattern_bets)):       scores[p] += sum1 / num1
                         scores[pu.dealer_id] += sum1 % num1
-                        if pot_line <= pu.bets[tmp[i][0]]: pot_line = pu.bets[tmp[i][0]]
+                        if pot_line <= max_win_score:
+                            pot_line = max_win_score
+                    tmp_playerid_pattern_bets = []
+                    tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
+                    previous = playerid_pattern_bets[i]
 
-                    previous = None
-                    tmp      = []
 
-            if len(tmp) > 0:
-                tmp.sort(key = lambda  x:x[2])
-                for i in xrange(len(tmp)):
-                    num1 = len(tmp) - i
+            if len(tmp_playerid_pattern_bets) > 0:
+                tmp_playerid_pattern_bets.sort(key = lambda  x:x[2])
+                for i in xrange(len(tmp_playerid_pattern_bets)):
+                    num1 = len(tmp_playerid_pattern_bets) - i
                     sum1 = 0
-                    for p in xrange(pu.num_players):    sum1      += max(0, pu.bets[p] - pot_line)
-                    for p in xrange(i, len(tmp)):       scores[p] += sum1 / num1
+                    max_win_score = pu.bets[tmp_playerid_pattern_bets[i][0]]
+                    for p in xrange(pu.num_players):
+                        sum1 += min(max(0, pu.bets[p] - pot_line), max_win_score)
+                    for p in xrange(i, len(tmp_playerid_pattern_bets)):
+                        scores[tmp_playerid_pattern_bets[p][0]] += sum1 / num1
                     scores[pu.dealer_id] += sum1 % num1
-                    if pot_line <= pu.bets[tmp[i][0]]: pot_line = pu.bets[tmp[i][0]]
-
-
+                    if pot_line <= max_win_score: pot_line = max_win_score
         for p in xrange(pu.num_players):
             pu.chips[p] += scores[p]
             scores[p]   -= pu.bets[p]
@@ -359,14 +376,20 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.is_quit[pu.turn] = True
         pu.num_quit += 1
 
+        pu.is_expected_to_action[pu.turn] = False
+        pu.num_expected_to_action        -= 1
+
     def action_check(self, action):
-        pass
+        pu = self.public_state
+        pu.is_expected_to_action[pu.turn] = False
+        pu.num_expected_to_action        -= 1
 
     def action_call(self, action):
         pu = self.public_state
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
-
+        pu.is_expected_to_action[pu.turn] = False
+        pu.num_expected_to_action        -= 1
 
     def action_raise(self, action):
         pu = self.public_state
@@ -375,7 +398,16 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
         pu.max_bet         = pu.bets[pu.turn]
-        pu.flag_nextstage  = pu.turn
+
+        pu.is_expected_to_action[pu.turn] = False
+        pu.num_expected_to_action        -= 1
+        p = (pu.turn + 1)%pu.num_players
+        while p != pu.turn:
+            if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_expected_to_action[p] == False:
+                pu.num_expected_to_action   += 1
+                pu.is_expected_to_action[p]  = True
+            p = (p + 1) % pu.num_players
+
 
     def action_allin(self, action):
         pu = self.public_state
@@ -384,7 +416,16 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.num_allin          += 1
 
         pu.bets[pu.turn]      += action.price
-        if pu.bets[pu.turn] > pu.max_bet:
-            pu.max_bet         = pu.bets[pu.turn]
-            pu.flag_nextstage  = pu.turn
         pu.chips[pu.turn]      = 0
+
+        pu.is_expected_to_action[pu.turn] = False
+        pu.num_expected_to_action        -= 1
+        if pu.bets[pu.turn] > pu.max_bet:
+            pu.max_bet = pu.bets[pu.turn]
+            p = (pu.turn + 1) % pu.num_players
+            while p != pu.turn:
+                if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_expected_to_action[p] == False:
+                    pu.num_expected_to_action  += 1
+                    pu.is_expected_to_action[p] = True
+                p = (p + 1) % pu.num_players
+

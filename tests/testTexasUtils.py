@@ -34,6 +34,12 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertEqual(pattern[6][3].suit, 0)
         self.assertEqual(pattern[6][4].suit, 1)
 
+    def test_cards2(self):
+        h1     = [Card(7, 0), Card(7, 1)]
+        keep   = [Card(3,1),Card(4,2),Card(5,3),Card(6,0),Card(7,2)]
+        pattern = Utils.cards2pattern(h1,keep)
+        self.assertEqual(pattern[0],"3_1_1")
+
 
     def test_cards(self):
         handcards1 = [Card(0,0),Card(0,1)]
@@ -98,5 +104,15 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertTrue(env.is_action_valid(action))
 
 
+    def test_compare(self):
+        h1 = [Card(7, 0), Card(7, 1)]
+        h2 = [Card(2, 0), Card(2, 1)]
+        h3 = [Card(2, 2), Card(2, 3)]
+        k  = [Card(3,1),Card(4,2),Card(5,3),Card(6,0),Card(7,2)]
 
-
+        p1 = Utils.cards2pattern(h1,k)
+        p2 = Utils.cards2pattern(h2,k)
+        p3 = Utils.cards2pattern(h3,k)
+        print Utils.compare_patterns(p1,p2)
+        print Utils.compare_patterns(p2,p3)
+        0/0
