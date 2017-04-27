@@ -2,7 +2,6 @@
 
 RoomAI is a toolkit for developing and comparing imperfect information game bots
 
-
 # Contents
 
 ## 1. Quick Guidance
