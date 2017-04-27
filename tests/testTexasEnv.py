@@ -17,25 +17,25 @@ class TexasEnvTester(unittest.TestCase):
         players =  [TexasHoldemRandomPlayer() for i in xrange(3)]
 
         isTerminal, scores, infos = env.init()
-        self.assertEqual(infos[0].init_player_id,0)
+        self.assertEqual(infos[0].person_state.id,0)
         env.private_state.hand_cards[0] = [Card(0, 0), Card(0, 1)]
         env.private_state.hand_cards[0] = [Card(2, 0), Card(2, 1)]
         env.private_state.hand_cards[0] = [Card(2, 0), Card(2, 1)]
         env.private_state.keep_cards    = [Card(3,0),  Card(4,0),Card(5,0),Card(6,0),Card(7,0)]
         self.assertEqual(env.public_state.turn, 0)
-        self.assertNotEqual(len(infos[0].available_actions),0 )
-        self.assertTrue("allin_100" in infos[0].available_actions.keys())
+        self.assertNotEqual(len(infos[0].person_state.available_actions),0 )
+        self.assertTrue("allin_100" in infos[0].person_state.available_actions.keys())
         # dealer_id = 0
         # turn = 0
         # chips:100, 90, 80
         # bets :0,   10,  20
         # state:n,   n,  n
 
-        action = Action("allin",100)
+        action = Action_Texas("allin",100)
         isTerminal, scores, infos = env.forward(action)
         self.assertEqual(env.public_state.turn, 1)
-        self.assertNotEqual(len(infos[1].available_actions),0 )
-        self.assertTrue("allin_90" in infos[1].available_actions.keys())
+        self.assertNotEqual(len(infos[1].person_state.available_actions),0 )
+        self.assertTrue("allin_90" in infos[1].person_state.available_actions.keys())
         self.assertEqual(env.public_state.turn, 1)
         self.assertEqual(env.chips[0],0)
         self.assertEqual(env.chips[1],90)
@@ -46,7 +46,7 @@ class TexasEnvTester(unittest.TestCase):
         # bets :100, 10, 20
         # state:all,  n,  n
 
-        action = Action("fold",0)
+        action = Action_Texas("fold",0)
         isTerminal, scores, infos = env.forward(action)
         # dealer_id = 0
         # turn = 2
@@ -55,7 +55,7 @@ class TexasEnvTester(unittest.TestCase):
         # state:all,  q,  n
         self.assertEqual(env.public_state.turn, 2)
 
-        action = Action("fold", 0)
+        action = Action_Texas("fold", 0)
         isTerminal, scores, infos = env.forward(action)
         # dealer_id = 0
         # turn = 1
@@ -86,14 +86,14 @@ class TexasEnvTester(unittest.TestCase):
         players =  [TexasHoldemRandomPlayer() for i in xrange(3)]
 
         isTerminal, scores, infos = env.init()
-        self.assertEqual(infos[0].init_player_id,0)
+        self.assertEqual(infos[0].person_state.id,0)
         env.private_state.hand_cards[0] = [Card(7, 0), Card(7, 1)]
         env.private_state.hand_cards[1] = [Card(2, 0), Card(2, 1)]
         env.private_state.hand_cards[2] = [Card(2, 2), Card(2, 3)]
         env.private_state.keep_cards    = [Card(3,1),Card(4,2),Card(5,3),Card(6,0),Card(7,3)]
         self.assertEqual(env.public_state.turn, 0)
-        self.assertNotEqual(len(infos[0].available_actions),0 )
-        self.assertTrue("raise_60" in infos[0].available_actions.keys())
+        self.assertNotEqual(len(infos[0].person_state.available_actions),0 )
+        self.assertTrue("raise_60" in infos[0].person_state.available_actions.keys())
         self.assertEqual(env.public_state.raise_account, 20)
         # dealer_id = 0
         # turn = 0
@@ -103,14 +103,14 @@ class TexasEnvTester(unittest.TestCase):
         # flag_next:0
         # raise_account: 20
 
-        action = Action("raise", 60)
+        action = Action_Texas("raise", 60)
         isTerminal, scores, infos = env.forward(action)
         print env.public_state.num_expected_to_action, env.public_state.is_expected_to_action
         self.assertEqual(env.public_state.turn, 1)
-        self.assertTrue("raise_60" not in infos[1].available_actions)
-        self.assertTrue("raise_80" not in infos[1].available_actions)
+        self.assertTrue("raise_60" not in infos[1].person_state.available_actions)
+        self.assertTrue("raise_80" not in infos[1].person_state.available_actions)
         self.assertEqual(env.public_state.raise_account, 40)
-        action = Action("call", 40)
+        action = Action_Texas("call", 40)
         self.assertRaises(ValueError, env.forward, action)
         # dealer_id = 0
         # turn  = 1
@@ -121,7 +121,7 @@ class TexasEnvTester(unittest.TestCase):
         # raise_account: 40
 
 
-        action = Action("call", 50)
+        action = Action_Texas("call", 50)
         isTerminal, scores, infos = env.forward(action)
         print env.public_state.num_expected_to_action, env.public_state.is_expected_to_action
         # dealer_id = 0
@@ -133,7 +133,7 @@ class TexasEnvTester(unittest.TestCase):
         # raise_account: 40
         # expected:f,f,t
 
-        action = Action("call", 40)
+        action = Action_Texas("call", 40)
         isTerminal, scores, infos = env.forward(action)
         self.assertEqual(infos[0].public_state.stage,StageSpace.secondStage)
         self.assertEqual(env.public_state.chips[1],440)
@@ -146,7 +146,7 @@ class TexasEnvTester(unittest.TestCase):
         # state:n,   n,  n
         # raise_account: 40
 
-        action = Action("call",0)
+        action = Action_Texas("call",0)
         isTerminal, scores, infos = env.forward(action)
         isTerminal, scores, infos = env.forward(action)
         isTerminal, scores, infos = env.forward(action)
@@ -160,7 +160,7 @@ class TexasEnvTester(unittest.TestCase):
         self.assertEqual(env.public_state.raise_account, 40)
         self.assertEqual(env.public_state.stage, 3)
         self.assertEqual(env.public_state.turn, 1)
-        print "1",infos[1].available_actions.keys()
+        print "1",infos[1].person_state.available_actions.keys()
         # dealer_id = 0
         # turn  = 1
         # stage = 3
@@ -169,10 +169,10 @@ class TexasEnvTester(unittest.TestCase):
         # state:n,   n,  n
         # raise_account: 40
 
-        action = Action("allin",440)
+        action = Action_Texas("allin",440)
         isTerminal, score, infos = env.forward(action)
         self.assertEqual(infos[0].public_state.max_bet, 500)
-        print "2", infos[2].available_actions.keys()
+        print "2", infos[2].person_state.available_actions.keys()
         self.assertEqual(env.public_state.is_allin[1],True)
         self.assertEqual(infos[0].public_state.stage, 3)
         # dealer_id = 0
@@ -183,9 +183,9 @@ class TexasEnvTester(unittest.TestCase):
         # state:n,   n,  n
         # raise_account: 40
 
-        action = Action("call",440)
+        action = Action_Texas("call",440)
         isTerminal, scores, infos = env.forward(action)
-        action = Action("allin",40)
+        action = Action_Texas("allin",40)
         isTerminal, scores, infos = env.forward(action)
         # dealer_id = 0
         # chips:0,     0,    500

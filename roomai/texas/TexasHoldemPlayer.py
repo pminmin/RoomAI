@@ -9,7 +9,7 @@ class TexasHoldemRandomPlayer(roomai.abstract.AbstractPlayer):
         self.available_actions = None
            
     def receive_info(self, info):
-        self.available_actions = info.available_actions
+        self.available_actions = info.person_state.available_actions
 
     def take_action(self):
         idx  = int(random.random() * len(self.available_actions))
