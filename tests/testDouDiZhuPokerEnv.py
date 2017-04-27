@@ -30,6 +30,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
 
     def testFoward(self):
         env = DouDiZhuPokerEnv()
+        env.is_force_check = False ## an issure left over by history
         p = [0,0,0]
         env.init()
 
@@ -90,8 +91,10 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         self.assertEqual(env.public_state.turn,0)
         action = Action([0],[])
         self.assertFalse(env.isActionValid(action))
+        env.public_state.is_response = False
         action = Action([0],[])
         isTerminal, scores, infos = env.forward(action)
+        env.public_state.is_response = True
         self.assertEqual(infos[3].public_state.license_playerid,0)
         self.assertEqual(infos[3].public_state.turn,1)        
         action = Action([8,8,8,8],[9,10])
@@ -150,7 +153,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
 
         #10 turn = 0 license_id = 0
         action = Action([],[])
-        env.forward(action) 
+        env.forward(action)
         ## 11 turn == 1 license_id =0
         action = Action([ActionSpace.cheat],[])
         env.forward(action)

@@ -10,9 +10,10 @@ from roomai.doudizhu.DouDiZhuPokerUtils import *
 class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
 
     def __init__(self):
-        self.public_state  = PublicState()
-        self.private_state = PrivateState()
-        self.logger        = roomai.get_logger()
+        self.is_force_check = True ## an issure left over by history
+        self.public_state   = PublicState()
+        self.private_state  = PrivateState()
+        self.logger         = roomai.get_logger()
 
     def generate_initial_cards(self):
 
@@ -97,7 +98,7 @@ class DouDiZhuPokerEnv(roomai.abstract.AbstractEnv):
     #@Overide
     def forward(self, action):
 
-        if not self.isActionValid(action):
+        if self.is_force_check == True and not self.isActionValid(action):
             self.logger.critical("action=%s is invalid"%(action.toString()))
             raise ValueError("action=%s is invalid"%(action.toString()))
 

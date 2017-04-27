@@ -115,4 +115,3 @@ class TexasUtilsTester(unittest.TestCase):
         p3 = Utils.cards2pattern(h3,k)
         print Utils.compare_patterns(p1,p2)
         print Utils.compare_patterns(p2,p3)
-        0/0

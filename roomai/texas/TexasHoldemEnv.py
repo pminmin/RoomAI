@@ -293,7 +293,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         if pu.num_players == pu.num_quit + 1:
             return True
 
-        #need showdown
+        # below need showdown
+
         if pu.num_players ==  pu.num_quit + pu.num_allin + 1 and pu.num_expected_to_action == 0:
             return True
 
@@ -315,6 +316,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             for i in xrange(pu.num_players):
                 if pu.is_quit[i] == False:
                     scores[i] = sum(pu.bets)
+                    break
 
         ## compute score after showdown
         else:
@@ -330,7 +332,6 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             previous = None
             tmp_playerid_pattern_bets      = []
             for i in xrange(len(playerid_pattern_bets)-1,-1,-1):
-
                 if previous == None:
                     tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
