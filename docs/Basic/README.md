@@ -1,5 +1,7 @@
 
-##  Basic Concepts
+##  Detailed Guidance
+
+Before read detailed guidance, please read [quick guidance](https://github.com/roomai/RoomAI##1-quick-guidance)
 
 There are some basic concepts in RoomAI: Player, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot player receive information from env, the current player takes a action, and the env forwards with this action.
 
