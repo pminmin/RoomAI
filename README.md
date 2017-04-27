@@ -50,7 +50,7 @@ if __name__ == "__main__":
         print scores
 </pre>
 
-## 2  [Basic Concepts](https://github.com/roomai/RoomAI/tree/master/docs/Basic)
+## 2  [Basic Concepts](https://github.com/roomai/RoomAI/blob/master/docs/Basic/README.md)
 
 ## 3. KuhnPoker
 
