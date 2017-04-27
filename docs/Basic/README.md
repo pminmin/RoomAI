@@ -33,17 +33,18 @@ def round(env, players):
 We define Player, Env, and Info as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
 
 
-#### 1.Info
+#### 1. Info
 
-The info is the information sent by env to player, which is consisted of public states、private states and person state.
+The info is the information sent by env to player, which is consisted of private_state、 public_state and person_state. 
 
 <pre>
-class AbstractPublicState:
-    # players[turn] will take a action
-    turn              = None 
 
 class AbstractPrivateState:
     pass
+    
+class AbstractPublicState:
+    # players[turn] will take a action
+    turn              = None 
 
 class AbstractPersonState:
     id                = None 
@@ -51,27 +52,25 @@ class AbstractPersonState:
 
 class AbstractInfo:
     def __init__(self, public_state, private_state, person_state):
-        self.public_state       = None
         self.private_state      = None
+        self.public_state       = None
         self.person_state       = None
 </pre>
 
-If there are n players, env.forward will return n+1 infos. The i-th info is w.r.t the i-th player except the last info.
-The last info is designed for recording private_state. 
+##### 1.1 If there are n players, env.forward will return n+1 infos. The i-th info is w.r.t the i-th player except the last info.
+The last info is designed for recording private_state, and only the last info contains non-None private_state. Hence, no player will get private_state
 
-##### All infos contain the public_state. 
+##### 1.2 All infos contain the public_state. 
 
-##### Only the last info contains the private_state.
+##### 1.3 All infos contain the person_state. For different players, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions.
 
-##### All infos contain the person_state. For different players, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions.
-
-The info is the most important concept for AI-bot developers, and is very different for different games. We list all info structures for the games supported by roomai. 
+The info is the most important concept for AI-bot developers, and is very different for different games. We list all info structures for the games supported by roomai:
 
 ##### [KuhnPoker]()
 ##### [DouDiZhu]()
 ##### [Texas]()
 
-#### 2.Player
+#### 2. Player
 
 A player is an AI-bot.
 
@@ -88,7 +87,7 @@ class AbstractPlayer:
 </pre>
 
 
-#### 3.Env
+#### 3. Env
 
 The env is a environment of a game.
 <pre>
@@ -107,20 +106,7 @@ class AbstractEnv:
 
 The round function holds a competition for the players, and computes the scores.
 
-#### 4.Action
+#### 4. Action
 
 A player takes a action, and env forwards with this action.
-
-
-
-
-
-
-
-
-
-
-
-
-
 
