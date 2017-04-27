@@ -58,6 +58,8 @@ class AbstractInfo:
         self.person_state       = None
 </pre>
 
+Three propertes:
+
 ##### 1.1 If there are n players, env.forward will return n+1 infos. The i-th info is w.r.t the i-th player except the last info. The last info is designed for recording private_state, and only the last info contains non-None private_state. Hence, no player will get private_state
 
 ##### 1.2 All infos contain the public_state. 
@@ -74,7 +76,7 @@ class AbstractAction:
         raise NotImplementedError("The toString function hasn't been implemented")
 </pre>
 
-The toString function generate its key.
+The toString function generate the action's key.
 
 #### 3. Player
 
