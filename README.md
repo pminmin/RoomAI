@@ -52,13 +52,13 @@ if __name__ == "__main__":
 
 ## 2. [Detailed Guidance](https://github.com/roomai/RoomAI/tree/master/docs/Basic)
 
-## 3. Info Structure
+## 3. Info and Action Structure
 
-### 3.1 [KuhnPoker Info Structure]
+### 3.1 [Info and Action Structure for KuhnPoker ]
 
-### 3.2 [DouDiZhuPoker Info Structure]
+### 3.2 [Info and Action Structure for DouDiZhuPoker]
 
-### 3.3 [Texas Info Structure]
+### 3.3 [Info and Action Structure for Texas]
 
 # License
 
