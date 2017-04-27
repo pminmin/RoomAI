@@ -30,7 +30,7 @@ def round(env, players):
 
 ![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png)
 
-We define Player, Env, and Info as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
+We define these basic concepts as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
 
 
 #### 1. Info
