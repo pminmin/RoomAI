@@ -19,10 +19,10 @@ env.init()
 env.public_state.is_response = False
 env.public_state.phase       = PhaseSpace.play
 
-actions = Utils.candidate_actions(hand_cards, env.public_state)
-line, action = Utils.lookup_action([ActionSpace.cheat],[])
+actions = Utils_DouDiZhu.candidate_actions(hand_cards, env.public_state)
+line, action = Utils_DouDiZhu.lookup_action([ActionSpace_DouDiZhu.cheat], [])
 actions[line] = action
-line, action = Utils.lookup_action([ActionSpace.bid],[])
+line, action = Utils_DouDiZhu.lookup_action([ActionSpace_DouDiZhu.bid], [])
 actions[line] = action
 
 res = dict()

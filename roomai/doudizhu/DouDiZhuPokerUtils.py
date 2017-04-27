@@ -7,7 +7,7 @@ import copy
 import itertools
 
 
-class Utils:
+class Utils_DouDiZhu:
     gen_allactions = False
 
     @classmethod
@@ -18,7 +18,7 @@ class Utils:
         if action.pattern[0] == "i_invalid":
             return False
 
-        if Utils.is_action_from_handcards(hand_cards, action) == False:
+        if Utils_DouDiZhu.is_action_from_handcards(hand_cards, action) == False:
             return False
 
         turn = public_state.turn
@@ -83,7 +83,7 @@ class Utils:
         action.isMasterStraight = 0
         num = 0
         for v in action.masterPoints2Count:
-            if (v + 1) in action.masterPoints2Count and (v + 1) < ActionSpace.two:
+            if (v + 1) in action.masterPoints2Count and (v + 1) < ActionSpace_DouDiZhu.two:
                 num += 1
         if num == len(action.masterPoints2Count) - 1 and len(action.masterPoints2Count) != 1:
             action.isMasterStraight = 1
@@ -104,21 +104,21 @@ class Utils:
         # is cheat?
         if len(action.masterCards) == 1 \
                 and len(action.slaveCards) == 0 \
-                and action.masterCards[0] == ActionSpace.cheat:
+                and action.masterCards[0] == ActionSpace_DouDiZhu.cheat:
             action.pattern = AllPatterns["i_cheat"]
 
         # is roblord
         elif len(action.masterCards) == 1 \
                 and len(action.slaveCards) == 0 \
-                and action.masterCards[0] == ActionSpace.bid:
+                and action.masterCards[0] == ActionSpace_DouDiZhu.bid:
             action.pattern = AllPatterns["i_bid"]
 
         # is twoKings
         elif len(action.masterCards) == 2 \
                 and len(action.masterPoints2Count) == 2 \
                 and len(action.slaveCards) == 0 \
-                and action.masterCards[0] in [ActionSpace.r, ActionSpace.R] \
-                and action.masterCards[1] in [ActionSpace.r, ActionSpace.R]:
+                and action.masterCards[0] in [ActionSpace_DouDiZhu.r, ActionSpace_DouDiZhu.R] \
+                and action.masterCards[1] in [ActionSpace_DouDiZhu.r, ActionSpace_DouDiZhu.R]:
             action.pattern = AllPatterns["x_rocket"]
 
         else:
@@ -247,12 +247,12 @@ class Utils:
         key_int = (masterCards + slaveCards)
         key_str = []
         for i in key_int:
-            key_str.append(ActionSpace.key_to_str[i])
+            key_str.append(ActionSpace_DouDiZhu.key_to_str[i])
         key_str.sort()
         key = "".join(key_str)
 
         if cls.gen_allactions == True:
-            return key, Action(masterCards, slaveCards)
+            return key, Action_DouDiZhu(masterCards, slaveCards)
 
         if key in AllActions:
             return key, AllActions[key]
@@ -306,21 +306,21 @@ class Utils:
                 continue
 
             if "i_cheat" == pattern[0]:
-                key, action = cls.lookup_action([ActionSpace.cheat], [])
+                key, action = cls.lookup_action([ActionSpace_DouDiZhu.cheat], [])
                 if cls.is_action_valid(hand_cards, public_state, action) == True:
                     actions[key] = action
                 continue
 
             if "i_bid" == pattern[0]:
-                key, action = cls.lookup_action([ActionSpace.bid], [])
+                key, action = cls.lookup_action([ActionSpace_DouDiZhu.bid], [])
                 if cls.is_action_valid(hand_cards, public_state, action) == True:
                     actions[key] = action
                 continue
 
             if pattern[0] == "x_rocket":
-                if hand_cards.cards[ActionSpace.r] == 1 and \
-                                hand_cards.cards[ActionSpace.R] == 1:
-                    key, action = cls.lookup_action([ActionSpace.r, ActionSpace.R], [])
+                if hand_cards.cards[ActionSpace_DouDiZhu.r] == 1 and \
+                                hand_cards.cards[ActionSpace_DouDiZhu.R] == 1:
+                    key, action = cls.lookup_action([ActionSpace_DouDiZhu.r, ActionSpace_DouDiZhu.R], [])
                     if cls.is_action_valid(hand_cards, public_state, action) == True:
                         actions[key] = action
                 continue
@@ -335,7 +335,7 @@ class Utils:
 
             ### action with cards
             mCardss = []
-            mCardss = Utils.extractMasterCards(hand_cards, numMasterPoint, MasterCount, pattern)
+            mCardss = Utils_DouDiZhu.extractMasterCards(hand_cards, numMasterPoint, MasterCount, pattern)
 
             for mCards in mCardss:
                 if numSlave == 0:
@@ -344,7 +344,7 @@ class Utils:
                         actions[key] = action
                     continue
 
-                sCardss = Utils.extractSlaveCards(hand_cards, numSlave, mCards, pattern)
+                sCardss = Utils_DouDiZhu.extractSlaveCards(hand_cards, numSlave, mCards, pattern)
                 for sCards in sCardss:
                     key, action = cls.lookup_action(mCards, sCards)
                     if cls.is_action_valid(hand_cards, public_state, action) == True:
@@ -362,8 +362,7 @@ class PhaseSpace:
     bid  = 0
     play = 1
 
-
-class ActionSpace:
+class ActionSpace_DouDiZhu:
     str_to_key  = {'3':0, '4':1, '5':2, '6':3, '7':4, '8':5, '9':6, 'T':7, 'J':8, 'Q':9, 'K':10, 'A':11, '2':12, 'r':13, 'R':14, 'x':15, 'b':16}
     # x means check, b means bid
     key_to_str  = {0: '3', 1:'4', 2:'5', 3:'6', 4:'7', 5:'8', 6:'9', 7:'T', 8:'J', 9:'Q', 10:'K', 11:'A', 12:'2', 13:'r', 14:'R', 15:'x', 16:'b'}
@@ -389,22 +388,22 @@ class ActionSpace:
 
 class HandCards:
     def __init__(self, cardstr):
-        self.cards      = [0 for i in xrange(ActionSpace.total_normal_cards)]
+        self.cards      = [0 for i in xrange(ActionSpace_DouDiZhu.total_normal_cards)]
         for c in cardstr:
-            idx = ActionSpace.str_to_key[c]
+            idx = ActionSpace_DouDiZhu.str_to_key[c]
             self.cards[idx] += 1
-            if idx >= ActionSpace.total_normal_cards:
+            if idx >= ActionSpace_DouDiZhu.total_normal_cards:
                 raise Exception("%s is invalid for a handcard"%(cardstr))
         
         self.num_cards    = sum(self.cards)
-        self.count2num    = [0 for i in xrange(ActionSpace.total_normal_cards)]
+        self.count2num    = [0 for i in xrange(ActionSpace_DouDiZhu.total_normal_cards)]
         for count in self.cards:
             self.count2num[count] += 1
 
         strs = []
         for h in xrange(len(self.cards)):
             for count in xrange(self.cards[h]):
-                strs.append(ActionSpace.key_to_str[h])
+                strs.append(ActionSpace_DouDiZhu.key_to_str[h])
         strs.sort()
         self.String = "".join(strs)
 
@@ -415,7 +414,7 @@ class HandCards:
             strs = []
             for h in xrange(len(self.cards)):
                 for count in xrange(self.cards[h]):
-                    strs.append(ActionSpace.key_to_str[h])
+                    strs.append(ActionSpace_DouDiZhu.key_to_str[h])
             strs.sort()
             return "".join(strs)
 
@@ -455,8 +454,10 @@ class HandCards:
         self.remove_cards(HandCards(str))
         self.String = self.toString(is_recomputing=True)
 
-
-class Action:
+'''
+###################################################### About Action ##################################################
+'''
+class Action_DouDiZhu(roomai.abstract.AbstractAction):
     def __init__(self, masterCards, slaveCards):
         self.masterCards        = copy.deepcopy(masterCards)
         self.slaveCards         = copy.deepcopy(slaveCards)
@@ -467,21 +468,19 @@ class Action:
         self.maxMasterPoint     = None
         self.minMasterPoint     = None
         self.pattern            = None
-        Utils.action2pattern(self)
+        Utils_DouDiZhu.action2pattern(self)
 
         key_int = (self.masterCards + self.slaveCards)
         key_str = []
         for key in key_int:
-            key_str.append(ActionSpace.key_to_str[key])
+            key_str.append(ActionSpace_DouDiZhu.key_to_str[key])
         key_str.sort()
         self.String = "".join(key_str)
 
-
+    #@override
     def toString(self):
         return self.String
 
-
-############## read data ################
 AllPatterns = dict()
 AllActions = dict()
 import zipfile
@@ -524,17 +523,27 @@ for line in action_file:
     for c in ss:
         if c != "":
             s.append(int(c))
-    action = Action(m, s)
+    action = Action_DouDiZhu(m, s)
     AllActions[action.toString()] = action
 action_file.close()
 
 
-class PrivateState(roomai.abstract.AbstractPrivateState):
+'''
+###################################################### About Info ##################################################
+'''
+
+class PersonState_DouDiZhu(roomai.abstract.AbsractPersonState):
+    id                = None
+    cards             = None
+    add_cards         = None
+    available_actions = None
+
+class PrivateState_DouDiZhu(roomai.abstract.AbstractPrivateState):
     def __init__(self):
         self.hand_cards     = [[],[],[]]
         self.keep_cards     = []
 
-class PublicState(roomai.abstract.AbstractPublicState):
+class PublicState_DouDiZhu(roomai.abstract.AbstractPublicState):
     def __init__(self):
         self.landlord_candidate_id  = -1
         self.landlord_id            = -1
@@ -551,15 +560,9 @@ class PublicState(roomai.abstract.AbstractPublicState):
         self.previous_action        = None
 
 
-class Info(roomai.abstract.AbstractInfo):
+class Info_DouDiZhu(roomai.abstract.AbstractInfo):
     def __init__(self):
-        ### init
-        self.init_id            = None
-        self.init_cards         = None
-        self.init_addcards      = None
-
         self.public_state       = None
-        #In the info sent to players, the private info always be None.
         self.private_state      = None
-        self.available_actions  = None
+        self.person_state       = None
 

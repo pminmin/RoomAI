@@ -9,9 +9,13 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
     #@override
     def init(self):
+        self.available_action = dict()
+        self.available_action[Action_Kuhn(ActionSpace_Kuhn.check).toString()] = Action_Kuhn(ActionSpace_Kuhn.check)
+        self.available_action[Action_Kuhn(ActionSpace_Kuhn.bet).toString()]   = Action_Kuhn(ActionSpace_Kuhn.bet)
 
-        self.private_state = PrivateState()
-        self.public_state  = PublicState()
+        self.private_state = PrivateState_Kuhn()
+        self.public_state  = PublicState_Kuhn()
+        self.person_states = [PersonState_Kuhn() for i in xrange(2)]
 
         card0 = math.floor(random.random() * 3)
         card1 = math.floor(random.random() * 3)
@@ -23,22 +27,22 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.first         = self.public_state.turn
         self.public_state.epoch         = 0
         self.public_state.action_list   = []
-        
+        self.person_states[0].id = 0
+        self.person_states[0].card      = card0
+        self.person_states[1].id        = 1
+        self.person_states[1].card      = card1
+
         infos = self.gen_infos(2)
-        infos[0].player_id = 0
-        infos[0].card      = card0
-        infos[1].player_id = 1
-        infos[1].card      = card1
         
         return False, [], infos 
 
     #@override
     def forward(self, action):
-        self.public_state.epoch += 1
-        self.public_state.turn   = (self.public_state.turn+1)%2
+        self.person_states[self.public_state.turn].available_actions = None
+        self.public_state.epoch                                     += 1
+        self.public_state.turn                                       = (self.public_state.turn+1)%2
         self.public_state.action_list.append(action)
         infos = self.gen_infos(2)
-
 
         if self.public_state.epoch == 1:
             return False, [], infos
@@ -76,13 +80,15 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         return scores
 
     def gen_infos(self,num):
-        infos = [Info(), Info(), Info()]
+        infos = [Info_Kuhn(), Info_Kuhn(), Info_Kuhn()]
+        for i in xrange(num):
+            infos[i].person_state = copy.deepcopy(self.person_states[i])
         for i in xrange(num+1):
             infos[i].public_state = copy.deepcopy(self.public_state)
         infos[num].private_state = copy.deepcopy(self.private_state)
 
         turn = self.public_state.turn
-        infos[turn].available_actions = [ActionSpace.cheat, ActionSpace.bet]
+        infos[turn].person_state.available_actions = self.available_action
 
         return infos
 
@@ -99,22 +105,22 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         scores = [0, 0];
         actions = self.public_state.action_list
         
-        if actions[0] == ActionSpace.cheat and \
-           actions[1] == ActionSpace.bet:
+        if actions[0] == ActionSpace_Kuhn.check and \
+           actions[1] == ActionSpace_Kuhn.bet:
             return [-1,-1]
         
         if actions[0] == actions[1] and \
-           actions[0] == ActionSpace.cheat:
+           actions[0] == ActionSpace_Kuhn.check:
             scores[win] = 1;
             return scores;
 
-        if actions[0] == ActionSpace.bet and \
-           actions[1] == ActionSpace.cheat:
+        if actions[0] == ActionSpace_Kuhn.bet and \
+           actions[1] == ActionSpace_Kuhn.check:
             scores[first] = 1;
             return scores;
 
         if actions[0] == actions[1] and \
-           actions[0] == ActionSpace.bet:
+           actions[0] == ActionSpace_Kuhn.bet:
             scores[win] = 2
             return scores;
 
@@ -123,7 +129,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         first   = self.public_state.first 
         win     = self.WhoHasHigherCard()
         scores  = [0, 0]
-        if self.public_state.action_list[2] == ActionSpace.cheat:
+        if self.public_state.action_list[2] == ActionSpace_Kuhn.check:
             scores[1 - first] = 1;
         else:
             scores[win] = 2;

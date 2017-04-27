@@ -5,7 +5,7 @@ RoomAI is a toolkit for developing and comparing imperfect information game bots
 
 # Contents
 
-## 1. Get Started
+## 1. Quick Guidance
 
 
 ### 1.1 Installation
@@ -44,19 +44,21 @@ class KuhnPokerExamplePlayer(roomai.abstract.AbstractPlayer):
 
 if __name__ == "__main__":
         players = [KuhnPokerExamplePlayer() for i in xrange(2)]
-        env = KuhnPokerEnv()
-        scores = KuhnPokerEnv.round(env, players)
+        env     = KuhnPokerEnv()
+        scores  = KuhnPokerEnv.round(env, players)
 
         print scores
 </pre>
 
 ## 2  [Basic Concepts](https://github.com/roomai/RoomAI/blob/master/docs/Basic/README.md)
 
-## 3. KuhnPoker
+## 3. Info and Action Structure
 
-## 4. DouDiZhuPoker
+### 3.1 [Info and Action Structure for KuhnPoker ]
 
-## 5. Texas
+### 3.2 [Info and Action Structure for DouDiZhuPoker]
+
+### 3.3 [Info and Action Structure for Texas]
 
 # License
 

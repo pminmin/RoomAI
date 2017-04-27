@@ -9,25 +9,25 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
     
     def testAction2Patterns(self):
         
-        a = Action([1,1,1],[2])
+        a = Action_DouDiZhu([1, 1, 1], [2])
         self.assertEqual(a.pattern[0], "p_3_1_0_1_0")
 
-        a = Action([1,1,1,2,3,3],[])
+        a = Action_DouDiZhu([1, 1, 1, 2, 3, 3], [])
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = Action([1,1,1,1],[2])
+        a = Action_DouDiZhu([1, 1, 1, 1], [2])
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = Action([1,1,1,1,1],[2])
+        a = Action_DouDiZhu([1, 1, 1, 1, 1], [2])
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = Action([ActionSpace.cheat],[2])
+        a = Action_DouDiZhu([ActionSpace_DouDiZhu.cheat], [2])
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = Action([ActionSpace.cheat],[])
+        a = Action_DouDiZhu([ActionSpace_DouDiZhu.cheat], [])
         self.assertEqual(a.pattern[0], "i_cheat")
         
-        a = Action([ActionSpace.R, ActionSpace.r],[])
+        a = Action_DouDiZhu([ActionSpace_DouDiZhu.R, ActionSpace_DouDiZhu.r], [])
         self.assertEqual(a.pattern[0], "x_rocket")
         
 
@@ -40,7 +40,7 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
                 self.assertEqual("p_%d_%d_%d_%d_%d"%(p[1],p[2],p[3],p[4],p[5]), p[0])
 
     def testRemoveCards(self):
-        cards = [ActionSpace.key_to_str[1],ActionSpace.key_to_str[2],ActionSpace.key_to_str[3]]
+        cards = [ActionSpace_DouDiZhu.key_to_str[1], ActionSpace_DouDiZhu.key_to_str[2], ActionSpace_DouDiZhu.key_to_str[3]]
         hand_cards = HandCards(cards)
         print hand_cards.cards
 
@@ -64,18 +64,18 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         cards = []
         for i in xrange(13):
             for j in xrange(4):
-                cards.append(ActionSpace.key_to_str[i])
-        cards.append(ActionSpace.key_to_str[13])
-        cards.append(ActionSpace.key_to_str[14])
+                cards.append(ActionSpace_DouDiZhu.key_to_str[i])
+        cards.append(ActionSpace_DouDiZhu.key_to_str[13])
+        cards.append(ActionSpace_DouDiZhu.key_to_str[14])
 
         hand_cards = HandCards(cards)
 
         ## extract straight
-        ss = Utils.extractMasterCards(hand_cards, 5, 3, Action([0,0,0,1,1,1,2,2,2],[]).pattern)
+        ss = Utils_DouDiZhu.extractMasterCards(hand_cards, 5, 3, Action_DouDiZhu([0, 0, 0, 1, 1, 1, 2, 2, 2], []).pattern)
 
 
         ## extract slave
-        ss = Utils.extractSlaveCards(hand_cards, 5, [1,1,1,1], Action([1,1,1,1],[]).pattern)
+        ss = Utils_DouDiZhu.extractSlaveCards(hand_cards, 5, [1, 1, 1, 1], Action_DouDiZhu([1, 1, 1, 1], []).pattern)
         for s in ss:
             for i in s:
                 self.assertTrue(i!=1)
@@ -90,15 +90,15 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         #hand_cards1 = HandCards([1,2,3,4,5,6,6,13,14])
         tmp = [1,1,1,2,2,3,3,4,4,5,6,8,8,8,8,9,9,10,10,10,10,13,14]
         for i in xrange(len(tmp)):
-            tmp[i] = ActionSpace.key_to_str[tmp[i]]
+            tmp[i] = ActionSpace_DouDiZhu.key_to_str[tmp[i]]
         hand_cards1 = HandCards(tmp)
         #self.assertEqual(hand_cards1.num_cards,32)
 
          
-        actions = Utils.candidate_actions(hand_cards1, env.public_state)
+        actions = Utils_DouDiZhu.candidate_actions(hand_cards1, env.public_state)
         for key in actions:
             a = actions[key]
-            flag = Utils.is_action_from_handcards(hand_cards1,a)
+            flag = Utils_DouDiZhu.is_action_from_handcards(hand_cards1, a)
             self.assertTrue(flag)     
             self.assertTrue(a.pattern[0] != "i_invalid") 
         
@@ -113,12 +113,12 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         hand_cards2 = []
         for i in xrange(13):
             for j in xrange(4):
-                hand_cards2.append(ActionSpace.key_to_str[i])
-        hand_cards2.append(ActionSpace.key_to_str[13])
-        hand_cards2.append(ActionSpace.key_to_str[14])
+                hand_cards2.append(ActionSpace_DouDiZhu.key_to_str[i])
+        hand_cards2.append(ActionSpace_DouDiZhu.key_to_str[13])
+        hand_cards2.append(ActionSpace_DouDiZhu.key_to_str[14])
         env.public_state.is_response = True
-        env.public_state.license_action = Action([1,1],[])
-        actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
+        env.public_state.license_action = Action_DouDiZhu([1, 1], [])
+        actions = Utils_DouDiZhu.candidate_actions(HandCards(hand_cards2), env.public_state)
         for key in actions:
             a = actions[key]
             print key, a.masterCards, a.slaveCards
@@ -126,14 +126,14 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
 
         
         env.public_state.is_response = True
-        env.public_state.license_action = Action([1,1,1,1],[0,0])
-        actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
+        env.public_state.license_action = Action_DouDiZhu([1, 1, 1, 1], [0, 0])
+        actions = Utils_DouDiZhu.candidate_actions(HandCards(hand_cards2), env.public_state)
         for key in actions:
             a = actions[key]
 
         env.public_state.is_response = False
-        env.public_state.license_action = Action([1,1],[])
-        actions = Utils.candidate_actions(HandCards(hand_cards2), env.public_state)
+        env.public_state.license_action = Action_DouDiZhu([1, 1], [])
+        actions = Utils_DouDiZhu.candidate_actions(HandCards(hand_cards2), env.public_state)
         for key in actions:
             a = actions[key]
 
