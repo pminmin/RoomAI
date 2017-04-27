@@ -44,19 +44,21 @@ class KuhnPokerExamplePlayer(roomai.abstract.AbstractPlayer):
 
 if __name__ == "__main__":
         players = [KuhnPokerExamplePlayer() for i in xrange(2)]
-        env = KuhnPokerEnv()
-        scores = KuhnPokerEnv.round(env, players)
+        env     = KuhnPokerEnv()
+        scores  = KuhnPokerEnv.round(env, players)
 
         print scores
 </pre>
 
-## 2  [Basic Concepts](https://github.com/roomai/RoomAI/tree/master/docs/Basic)
+## 2. [Basic Concepts](https://github.com/roomai/RoomAI/tree/master/docs/Basic)
 
-## 3. KuhnPoker
+## 3. Info Structure
 
-## 4. DouDiZhuPoker
+### 3.1 [KuhnPoker Info Structure]
 
-## 5. Texas
+### 3.2 [DouDiZhuPoker Info Structure]
+
+### 3.3 [Texas Info Structure]
 
 # License
 
