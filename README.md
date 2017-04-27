@@ -4,7 +4,7 @@ RoomAI is a toolkit for developing and comparing imperfect information game bots
 
 # Contents
 
-## 1. Quick Guidance
+## 1 Quick Guidance
 
 
 ### 1.1 Installation
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
 ## 2  [Detailed Guidance](https://github.com/roomai/RoomAI/blob/master/docs/Basic/README.md)
 
-## 3. Info and Action Structure
+## 3  Info and Action Structure
 
 ### 3.1 [Info and Action Structure for KuhnPoker ]
 
