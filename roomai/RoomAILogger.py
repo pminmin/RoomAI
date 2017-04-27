@@ -15,13 +15,10 @@ logger.addHandler(handler);
 
 
 def set_level(level):
-    global logger;
-    global handler;
     logger.setLevel(level)
     handler.setLevel(level)
 
 def get_logger():
-    global logger;
     return logger
 
 

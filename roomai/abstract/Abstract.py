@@ -1,38 +1,55 @@
 #!/bin/python
 #coding=utf8
 
-import copy
-
-### abstract data struct
 class AbstractPublicState:
     pass
 
 class AbstractPrivateState:
     pass
 
+class AbsractPersonState:
+    id                = None
+    available_actions = None
+
 class AbstractInfo:
-    def __init__(self, public_state, private_state):
-
-        ## public state information, which is available for all players
+    def __init__(self):
         self.public_state       = None
-
-        ## private state information, which is unavailable for all players
         self.private_state      = None
-        
-        ## all available_actions for the current turn player
-        self.available_actions  = None
+        self.person_state       = None
+'''
+The info is the information sent by env to player, which is 
+consisted of private_state、 public_state and person_state.
 
-    def get_public_state(self):
-        return self.public_state
+Three properties of info
 
-    def get_private_state(self):
-        return self.private_state
+1.1 If there are n players, env.forward will return n+1 infos. 
+The i-th info is w.r.t the i-th player except the last info. 
+The last info is designed for recording private_state, and 
+only the last info contains non-None private_state. Hence, no 
+player will get private_state
 
-    def get_available_actions(self):
-        return self.available_actions
+1.2 All infos contain the public_state.
 
+1.3 All infos contain the person_state. For different players,
+the person state is different. Only the person_state in the 
+info w.r.t the player who will take a action, contains non-None
+available_actions dict. non-None available_actions dict is with (action_key, action)
+'''
 
-### abstract 
+class AbstractAction:
+    def toString(self):
+        '''
+        :return:
+            key: action's key 
+        :raises:
+            NotImplementedError: An error occurred when we doesn't implement this function
+        '''
+        raise NotImplementedError("The receiveInfo function hasn't been implemented")
+
+'''
+The toString function generate its key.
+'''
+
 class AbstractPlayer:
 
     def receive_info(self, info):

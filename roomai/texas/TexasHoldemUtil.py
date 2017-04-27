@@ -63,7 +63,7 @@ AllCardsPattern["2_1_1_1"] = \
 ["2_1_1_1",             False, True,  False, [2,1,1,1], 92,  []]
 
 
-class Action:
+class Action_Texas:
     def __init__(self, option1, price):
         self.option = option1
         self.price  = price
@@ -71,18 +71,22 @@ class Action:
     def toString(self):
         return self.String
 
-class PublicState(roomai.abstract.AbstractPublicState):
+class PublicState_Texas(roomai.abstract.AbstractPublicState):
     def __init__(self):
         self.stage              = None
         self.num_players        = None
         self.dealer_id          = None
         self.public_cards       = None
-        self.is_quit            = None
-        self.num_quit           = None
-        self.is_allin           = None
-        self.num_allin          = None
         self.num_players        = None
         self.big_blind_bet      = None
+
+        #state of players
+        self.is_quit                        = None
+        self.num_quit                       = None
+        self.is_allin                       = None
+        self.num_allin                      = None
+        self.is_expected_to_action          = None
+        self.num_expected_to_action         = None
 
         # who is expected to take a action
         self.turn               = None
@@ -98,35 +102,28 @@ class PublicState(roomai.abstract.AbstractPublicState):
         #the raise acount
         self.raise_account      = None
 
-        # it is time to enter into the next stage or showdown,
-        # when next_player == flag_for_nextstage
-        self.flag_nextstage = None
-
         self.previous_id        = None
         self.previous_action    = None        
 
-class PrivateState(roomai.abstract.AbstractPrivateState):
+class PrivateState_Texas(roomai.abstract.AbstractPrivateState):
     def __init__(self):
         self.keep_cards = None
         self.hand_cards = None
+class PersonState_Texas(roomai.abstract.AbsractPersonState):
+    id                =    None
+    hand_cards        =    None
+    available_actions =    None
 
-class Info(roomai.abstract.AbstractInfo):
+class Info_Texas(roomai.abstract.AbstractInfo):
     def __init__(self):
-        self.init_player_id          = None
-        self.init_hand_cards         = None
-        #player_id and hand_cards will be sent to players at the begining of game
-
         self.public_state            = None
         self.private_state           = None
-        self.available_actions       = None
+        self.person_state            = None
 
-class Utils:
+class Utils_Texas:
     @classmethod
     def compare_cards(cls, c1, c2):
-            if c1.point != c2.point:
-                return c1.point - c2.point
-            else:
-                return c1.suit - c2.suit
+        return c1.point - c2.point
 
     @classmethod
     def cards2pattern(cls, hand_cards, remaining_cards):
@@ -137,7 +134,7 @@ class Utils:
             else:
                 point2cards[c.point] = [c]
         for p in point2cards:
-            point2cards[p].sort(Utils.compare_cards)
+            point2cards[p].sort(Utils_Texas.compare_cards)
 
         suit2cards = dict()
         for c in hand_cards + remaining_cards:
@@ -146,7 +143,7 @@ class Utils:
             else:
                 suit2cards[c.suit] = [c]
         for s in suit2cards:
-            suit2cards[s].sort(Utils.compare_cards)
+            suit2cards[s].sort(Utils_Texas.compare_cards)
 
         num2point = [[], [], [], [], []]
         for p in point2cards:
@@ -282,8 +279,8 @@ class Utils:
 
     @classmethod
     def compare_handcards(cls,hand_card0, hand_card1, keep_cards):
-        pattern0 = Utils.cards2pattern(hand_card0, keep_cards)
-        pattern1 = Utils.cards2pattern(hand_card1, keep_cards)
+        pattern0 = Utils_Texas.cards2pattern(hand_card0, keep_cards)
+        pattern1 = Utils_Texas.cards2pattern(hand_card1, keep_cards)
         
         diff = cls.compare_patterns(pattern0, pattern1)
         return diff
@@ -305,19 +302,19 @@ class Utils:
         key_actions = dict()
 
         ## for fold
-        action = Action(OptionSpace.Fold,0)
+        action = Action_Texas(OptionSpace.Fold, 0)
         if cls.is_action_valid(public_state, action):
             key_actions[action.toString()] = action
 
         ## for check
         if pu.bets[turn] == pu.max_bet:
-            action = Action(OptionSpace.Check, 0)
+            action = Action_Texas(OptionSpace.Check, 0)
             if cls.is_action_valid(public_state, action):
                 key_actions[action.toString()] = action
 
         ## for call
         if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn]:
-            action = Action(OptionSpace.Call, pu.max_bet - pu.bets[turn])
+            action = Action_Texas(OptionSpace.Call, pu.max_bet - pu.bets[turn])
             if cls.is_action_valid(public_state, action):
                 key_actions[action.toString()] = action
 
@@ -325,12 +322,12 @@ class Utils:
         if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn] + pu.raise_account:
             num = (pu.chips[turn] - (pu.max_bet - pu.bets[turn])) / pu.raise_account
             for i in xrange(1,num+1):
-                action = Action(OptionSpace.Raise, (pu.max_bet - pu.bets[turn]) + pu.raise_account * i)
+                action = Action_Texas(OptionSpace.Raise, (pu.max_bet - pu.bets[turn]) + pu.raise_account * i)
                 if cls.is_action_valid(public_state, action):
                     key_actions[action.toString()] = action
 
         ## for all in
-        action = Action(OptionSpace.AllIn, pu.chips[turn])
+        action = Action_Texas(OptionSpace.AllIn, pu.chips[turn])
         if cls.is_action_valid(public_state, action):
            key_actions[action.toString()] = action
 
@@ -338,40 +335,39 @@ class Utils:
 
     @classmethod
     def is_action_valid(cls, public_state, action):
-        ps = public_state
+        pu = public_state
 
-        if (not isinstance(public_state,PublicState)) or (not isinstance(action, Action)):
+        if (not isinstance(public_state, PublicState_Texas)) or (not isinstance(action, Action_Texas)):
             return False
 
-        if ps.is_allin[ps.turn] == True or ps.is_quit[ps.turn] == True:
+        if pu.is_allin[pu.turn] == True or pu.is_quit[pu.turn] == True:
             return False
-        if ps.chips[ps.turn] == 0:
+        if pu.chips[pu.turn] == 0:
             return False
 
         if action.option == OptionSpace.Fold:
             return True
 
         elif action.option == OptionSpace.Check:
-            if ps.bets[ps.turn] == ps.max_bets:
+            if pu.bets[pu.turn] == pu.max_bet:
                 return True
             else:
                 return False
 
         elif action.option == OptionSpace.Call:
-            if action.price == ps.max_bet - ps.bets[ps.turn]:
+            if action.price == pu.max_bet - pu.bets[pu.turn]:
                 return True
             else:
                 return False
 
         elif action.option == OptionSpace.Raise:
-            raise_account = action.price - (ps.max_bet - ps.bets[ps.turn])
+            raise_account = action.price - (pu.max_bet - pu.bets[pu.turn])
             if raise_account == 0:    return False
-            if raise_account % ps.raise_account == 0:   return True
+            if raise_account % pu.raise_account == 0:   return True
             else:   return False
-
-
         elif action.option == OptionSpace.AllIn:
-            return True
+            if action.price == pu.chips[pu.turn]: return True
+            else:return False
         else:
             raise Exception("Invalid action.option"+action.option)
 
