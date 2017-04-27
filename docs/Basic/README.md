@@ -48,7 +48,8 @@ class AbstractPublicState:
 
 class AbstractPersonState:
     id                = None 
-    available_actions = None
+    # if avilable_actions is non-None, it is a dict with (action_key, action) 
+    available_actions = None 
 
 class AbstractInfo:
     def __init__(self, public_state, private_state, person_state):
@@ -57,20 +58,25 @@ class AbstractInfo:
         self.person_state       = None
 </pre>
 
-##### 1.1 If there are n players, env.forward will return n+1 infos. The i-th info is w.r.t the i-th player except the last info.
-The last info is designed for recording private_state, and only the last info contains non-None private_state. Hence, no player will get private_state
+##### 1.1 If there are n players, env.forward will return n+1 infos. The i-th info is w.r.t the i-th player except the last info. The last info is designed for recording private_state, and only the last info contains non-None private_state. Hence, no player will get private_state
 
 ##### 1.2 All infos contain the public_state. 
 
-##### 1.3 All infos contain the person_state. For different players, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions.
+##### 1.3 All infos contain the person_state. For different players, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions dict. non-None available_actions dict is with (action_key, action)
 
-The info is the most important concept for AI-bot developers, and is very different for different games. We list all info structures for the games supported by roomai:
+#### 2. Action
 
-##### [KuhnPoker]()
-##### [DouDiZhu]()
-##### [Texas]()
+A player takes a action, and env forwards with this action.
 
-#### 2. Player
+<pre>
+class AbstractAction:
+    def toString(self):
+        raise NotImplementedError("The toString function hasn't been implemented")
+</pre>
+
+The toString function generate its key.
+
+#### 3. Player
 
 A player is an AI-bot.
 
@@ -87,7 +93,7 @@ class AbstractPlayer:
 </pre>
 
 
-#### 3. Env
+#### 4. Env
 
 The env is a environment of a game.
 <pre>
@@ -106,7 +112,10 @@ class AbstractEnv:
 
 The round function holds a competition for the players, and computes the scores.
 
-#### 4. Action
+#### 5. List of different games' info structure and action structure 
 
-A player takes a action, and env forwards with this action.
+The info and action are  important concepts for AI-bot developers, and are very different for different games. We list info and action structures for the games supported by roomai:
 
+##### [KuhnPoker]()
+##### [DouDiZhu]()
+##### [Texas]()
