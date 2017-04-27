@@ -49,7 +49,7 @@ if __name__ == "__main__":
         print scores
 </pre>
 
-## 2  [Basic Concepts](https://github.com/roomai/RoomAI/blob/master/docs/Basic/README.md)
+## 2  [Detailed Guidance](https://github.com/roomai/RoomAI/blob/master/docs/Basic/README.md)
 
 ## 3. Info and Action Structure
 
