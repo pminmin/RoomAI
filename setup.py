@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(  name        = "roomai",
-        version     = "0.1a10",
+        version     = "1.0.0",
         description = "A toolkit for developing and comparing imperfect information game bots",
         url         = "https://github.com/algorithmdog/RoomAI",
         author      = "AlgorithmDog",
