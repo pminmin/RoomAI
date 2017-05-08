@@ -54,7 +54,7 @@ The info and action are important concepts for AI-bot developers, and are very d
 
 ### 3.1 [Info and Action Structures for KuhnPoker ]
 
-### 3.2 [Info and Action Structures for DouDiZhuPoker](https://github.com/roomai/RoomAI/blob/master/docs/DouDiZhuPoker/doudizhu.md)
+
 
 ### 3.3 [Info and Action Structures for Texas]
 
