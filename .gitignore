@@ -1,0 +1,8 @@
+.idea
+*.zip
+*.pyc
+*.swp
+*.pypirc
+RoomAI.egg-info/*
+dist/*
+roomai.egg-info/*
