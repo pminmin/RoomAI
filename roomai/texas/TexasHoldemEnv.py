@@ -51,13 +51,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.public_state.num_quit              = 0
         self.public_state.is_allin              = [False for i in xrange(self.num_players)]
         self.public_state.num_allin             = 0
-        self.public_state.is_expected_to_action = [True for i in xrange(self.num_players)]
-        self.public_state.num_expected_to_action= self.public_state.num_players
+        self.public_state.is_needed_to_action = [True for i in xrange(self.num_players)]
+        self.public_state.num_needed_to_action= self.public_state.num_players
 
         self.public_state.bets                  = [0 for i in xrange(self.num_players)]
         self.public_state.chips                 = self.chips
         self.public_state.stage                 = StageSpace.firstStage
-        self.public_state.turn                  = self.next_player(big)
+        self.public_state.turn                  = (big+1)%self.public_state.num_players
         self.public_state.public_cards          = []
 
         self.public_state.previous_id           = None
@@ -142,10 +142,10 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]"%(action.option))
         pu.previous_id     = pu.turn
         pu.previous_action = action
-        pu.turn            = self.next_player(pu.turn)
+        pu.turn            = self.next_player(pu)
 
         # computing_score
-        if self.is_compute_score():
+        if TexasHoldemEnv.is_compute_score(self.public_state):
             isTerminal = True
             scores = self.compute_score()
             ## need showdown
@@ -153,7 +153,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 pu.public_cards = pr.keep_cards[0:5]
 
         # enter into the next stage
-        elif self.is_nextstage():
+        elif TexasHoldemEnv.is_nextround(self.public_state):
             add_cards = []
             if pu.stage == StageSpace.firstStage:   add_cards = pr.keep_cards[0:3]
             if pu.stage == StageSpace.secondStage:  add_cards = [pr.keep_cards[3]]
@@ -162,8 +162,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             pu.public_cards.extend(add_cards)
             pu.stage                      = pu.stage + 1
             pu.turn                       = (pu.dealer_id + 1) % pu.num_players
-            pu.is_expected_to_action      = [True for i in xrange(pu.num_players)]
-            pu.num_expected_to_action     = self.public_state.num_players
+            pu.is_needed_to_action      = [True for i in xrange(pu.num_players)]
+            pu.num_needed_to_action     = self.public_state.num_players
 
         self.person_states[self.public_state.previous_id].available_actions = None
         self.person_states[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
@@ -257,45 +257,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             infos[i].public_state = copy.deepcopy(self.public_state)
         return infos
 
-    def next_player(self,i):
-        pu = self.public_state
-        if pu.num_expected_to_action == 0:
-            return -1
 
-        p = (i+1)%pu.num_players
-        while pu.is_expected_to_action[p] == False:
-            p = (p+1)%pu.num_players
-        return p
-
-
-
-    def is_nextstage(self):
-        '''
-        :return: 
-        A boolean variable indicates whether is it time to enter the next stage
-        '''
-        pu = self.public_state
-        return pu.num_expected_to_action == 0
-
-    def is_compute_score(self):
-        '''
-        :return: 
-        A boolean variable indicates whether is it time to compute scores
-        '''
-        pu = self.public_state
-
-        if pu.num_players == pu.num_quit + 1:
-            return True
-
-        # below need showdown
-
-        if pu.num_players ==  pu.num_quit + pu.num_allin + 1 and pu.num_expected_to_action == 0:
-            return True
-
-        if pu.stage == StageSpace.fourthStage and self.is_nextstage():
-            return True
-
-        return False
 
     def compute_score(self):
         '''
@@ -371,20 +333,20 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.is_quit[pu.turn] = True
         pu.num_quit += 1
 
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
 
     def action_check(self, action):
         pu = self.public_state
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
 
     def action_call(self, action):
         pu = self.public_state
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
 
     def action_raise(self, action):
         pu = self.public_state
@@ -394,13 +356,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.bets[pu.turn]  += action.price
         pu.max_bet         = pu.bets[pu.turn]
 
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
         p = (pu.turn + 1)%pu.num_players
         while p != pu.turn:
-            if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_expected_to_action[p] == False:
-                pu.num_expected_to_action   += 1
-                pu.is_expected_to_action[p]  = True
+            if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+                pu.num_needed_to_action   += 1
+                pu.is_needed_to_action[p]  = True
             p = (p + 1) % pu.num_players
 
 
@@ -413,19 +375,59 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.bets[pu.turn]      += action.price
         pu.chips[pu.turn]      = 0
 
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
         if pu.bets[pu.turn] > pu.max_bet:
             pu.max_bet = pu.bets[pu.turn]
             p = (pu.turn + 1) % pu.num_players
             while p != pu.turn:
-                if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_expected_to_action[p] == False:
-                    pu.num_expected_to_action  += 1
-                    pu.is_expected_to_action[p] = True
+                if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+                    pu.num_needed_to_action  += 1
+                    pu.is_needed_to_action[p] = True
                 p = (p + 1) % pu.num_players
 
 
 #####################################Utils Function ##############################
+
+    @classmethod
+    def next_player(self, pu):
+        i = pu.turn
+        if pu.num_needed_to_action == 0:
+            return -1
+
+        p = (i+1)%pu.num_players
+        while pu.is_needed_to_action[p] == False:
+            p = (p+1)%pu.num_players
+        return p
+
+    @classmethod
+    def is_compute_score(self, pu):
+        '''
+        :return: 
+        A boolean variable indicates whether is it time to compute scores
+        '''
+
+        if pu.num_players == pu.num_quit + 1:
+            return True
+
+        # below need showdown
+
+        if pu.num_players ==  pu.num_quit + pu.num_allin + 1 and pu.num_needed_to_action == 0:
+            return True
+
+        if pu.stage == StageSpace.fourthStage and self.is_nextround():
+            return True
+
+        return False
+
+    @classmethod
+    def is_nextround(self, public_state):
+        '''
+        :return: 
+        A boolean variable indicates whether is it time to enter the next stage
+        '''
+        return public_state.num_needed_to_action == 0
+
     @classmethod
     def cards2pattern(cls, hand_cards, remaining_cards):
         point2cards = dict()

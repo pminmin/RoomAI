@@ -112,7 +112,7 @@ class TexasEnvTester(unittest.TestCase):
 
         action = TexasHoldemAction("raise_60")
         isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
-        print env.public_state.num_expected_to_action, env.public_state.is_expected_to_action
+        print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
         self.assertEqual(env.public_state.turn, 1)
         self.assertTrue("raise_60" not in infos[1].person_state.available_actions)
         self.assertTrue("raise_80" not in infos[1].person_state.available_actions)
@@ -131,7 +131,7 @@ class TexasEnvTester(unittest.TestCase):
 
         action = TexasHoldemAction("call_50")
         isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
-        print env.public_state.num_expected_to_action, env.public_state.is_expected_to_action
+        print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
         # dealer_id = 0
         # turn  = 2
         # stage = 1

@@ -43,8 +43,8 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.num_quit                       = None
         self.is_allin                       = None
         self.num_allin                      = None
-        self.is_expected_to_action          = None
-        self.num_expected_to_action         = None
+        self.is_needed_to_action            = None
+        self.num_needed_to_action           = None
 
         # who is expected to take a action
         self.turn               = None
