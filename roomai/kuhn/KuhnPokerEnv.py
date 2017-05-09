@@ -34,7 +34,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
         infos = self.gen_infos(2)
         
-        return False, [], infos 
+        return False, [], infos, self.public_stete, self.person_states, self.private_state
 
     #@override
     def forward(self, action):
@@ -50,13 +50,13 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         elif self.public_state.epoch == 2:
             scores = self.evaluteTwo()
             if scores[0] != -1:
-                return True, scores, infos
+                return True, scores, infos,self.public_stete, self.person_states, self.private_state
             else:
-                return False,[],infos
+                return False, [],    infos,self.public_stete, self.person_states, self.private_state
 
         elif self.public_state.epoch == 3:
             scores = self.evaluteThree()
-            return True, scores, infos
+            return True, scores, infos,self.public_stete, self.person_states, self.private_state
 
         else:
             raise Exception("KuhnPoker has 3 turns at most")
@@ -79,13 +79,11 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
         return scores
 
-    def gen_infos(self,num):
-        infos = [Info_Kuhn(), Info_Kuhn(), Info_Kuhn()]
-        for i in xrange(num):
+    def gen_infos(self):
+        infos = [Info_Kuhn(), Info_Kuhn()]
+        for i in xrange(len(infos)):
             infos[i].person_state = copy.deepcopy(self.person_states[i])
-        for i in xrange(num+1):
             infos[i].public_state = copy.deepcopy(self.public_state)
-        infos[num].private_state = copy.deepcopy(self.private_state)
 
         turn = self.public_state.turn
         infos[turn].person_state.available_actions = self.available_action
