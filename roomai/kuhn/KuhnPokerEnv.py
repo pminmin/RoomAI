@@ -10,12 +10,12 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
     #@override
     def init(self):
         self.available_action = dict()
-        self.available_action[Action_Kuhn(ActionSpace_Kuhn.check).toString()] = Action_Kuhn(ActionSpace_Kuhn.check)
-        self.available_action[Action_Kuhn(ActionSpace_Kuhn.bet).toString()]   = Action_Kuhn(ActionSpace_Kuhn.bet)
+        self.available_action[KuhnPokerAction("check").get_key()] = KuhnPokerAction("check")
+        self.available_action[KuhnPokerAction("bet").get_key()]   = KuhnPokerAction("bet")
 
-        self.private_state = PrivateState_Kuhn()
-        self.public_state  = PublicState_Kuhn()
-        self.person_states = [PersonState_Kuhn() for i in xrange(2)]
+        self.private_state = KuhnPokerPrivateState()
+        self.public_state  = KuhnPokerPublicState()
+        self.person_states = [KuhnPokerPersonState() for i in xrange(2)]
 
         card0 = math.floor(random.random() * 3)
         card1 = math.floor(random.random() * 3)
@@ -41,7 +41,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.person_states[self.public_state.turn].available_actions = None
         self.public_state.epoch                                     += 1
         self.public_state.turn                                       = (self.public_state.turn+1)%2
-        self.public_state.action_list.append(action.toString())
+        self.public_state.action_list.append(action.get_key())
         infos = self.gen_infos()
 
         if self.public_state.epoch == 1:
@@ -66,7 +66,6 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
     def compete(cls, env, players):
 
         isTerminal, scores, infos, public_state, person_state, private_state = env.init()
-
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
 
@@ -80,7 +79,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         return scores
 
     def gen_infos(self):
-        infos = [Info_Kuhn(), Info_Kuhn()]
+        infos = [KuhnPokerInfo(), KuhnPokerInfo()]
         for i in xrange(len(infos)):
             infos[i].person_state = copy.deepcopy(self.person_states[i])
             infos[i].public_state = copy.deepcopy(self.public_state)
@@ -103,22 +102,22 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         scores = [0, 0];
         actions = self.public_state.action_list
         
-        if actions[0] == Action_Kuhn(ActionSpace_Kuhn.check).toString() and \
-           actions[1] == Action_Kuhn(ActionSpace_Kuhn.bet).toString():
+        if actions[0] == "check" and \
+           actions[1] == "bet":
             return [-1,-1]
         
         if actions[0] == actions[1] and \
-           actions[0] == Action_Kuhn(ActionSpace_Kuhn.check).toString():
+           actions[0] == "check":
             scores[win] = 1;
             return scores;
 
-        if actions[0] == Action_Kuhn(ActionSpace_Kuhn.bet).toString() and \
-           actions[1] == Action_Kuhn(ActionSpace_Kuhn.check).toString():
+        if actions[0] == "bet" and \
+           actions[1] == "check":
             scores[first] = 1;
             return scores;
 
         if actions[0] == actions[1] and \
-           actions[0] == Action_Kuhn(ActionSpace_Kuhn.bet).toString():
+           actions[0] == "bet":
             scores[win] = 2
             return scores;
 
@@ -127,7 +126,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         first   = self.public_state.first 
         win     = self.WhoHasHigherCard()
         scores  = [0, 0]
-        if self.public_state.action_list[2] == ActionSpace_Kuhn.check:
+        if self.public_state.action_list[2] == "check":
             scores[1 - first] = 1;
         else:
             scores[win] = 2;

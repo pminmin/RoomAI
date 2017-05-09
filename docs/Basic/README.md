@@ -69,11 +69,11 @@ A player takes a action, and env forwards with this action.
 
 <pre>
 class AbstractAction:
-    def toString(self):
-        raise NotImplementedError("The toString function hasn't been implemented")
+    def get_key(self):
+        raise NotImplementedError("The get_key function hasn't been implemented")
 </pre>
 
-The toString function generate the action's key.
+The get_key function generate the action's key.
 
 #### 3. Player
 

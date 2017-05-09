@@ -1,14 +1,14 @@
 #!/bin/python
 import roomai.abstract
 
-class PrivateState_FiveCardStud(roomai.abstract.AbstractPrivateState):
+class FiveCardStudPrivateState(roomai.abstract.AbstractPrivateState):
     first_hand_cards  = None
     second_hand_cards = None
     third_hand_cards  = None
     fourth_hand_cards = None
     fifth_hand_cards  = None
 
-class PublicState_FiveCardStud(roomai.abstract.AbstractPublicState):
+class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     second_hand_cards = None
     third_hand_cards  = None
     fourth_hand_cards = None
@@ -20,13 +20,11 @@ class PublicState_FiveCardStud(roomai.abstract.AbstractPublicState):
     num_quit          = None
 
 
-class PersonState_FiveCardStud(roomai.abstract.AbsractPersonState):
+class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
     id                = None
     first_hand_card   = None
     available_actions = None
 
-
-class Info_FiveCardStud(roomai.abstract.AbstractInfo):
+class FiveCardStudInfo(roomai.abstract.AbstractInfo):
     public_state  = None
-    private_state = None
     person_state  = None
