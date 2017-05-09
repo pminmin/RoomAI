@@ -42,7 +42,7 @@ class KuhnPokerExamplePlayer(roomai.abstract.AbstractPlayer):
 if __name__ == "__main__":
         players = [KuhnPokerExamplePlayer() for i in xrange(2)]
         env = KuhnPokerEnv()
-        scores = KuhnPokerEnv.round(env, players)
+        scores = KuhnPokerEnv.compete(env, players)
         print scores
 </pre>
 
