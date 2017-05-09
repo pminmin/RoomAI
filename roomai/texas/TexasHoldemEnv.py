@@ -106,7 +106,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.big_blind_bet
             ))
 
-        return isTerminal, scores, infos
+        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
 
     ## we need ensure the action is valid
     #@Overide
@@ -177,7 +177,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.stage\
             ))
 
-        return isTerminal, scores, infos
+        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
 
     #override
     @classmethod
@@ -191,13 +191,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         env.dealer_id       = int(random.random * len(players))
         env.big_blind_bet   = 100
 
-        isTerminal, _, infos = env.init()
+        isTerminal, _, infos, public, persons, private = env.init()
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
         while isTerminal == False:
-            turn = infos[-1].public_state.turn
+            turn = public.turn
             action = players[turn].take_action()
-            isTerminal, scores, infos = env.forward(action)
+            isTerminal, scores, infos, public, persons, private = env.forward(action)
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
 
@@ -225,15 +225,16 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             env.chips       = next_chips
             env.dealer_id   = next_dealer_id
             env.num_players = len(next_players_id)
-            isTerminal, _, infos = env.init()
+            
+            isTerminal, scores, infos, public, persons, private = env.init()
             for i in xrange(len(next_players_id)):
                 idx = next_players_id[i]
                 players[idx].receive_info(infos[i])
             while isTerminal == False:
-                turn = infos[-1].public_state.turn
+                turn = public.turn
                 idx = next_players_id[turn]
                 action = players[idx].take_action()
-                isTerminal, scores, infos = env.forward(action)
+                isTerminal, scores, infos, public, persons, private = env.forward(action)
                 for i in xrange(len(next_players_id)):
                     idx = next_players_id[i]
                     players[idx].receive_info(infos[i])
@@ -248,12 +249,11 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
 
     def gen_infos(self):
-        infos = [Info_Texas() for i in xrange(self.public_state.num_players + 1)]
-        for i in xrange(len(infos) - 1):
+        infos = [Info_Texas() for i in xrange(self.public_state.num_players)]
+        for i in xrange(len(infos)):
             infos[i].person_state = copy.deepcopy(self.person_states[i])
         for i in xrange(len(infos)):
             infos[i].public_state = copy.deepcopy(self.public_state)
-        infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
         return infos
 
     def next_player(self,i):
