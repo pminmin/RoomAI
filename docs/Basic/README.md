@@ -13,7 +13,7 @@ def compete(env, players):
    :return: the final scores of this competition
    '''
    
-   isTerminal, scores, infos, public_state, person_states, private_states = env.init()
+   isTerminal, scores, infos, public_state, person_states, private_state = env.init()
    for i in xrange(len(players)):
        players[i].receive_info(infos[i])
 
@@ -21,7 +21,7 @@ def compete(env, players):
         turn = public_state.turn
         action = players[turn].take_action()
         
-        isTerminal, scores, infos, public_state, person_states, private_states = env.forward(action)
+        isTerminal, scores, infos, public_state, person_states, private_state = env.forward(action)
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
 
