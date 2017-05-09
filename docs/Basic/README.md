@@ -53,7 +53,6 @@ class AbstractPersonState:
 
 class AbstractInfo:
     def __init__(self, public_state, private_state, person_state):
-        self.private_state      = None
         self.public_state       = None
         self.person_state       = None
 </pre>
