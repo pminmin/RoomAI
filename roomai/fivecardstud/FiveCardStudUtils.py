@@ -1,7 +1,10 @@
 #!/bin/python
 import roomai.abstract
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> ca315bb2f1ad43fbceac353d88f0a6aa37165179
                                                     #0     1           2       3           4                                    5
                                                     #name, isStraight, isSameSuit, isNumRelated, [SizeOfPair1, SizeOfPair2,..](desc), rank
 AllCardsPattern_FiveCardStud = dict()
@@ -15,6 +18,7 @@ AllCardsPattern_FiveCardStud["2_2_1"]             = ["2_2_1", False, False, True
 AllCardsPattern_FiveCardStud["2_1_1_1"]           = ["2_1_1_1", False, False, True, [2, 1, 1, 1], 92]
 AllCardsPattern_FiveCardStud["1_1_1_1_1"]         = ["1_1_1_1_1", False, False, True, [1, 1, 1, 1, 1], 91]
 
+<<<<<<< HEAD
 point_str_to_key_fivecardstud  = {'2':0, '3':1, '4':2, '5':3, '6':4, '7':5, '8':6, '9':7, 'T':8, 'J':9, 'Q':10, 'K':11, 'A':12}
 point_key_to_str_fivecardstud  = {0: '2', 1: '3', 2: '4', 3: '5', 4: '6', 5: '7', 6: '8', 7: '9', 8: 'T', 9: 'J', 10: 'Q', 11: 'K', 12: 'A'}
 suit_key_to_str_fivecardstud   = {0: 'Spade', 1: 'Heart', 2: 'Diamond', 3: 'Club'}
@@ -140,6 +144,24 @@ class Utils_FiveCardStud:
 
         ##1_1_1_1_1
         return AllCardsPattern_FiveCardStud["1_1_1_1_1"]
+=======
+class FiveCardStudPokerCard(roomai.abstract.PokerCard):
+    def get_point_rank(self):
+        return self.point
+    def get_suit_rank(self):
+        suit_str_to_rank = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0}
+        return suit_str_to_rank[self.suit_str]
+
+    @classmethod
+    def compare(cls, pokercard1, pokercard2):
+        pr1 = pokercard1.get_point_rank()
+        pr2 = pokercard1.get_point_rank()
+        if pr1 != pr2:
+            return pr1-pr2
+        else:
+            return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
+
+>>>>>>> ca315bb2f1ad43fbceac353d88f0a6aa37165179
 
 
 

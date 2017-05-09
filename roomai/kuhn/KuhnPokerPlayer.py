@@ -12,7 +12,7 @@ class KuhnPokerAlwaysBetPlayer(roomai.abstract.AbstractPlayer):
         pass     
 
     def take_action(self):
-        return Action_Kuhn(ActionSpace_Kuhn.bet)
+        return KuhnPokerAction("bet")
 
     def reset(self):
         pass

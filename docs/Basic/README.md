@@ -6,22 +6,21 @@ Before read detailed guidance, please read [quick guidance](https://github.com/r
 There are some basic concepts in RoomAI: Player, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot player receive information from env, the current player takes a action, and the env forwards with this action.
 
 <pre>
-def round(env, players):
+def compete(env, players):
    '''
    :param env: the game environments
    :param players: the array of players
    :return: the final scores of this competition
    '''
-   
-   isTerminal, scores, infos = env.init()
+   isTerminal, scores, infos, public_state, person_states, private_state = env.init()
    for i in xrange(len(players)):
        players[i].receive_info(infos[i])
 
    while isTerminal == False:
-        turn = infos[-1].public_state.turn
+        turn = public_state.turn
         action = players[turn].take_action()
         
-        isTerminal, scores, infos = env.forward(action)
+        isTerminal, scores, infos, public_state, person_states, private_state = env.forward(action)
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
 
@@ -53,30 +52,29 @@ class AbstractPersonState:
 
 class AbstractInfo:
     def __init__(self, public_state, private_state, person_state):
-        self.private_state      = None
         self.public_state       = None
         self.person_state       = None
 </pre>
 
-Three propertes:
 
-##### 1.1 If there are n players, env.forward will return n+1 infos. The i-th info is w.r.t the i-th player except the last info. The last info is designed for recording private_state, and only the last info contains non-None private_state. Hence, no player will get private_state
+All infos contain the same public state. 
 
-##### 1.2 All infos contain the public_state. 
+All infos contain the person state, and the person state is different for different players. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions dict. 
 
-##### 1.3 All infos contain the person_state. For different players, the person state is different. Only the person_state in the info w.r.t the player who will take a action, contains non-None available_actions dict. non-None available_actions dict is with (action_key, action)
-
+The private_state won't be in any info, hence no player can access it.
 #### 2. Action
 
 A player takes a action, and env forwards with this action.
 
 <pre>
 class AbstractAction:
-    def toString(self):
-        raise NotImplementedError("The toString function hasn't been implemented")
+    def __init__(self,key):
+        raise NotImplementedError("The __init__ function hasn't been implemented"
+    def get_key(self):
+        raise NotImplementedError("The get_key function hasn't been implemented")
 </pre>
 
-The toString function generate the action's key.
+The get_key function generate the action's key.
 
 #### 3. Player
 
@@ -119,5 +117,4 @@ The round function holds a competition for the players, and computes the scores.
 The info and action are  important concepts for AI-bot developers, and are very different for different games. We list info and action structures for the games supported by roomai:
 
 ##### [KuhnPoker]()
-##### [DouDiZhu](https://github.com/roomai/RoomAI/blob/master/docs/DouDiZhuPoker/doudizhu.md)
 ##### [Texas]()

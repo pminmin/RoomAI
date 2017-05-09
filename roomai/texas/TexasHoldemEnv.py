@@ -30,7 +30,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         allcards = []
         for i in xrange(13):
             for j in xrange(4):
-                allcards.append(Card(i, j))
+                allcards.append(roomai.abstract.PokerCard(i, j))
         random.shuffle(allcards)
         hand_cards       = []
         for i in xrange(self.num_players):
@@ -40,7 +40,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         ## public info
         small = (self.dealer_id + 1) % self.num_players
         big   = (self.dealer_id + 2) % self.num_players
-        self.public_state                       = PublicState_Texas()
+
+        self.public_state                       = TexasHoldemPublicState()
         self.public_state.num_players           = self.num_players
         self.public_state.dealer_id             = self.dealer_id
         self.public_state.big_blind_bet         = self.big_blind_bet
@@ -83,18 +84,18 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             self.public_state.num_allin      += 1
 
         # private info
-        self.private_state = PrivateState_Texas()
+        self.private_state = TexasHoldemPrivateState()
         self.private_state.hand_cards       = [[] for i in xrange(self.num_players)]
         for i in xrange(self.num_players):
             self.private_state.hand_cards[i]  = copy.deepcopy(hand_cards[i])
         self.private_state.keep_cards = copy.deepcopy(keep_cards)
 
         ## person info
-        self.person_states                      = [PersonState_Texas() for i in xrange(self.num_players)]
+        self.person_states                      = [TexasHoldemPersonState() for i in xrange(self.num_players)]
         for i in xrange(self.num_players):
             self.person_states[i].id = i
             self.person_states[i].hand_cards = copy.deepcopy(hand_cards[i])
-        self.person_states[self.public_state.turn].available_actions = self.available_actions()
+        self.person_states[self.public_state.turn].available_actions = self.available_actions(self.public_state)
 
         infos = self.gen_infos()
 
@@ -106,7 +107,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.big_blind_bet
             ))
 
-        return isTerminal, scores, infos
+        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
 
     ## we need ensure the action is valid
     #@Overide
@@ -116,9 +117,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         :except: throw ValueError when the action is invalid at this time 
         '''
 
-        if not Utils_Texas.is_action_valid(self.public_state, action):
-            self.logger.critical("action=%s is invalid"%(action.toString()))
-            raise ValueError("action=%s is invalid"%(action.toString()))
+        if not self.is_action_valid(self.public_state, action):
+            self.logger.critical("action=%s is invalid" % (action.get_key()))
+            raise ValueError("action=%s is invalid" % (action.get_key()))
 
 
         isTerminal = False
@@ -127,15 +128,15 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu         = self.public_state
         pr         = self.private_state
 
-        if action.option == OptionSpace.Fold:
+        if action.option == TexasHoldemAction.Fold:
             self.action_fold(action)
-        elif action.option == OptionSpace.Check:
+        elif action.option == TexasHoldemAction.Check:
             self.action_check(action)
-        elif action.option == OptionSpace.Call:
+        elif action.option == TexasHoldemAction.Call:
             self.action_call(action)
-        elif action.option == OptionSpace.Raise:
+        elif action.option == TexasHoldemAction.Raise:
             self.action_raise(action)
-        elif action.option == OptionSpace.AllIn:
+        elif action.option == TexasHoldemAction.AllIn:
             self.action_allin(action)
         else:
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]"%(action.option))
@@ -165,7 +166,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             pu.num_expected_to_action     = self.public_state.num_players
 
         self.person_states[self.public_state.previous_id].available_actions = None
-        self.person_states[self.public_state.turn].available_actions        = Utils_Texas.available_actions(self.public_state)
+        self.person_states[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
         infos = self.gen_infos()
 
         if self.logger.level <= logging.DEBUG:
@@ -173,11 +174,11 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.num_quit,\
                 self.public_state.num_allin,\
                 self.public_state.num_quit + self.public_state.num_allin,\
-                action.toString(),\
+                action.get_key(),\
                 self.public_state.stage\
             ))
 
-        return isTerminal, scores, infos
+        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
 
     #override
     @classmethod
@@ -191,13 +192,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         env.dealer_id       = int(random.random * len(players))
         env.big_blind_bet   = 100
 
-        isTerminal, _, infos = env.init()
+        isTerminal, _, infos, public, persons, private = env.init()
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
         while isTerminal == False:
-            turn = infos[-1].public_state.turn
+            turn = public.turn
             action = players[turn].take_action()
-            isTerminal, scores, infos = env.forward(action)
+            isTerminal, scores, infos, public, persons, private = env.forward(action)
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
 
@@ -225,15 +226,16 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             env.chips       = next_chips
             env.dealer_id   = next_dealer_id
             env.num_players = len(next_players_id)
-            isTerminal, _, infos = env.init()
+            
+            isTerminal, scores, infos, public, persons, private = env.init()
             for i in xrange(len(next_players_id)):
                 idx = next_players_id[i]
                 players[idx].receive_info(infos[i])
             while isTerminal == False:
-                turn = infos[-1].public_state.turn
+                turn = public.turn
                 idx = next_players_id[turn]
                 action = players[idx].take_action()
-                isTerminal, scores, infos = env.forward(action)
+                isTerminal, scores, infos, public, persons, private = env.forward(action)
                 for i in xrange(len(next_players_id)):
                     idx = next_players_id[i]
                     players[idx].receive_info(infos[i])
@@ -248,12 +250,11 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
 
     def gen_infos(self):
-        infos = [Info_Texas() for i in xrange(self.public_state.num_players + 1)]
-        for i in xrange(len(infos) - 1):
+        infos = [TexasHoldemInfo() for i in xrange(self.public_state.num_players)]
+        for i in xrange(len(infos)):
             infos[i].person_state = copy.deepcopy(self.person_states[i])
         for i in xrange(len(infos)):
             infos[i].public_state = copy.deepcopy(self.public_state)
-        infos[len(infos) - 1].private_state = copy.deepcopy(self.private_state)
         return infos
 
     def next_player(self,i):
@@ -267,20 +268,6 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         return p
 
 
-    def available_actions(self):
-        '''
-        :return: 
-            A dict contains all available actions options
-        '''
-        return Utils_Texas.available_actions(self.public_state)
-
-
-    def is_action_valid(self, action):
-        '''
-        :return: A boolean variable, which indicates whether is the action valid on the current state
-        '''
-
-        return Utils_Texas.is_action_valid(self.public_state, action)
 
     def is_nextstage(self):
         '''
@@ -331,9 +318,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             playerid_pattern_bets = [] #for not_quit players
             for i in xrange(pu.num_players):
                 if pu.is_quit[i] == True: continue
-                hand_pattern = Utils_Texas.cards2pattern(pr.hand_cards[i], pr.keep_cards)
+                hand_pattern = self.cards2pattern(pr.hand_cards[i], pr.keep_cards)
                 playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
-            playerid_pattern_bets.sort(key=lambda x:x[1], cmp=Utils_Texas.compare_patterns)
+            playerid_pattern_bets.sort(key=lambda x:x[1], cmp=self.compare_patterns)
 
             pot_line = 0
             previous = None
@@ -342,7 +329,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 if previous == None:
                     tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
-                elif Utils_Texas.compare_patterns(playerid_pattern_bets[i][1], previous[1]) == 0:
+                elif self.compare_patterns(playerid_pattern_bets[i][1], previous[1]) == 0:
                     tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
                 else:
@@ -437,3 +424,267 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                     pu.is_expected_to_action[p] = True
                 p = (p + 1) % pu.num_players
 
+
+#####################################Utils Function ##############################
+    @classmethod
+    def cards2pattern(cls, hand_cards, remaining_cards):
+        point2cards = dict()
+        for c in hand_cards + remaining_cards:
+            if c.point in point2cards:
+                point2cards[c.point].append(c)
+            else:
+                point2cards[c.point] = [c]
+        for p in point2cards:
+            point2cards[p].sort(roomai.abstract.PokerCard.compare)
+
+        suit2cards = dict()
+        for c in hand_cards + remaining_cards:
+            if c.suit in suit2cards:
+                suit2cards[c.suit].append(c)
+            else:
+                suit2cards[c.suit] = [c]
+        for s in suit2cards:
+            suit2cards[s].sort(roomai.abstract.PokerCard.compare)
+
+        num2point = [[], [], [], [], []]
+        for p in point2cards:
+            num = len(point2cards[p])
+            num2point[num].append(p)
+        for i in xrange(5):
+            num2point[num].sort()
+
+        sorted_point = []
+        for p in point2cards:
+            sorted_point.append(p)
+        sorted_point.sort()
+
+        ##straight_samesuit
+        for s in suit2cards:
+            if len(suit2cards[s]) >= 5:
+                numStraight = 1
+                for i in xrange(len(suit2cards[s]) - 2, -1, -1):
+                    if suit2cards[s][i].point == suit2cards[s][i + 1].point - 1:
+                        numStraight += 1
+                    else:
+                        numStraight = 1
+
+                    if numStraight == 5:
+                        pattern = AllCardsPattern["Straight_SameSuit"]
+                        pattern[6] = suit2cards[s][i:i + 5]
+                        return pattern
+
+        ##4_1
+        if len(num2point[4]) > 0:
+            p4 = num2point[4][0]
+            p1 = -1
+            for i in xrange(len(sorted_point) - 1, -1, -1):
+                if sorted_point[i] != p4:
+                    p1 = sorted_point[i]
+                    break
+            pattern = AllCardsPattern["4_1"]
+            pattern[6] = point2cards[p4][0:4]
+            pattern[6].append(point2cards[p1][0])
+            return pattern
+
+        ##3_2
+        if len(num2point[3]) >= 1:
+            pattern = AllCardsPattern["3_2"]
+
+            if len(num2point[3]) == 2:
+                p3 = num2point[3][1]
+                pattern[6] = point2cards[p3][0:3]
+                p2 = num2point[3][0]
+                pattern[6].append(point2cards[p2][0])
+                pattern[6].append(point2cards[p2][1])
+                return pattern
+
+            if len(num2point[2]) >= 1:
+                p3 = num2point[3][0]
+                pattern[6] = point2cards[p3][0:3]
+                p2 = num2point[2][len(num2point[2]) - 1]
+                pattern[6].append(point2cards[p2][0])
+                pattern[6].append(point2cards[p2][1])
+                return pattern
+
+        ##SameSuit
+        for s in suit2cards:
+            if len(suit2cards[s]) >= 5:
+                pattern = AllCardsPattern["SameSuit"]
+                len1 = len(suit2cards[s])
+                pattern[6] = suit2cards[s][len1 - 5:len1]
+                return pattern
+
+        ##Straight_DiffSuit
+        numStraight = 1
+        for idx in xrange(len(sorted_point) - 2, -1, -1):
+            if sorted_point[idx] + 1 == sorted_point[idx]:
+                numStraight += 1
+            else:
+                numStraight = 1
+
+            if numStraight == 5:
+                pattern = AllCardsPattern["Straight_DiffSuit"]
+                for p in xrange(idx, idx + 5):
+                    point = sorted_point[p]
+                    pattern[6].append(point2cards[point][0])
+                return pattern
+
+        ##3_1_1
+        if len(num2point[3]) == 1:
+            pattern = AllCardsPattern["3_1_1"]
+
+            p3 = num2point[3][0]
+            pattern[6] = point2cards[p3][0:3]
+
+            num = 0
+            for i in xrange(len(sorted_point) - 1, -1, -1):
+                p = sorted_point[i]
+                if p != p3:
+                    pattern[6].append(point2cards[p][0])
+                    num += 1
+                if num == 2:    break
+            return pattern
+
+        ##2_2_1
+        if len(num2point[2]) >= 2:
+            pattern = AllCardsPattern["2_2_1"]
+            p21 = num2point[2][len(num2point[2]) - 1]
+            for c in point2cards[p21]:
+                pattern[6].append(c)
+            p22 = num2point[2][len(num2point[2]) - 2]
+            for c in point2cards[p22]:
+                pattern[6].append(c)
+
+            flag = False
+            for i in xrange(len(sorted_point) - 1, -1, -1):
+                p = sorted_point[i]
+                if p != p21 and p != p22:
+                    c = point2cards[p][0]
+                    pattern[6].append(c)
+                    flag = True
+                if flag == True:    break;
+            return pattern
+
+        ##2_1_1_1
+        if len(num2point[2]) == 1:
+            pattern = AllCardsPattern["2_1_1_1"]
+            p2 = num2point[2][0]
+            pattern[6] = point2cards[p2][0:2]
+            num = 0
+            for p in xrange(len(sorted_point) - 1, -1, -1):
+                p1 = sorted_point[p]
+                if p1 != p2:
+                    pattern[6].append(point2cards[p1][0])
+                if num == 3:    break
+            return pattern
+
+        ##1_1_1_1_1
+        pattern = AllCardsPattern["1_1_1_1_1"]
+        count = 0
+        for i in xrange(len(sorted_point) - 1, -1, -1):
+            p = sorted_point[i]
+            for c in point2cards[p]:
+                pattern[6].append(c)
+                count += 1
+                if count == 5: break
+            if count == 5: break
+        return pattern
+
+    @classmethod
+    def compare_handcards(cls, hand_card0, hand_card1, keep_cards):
+        pattern0 = TexasHoldemEnv.cards2pattern(hand_card0, keep_cards)
+        pattern1 = TexasHoldemEnv.cards2pattern(hand_card1, keep_cards)
+
+        diff = cls.compare_patterns(pattern0, pattern1)
+        return diff
+
+    @classmethod
+    def compare_patterns(cls, p1, p2):
+        if p1[5] != p2[5]:
+            return p1[5] - p2[5]
+        else:
+            for i in xrange(5):
+                if p1[6][i] != p2[6][i]:
+                    return p1[6][i] - p2[6][i]
+            return 0
+
+    @classmethod
+    def available_actions(cls, public_state):
+        pu = public_state
+        turn = pu.turn
+        key_actions = dict()
+
+        ## for fold
+        action = TexasHoldemAction(TexasHoldemAction.Fold + "_0")
+        if cls.is_action_valid(public_state, action):
+            key_actions[action.get_key()] = action
+
+        ## for check
+        if pu.bets[turn] == pu.max_bet:
+            action = TexasHoldemAction(TexasHoldemAction.Check + "_0")
+            if cls.is_action_valid(public_state, action):
+                key_actions[action.get_key()] = action
+
+        ## for call
+        if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn]:
+            action = TexasHoldemAction(TexasHoldemAction.Call + "_%d" % (pu.max_bet - pu.bets[turn]))
+            if cls.is_action_valid(public_state, action):
+                key_actions[action.get_key()] = action
+
+        ## for raise
+        if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn] + pu.raise_account:
+            num = (pu.chips[turn] - (pu.max_bet - pu.bets[turn])) / pu.raise_account
+            for i in xrange(1, num + 1):
+                action = TexasHoldemAction(
+                    TexasHoldemAction.Raise + "_%d" % ((pu.max_bet - pu.bets[turn]) + pu.raise_account * i))
+                if cls.is_action_valid(public_state, action):
+                    key_actions[action.get_key()] = action
+
+        ## for all in
+        action = TexasHoldemAction(TexasHoldemAction.AllIn + "_%d" % (pu.chips[turn]))
+        if cls.is_action_valid(public_state, action):
+            key_actions[action.get_key()] = action
+
+        return key_actions
+
+    @classmethod
+    def is_action_valid(cls, public_state, action):
+        pu = public_state
+
+        if (not isinstance(public_state, TexasHoldemPublicState)) or (not isinstance(action, TexasHoldemAction)):
+            return False
+
+        if pu.is_allin[pu.turn] == True or pu.is_quit[pu.turn] == True:
+            return False
+        if pu.chips[pu.turn] == 0:
+            return False
+
+        if action.option == TexasHoldemAction.Fold:
+            return True
+
+        elif action.option == TexasHoldemAction.Check:
+            if pu.bets[pu.turn] == pu.max_bet:
+                return True
+            else:
+                return False
+
+        elif action.option == TexasHoldemAction.Call:
+            if action.price == pu.max_bet - pu.bets[pu.turn]:
+                return True
+            else:
+                return False
+
+        elif action.option == TexasHoldemAction.Raise:
+            raise_account = action.price - (pu.max_bet - pu.bets[pu.turn])
+            if raise_account == 0:    return False
+            if raise_account % pu.raise_account == 0:
+                return True
+            else:
+                return False
+        elif action.option == TexasHoldemAction.AllIn:
+            if action.price == pu.chips[pu.turn]:
+                return True
+            else:
+                return False
+        else:
+            raise Exception("Invalid action.option" + action.option)
