@@ -17,7 +17,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.logger         = roomai.get_logger()
         self.num_players    = 3
         self.chips          = [1000 for i in xrange(self.num_players)]
-        self.min_bet        = 10
+        self.floor_bet      = 10
 
     def gen_infos(self):
         infos = [FiveCardStudInfo() for i in xrange(self.public_state.num_players)]
@@ -29,6 +29,9 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
     #@override
     def init(self):
+        if FiveCardStudEnv.is_valid_initialization(self) == False:
+            pass
+
         self.public_state   = FiveCardStudPublicState()
         self.private_state  = FiveCardStudPrivateState()
         self.person_states  = [FiveCardStudPersonState for i in xrange(3)]
@@ -46,10 +49,23 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.private_state.all_hand_cards    = allcards
 
         ## public_state
-        self.public_state.num_players        = self.num_players
-        self.public_state.second_hand_cards  = self.private_state.all_hand_cards[1*self.num_players]
-        self.public_state.turn               = int(random.random() * self.public_state.num_players)
+        self.public_state.num_players          = self.num_players
+        self.public_state.chips                = self.chips
+        self.public_state.public_cards         = []
+        self.public_state.public_cards.append(self.private_state.all_hand_cards[1*self.num_players])
+        self.public_state.floor_bet            = self.floor_bet
+        self.public_state.upper_bet            = min(self.public_state.chips)
 
+        self.public_state.bets                 = [self.public_state.floor_bet for i in xrange(self.num_players)]
+        self.public_state.chips                = [self.public_state.chips[i] - self.public_state.floor_bet for i in xrange(self.num_players)]
+        self.public_state.max_bet_sofar        = self.public_state.floor_bet
+        self.public_state.is_quit              = [False for i in xrange(self.num_players)]
+        self.public_state.num_quit             = 0
+        self.public_state.is_needed_to_action  = [True for i in xrange(self.num_players)]
+        self.public_state.num_needed_to_action = self.num_players
+
+        self.public_state.round                = 1
+        self.public_state.turn                 = FiveCardStudEnv.choose_player_at_begining_of_round(self.public_state)
 
         ## person_state
         for i in xrange(self.num_players):
@@ -260,6 +276,10 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 p = (p + 1) % pu.num_players
 
 ############################################# Utils Function ######################################################
+    @classmethod
+    def is_valid_initialization(cls, env):
+        env.chips
+
     @classmethod
     def choose_player_at_begining_of_round(cls, public_state):
         pass

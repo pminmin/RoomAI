@@ -6,17 +6,25 @@ class FiveCardStudPrivateState(roomai.abstract.AbstractPrivateState):
     all_hand_cards    = None
 
 class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
-    second_hand_cards = None
-    third_hand_cards  = None
-    fourth_hand_cards = None
-    fifth_hand_cards  = None
-    turn              = None
-    round             = None
-    num_players       = None
-    is_quit           = None
-    num_quit          = None
-    is_needed_to_action = None
-    num_needed_to_action = None
+    public_cards          = None
+    is_quit               = None
+    num_quit              = None
+    is_needed_to_action   = None
+    num_needed_to_action  = None
+
+    # chips is array which contains the chips of all players
+    chips = None
+
+    # bets is array which contains the bets from all players
+    bets = None
+
+    upper_bet              = None
+    floor_bet              = None
+    max_bet_sofar          = None
+
+    turn                  = None
+    round                 = None
+    num_players           = None
 
 
 class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
