@@ -19,7 +19,6 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.chips          = [1000 for i in xrange(self.num_players)]
         self.big_blind_bet  = 10
 
-        logger = roomai.get_logger()
 
     # Before init, you need set the num_players, dealer_id, and chips
     #@override

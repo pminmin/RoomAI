@@ -14,15 +14,15 @@ from FiveCardStudAction import FiveCardStudAction
 
 class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     def __init__(self):
-        self.num_players    = 3
         self.logger         = roomai.get_logger()
+        self.num_players    = 3
+        self.chips          = [1000 for i in xrange(self.num_players)]
+        self.min_bet        = 10
 
     def gen_infos(self):
-        infos = [FiveCardStudInfo() for i in xrange(4)]
-        infos[3].private_state    = copy.deepcopy(self.private_state)
-        for i in xrange(3):
+        infos = [FiveCardStudInfo() for i in xrange(self.public_state.num_players)]
+        for i in xrange(self.public_state.num_players):
             infos[i].person_state = copy.deepcopy(self.person_states[i])
-        for i in xrange(4):
             infos[i].public_state = copy.deepcopy(self.public_state)
 
         return infos
@@ -47,8 +47,8 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
         ## public_state
         self.public_state.num_players        = self.num_players
-        self.public_state.second_hand_cards  = self.private_state.allcards[1*self.num_pla]
-        self.public_state.turn               = int(random.random * self.public_state.num_players)
+        self.public_state.second_hand_cards  = self.private_state.all_hand_cards[1*self.num_players]
+        self.public_state.turn               = int(random.random() * self.public_state.num_players)
 
 
         ## person_state
