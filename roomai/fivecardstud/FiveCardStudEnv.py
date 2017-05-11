@@ -51,8 +51,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         ## public_state
         self.public_state.num_players          = self.num_players
         self.public_state.chips                = self.chips
-        self.public_state.public_cards         = []
-        self.public_state.public_cards.append(self.private_state.all_hand_cards[1*self.num_players])
+        self.public_state.public_cards         = [self.private_state.all_hand_cards[0:1*self.num_players]]
         self.public_state.floor_bet            = self.floor_bet
         self.public_state.upper_bet            = min(self.public_state.chips)
 
@@ -71,6 +70,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         for i in xrange(self.num_players):
             self.person_states[i].first_hand_card  = self.private_state.all_hand_cards[i]
         turn = self.public_state.turn
+        print turn
         self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
 
 
@@ -282,7 +282,37 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
     @classmethod
     def choose_player_at_begining_of_round(cls, public_state):
-        pass
+
+        if len(public_state.public_cards) < public_state.round:
+            raise ValueError("len(public_state.public_cards)_%d < public_state.round_%d" % ( \
+                len(public_state.public_cards), public_state.round))
+        if len(public_state.public_cards[public_state.round - 1]) != public_state.num_players:
+            raise ValueError("len(public_state.public_cards[round-1])_%d != public_state.num_players_%d" % ( \
+                len(public_state.public_cards[public_state.round - 1]), public_state.num_players))
+
+        public_cards = public_state.public_cards
+        round        = public_state.round
+        if round in [1,2,3]:
+            max_card = public_cards[round-1][0]
+            max_id   = 0
+            for i in xrange(1, public_state.num_players):
+                if FiveCardStudPokerCard.compare(max_card, public_cards[round-1][i]) < 0:
+                    max_card = public_cards[round-1][i]
+                    max_id   = i
+            return max_id
+
+        elif round == 4:
+            max_cards = public_cards[0:4][0]
+            max_id    = 0
+            for i in xrange(1, public_state.num_players):
+                tmp = public_cards[0:4][i]
+                if FiveCardStudEnv.compare_cards(max_cards, tmp) < 0:
+                    max_cards = tmp
+                    max_id    = i
+            return max_id
+
+        else:
+            raise ValueError("pulic_state.round(%d) not in [1,2,3,4]"%(public_state.turn))
 
     @classmethod
     def next_player(self, pu):
@@ -334,7 +364,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 return FiveCardStudPokerCard.compare(cards1[-1], cards2[-1])
 
         else:
-            raise  ValueError("len(cards1)%d, and len(cards2)%d are invalid "%(len(cards1),len(cards2)))
+            raise  ValueError("len(cards1)%d, and len(cards2)%d are same and are 4 or 5 "%(len(cards1),len(cards2)))
 
     @classmethod
     def cards2pattern(cls, cards):
