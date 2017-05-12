@@ -3,7 +3,9 @@
 
 ######################################################################### Basic Concepts #####################################################
 class AbstractPublicState:
-    pass
+    turn            = None
+    previous_id     = None
+    previous_action = None
 
 class AbstractPrivateState:
     pass

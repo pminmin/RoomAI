@@ -13,8 +13,10 @@ class FiveCardStudAction(roomai.abstract.AbstractAction):
     Call        = "call"
     # 加注
     Raise       = "raise"
+    # 下注
+    Bet         = "bet"
     # all in
-    AllIn       = "allin"
+    Showhand    = "showhand"
 
     def __init__(self,key):
         opt_price = key.strip().split("_")

@@ -104,7 +104,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             self.action_call(action)
         elif action.option == FiveCardStudAction.Raise:
             self.action_raise(action)
-        elif action.option == FiveCardStudAction.AllIn:
+        elif action.option == FiveCardStudAction.Showhand:
             self.action_allin(action)
         else:
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]" % (action.option))
@@ -331,7 +331,68 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
     @classmethod
     def available_actions(cls, public_state):
-        pass
+        pu             = public_state
+        public_cards   = pu.public_cards
+        round          = pu.round
+        turn           = pu.turn
+        showhand_count = pu.upper_bet - pu.bets[turn]
+        call_count     = pu.max_bet_sofar - pu.bets[turn]
+
+        actions = dict()
+        if round  == 1 or round == 2 or round == 3:
+            if pu.previous_round is None or pu.previous_round == round -1:
+                ## 下注
+                for i in xrange(pu.bets[turn]+1, pu.upper_bet-pu.bets[turn]):
+                    actions["bet_%d"%i]                 = FiveCardStudAction("bet_%d"%i)
+                ## 弃牌
+                actions["fold_0"]                       = FiveCardStudAction("fold_0")
+                ## showhand
+                actions["showhand_%d"%(showhand_count)] = FiveCardStudAction("showhand_%d"%showhand_count)
+                ## check
+                actions["check_0"]                      = FiveCardStudAction("check_0")
+            else:
+                ## 弃牌
+                actions["fold_0"]                       = FiveCardStudAction("fold_0")
+                ## showhand
+                actions["showhand_%d"%showhand_count]   = FiveCardStudAction("showhand_%d"%(showhand_count))
+                ## call
+                if call_count  < showhand_count:
+                    if call_count == 0:
+                        actions["check_0"]                 = FiveCardStudAction("check_0")
+                    else:
+                        actions["call_%d"%(call_count )]   = FiveCardStudAction("call_%d".format(call_count))
+                ## 加注
+                if pu.is_raise[turn] == False:
+                    for i in xrange(call_count + 1,showhand_count):
+                        actions["raise_%d".format(i)] = FiveCardStudAction("raise_%d"%i)
+
+
+        elif round == 4:
+            if pu.previous_round == round - 1:
+                ## showhand
+                actions["showhand_0"] = FiveCardStudAction("showhand_%d"%(showhand_count))
+                ## 下注
+                for i in xrange(1, pu.upper_bet - pu.bets[turn]):
+                    actions["bet_%d"%i] = FiveCardStudAction("bet_%d"%i)
+                ## 弃牌
+                actions["fold_0"]     = FiveCardStudAction("fold_0")
+
+            else:
+                ## fold
+                actions["fold_0"]     = FiveCardStudAction("fold_0")
+                ## call
+                if call_count  == showhand_count:
+                    actions["showhand_%d".format(call_count)] = FiveCardStudAction("showhand_%d".format(call_count))
+                elif call_count == 0:
+                    actions["check_0"]                        = FiveCardStudAction("check_0")
+                else:
+                    actions["call_%d"%(call_count )]          = FiveCardStudAction("call_%d".format(call_count))
+
+
+        else:
+            raise ValueError("pulic_state.round(%d) not in [1,2,3,4]" % (public_state.turn))
+
+        return actions
 
     @classmethod
     def is_nextround(self, public_state):

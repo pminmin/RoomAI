@@ -9,6 +9,8 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     public_cards          = None
     is_quit               = None
     num_quit              = None
+    is_raise              = None
+    num_raise             = None
     is_needed_to_action   = None
     num_needed_to_action  = None
 
@@ -22,9 +24,13 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     floor_bet              = None
     max_bet_sofar          = None
 
-    turn                  = None
-    round                 = None
-    num_players           = None
+    turn                   = None
+    round                  = None
+    num_players            = None
+
+    previous_id            = None
+    previous_action        = None
+    previous_round         = None
 
 
 class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
