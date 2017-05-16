@@ -16,8 +16,7 @@ FiveCardStudAllCardsPattern["1_1_1_1_1"]         = ["1_1_1_1_1", False, False, T
 
 
 class FiveCardStudPokerCard(roomai.abstract.PokerCard):
-    def get_point_rank(self):
-        return self.point
+
     def get_suit_rank(self):
         suit_str_to_rank = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0}
         return suit_str_to_rank[self.suit_str]

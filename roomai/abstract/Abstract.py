@@ -87,8 +87,6 @@ class PokerCard:
             if isinstance(suit, str):
                 suit1 = suit_str_to_key[suit]
 
-        self.point  = point1
-        self.suit   = suit1
         self.point_str = point_key_to_str[point1]
         self.suit_str  = suit_key_to_str[suit1]
         self.String = "%s_%s"%(self.point_str, self.suit_str)
@@ -97,10 +95,10 @@ class PokerCard:
         return self.String
 
     def get_point_rank(self):
-        return self.point
+        return point_str_to_key[self.point_str]
 
     def get_suit_rank(self):
-        return self.suit
+        return suit_str_to_key[self.suit_str]
 
     @classmethod
     def compare(cls, pokercard1, pokercard2):

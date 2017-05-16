@@ -1,4 +1,5 @@
 #!/bin/python
+#coding:utf-8
 import roomai.abstract
 import copy
 import logging
@@ -108,17 +109,15 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             self.action_allin(action)
         else:
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]" % (action.option))
-        pu.previous_id = pu.turn
+        pu.previous_id     = pu.turn
         pu.previous_action = action
+        pu.previous_round  = pu.round
         pu.turn = self.next_player(pu.turn)
 
         # computing_score
         if FiveCardStudEnv.is_compute_score(self.public_state):
             isTerminal = True
             scores = self.compute_score()
-            ## need showdown
-            if pu.num_quit + 1 < pu.num_players:
-                pu.public_cards = pr.keep_cards[0:5]
 
         # enter into the next stage
         elif FiveCardStudEnv.is_nextround(self.public_state):
@@ -332,7 +331,6 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     @classmethod
     def available_actions(cls, public_state):
         pu             = public_state
-        public_cards   = pu.public_cards
         round          = pu.round
         turn           = pu.turn
         showhand_count = pu.upper_bet - pu.bets[turn]
@@ -387,7 +385,6 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                     actions["check_0"]                        = FiveCardStudAction("check_0")
                 else:
                     actions["call_%d"%(call_count )]          = FiveCardStudAction("call_%d".format(call_count))
-
 
         else:
             raise ValueError("pulic_state.round(%d) not in [1,2,3,4]" % (public_state.turn))
@@ -470,23 +467,23 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                         numStraight = 1
 
                     if numStraight == 5:
-                        pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["Straight_SameSuit"]
+                        pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["Straight_SameSuit"]
                         return pattern
 
         ##4_1
         if len(num2pointrank[4]) ==1:
-            pattern =  roomai.fivecardstud.AllCardsPattern_FiveCardStud["4_1"]
+            pattern =  roomai.fivecardstud.FiveCardStudAllCardsPattern["4_1"]
             return pattern
 
         ##3_2
         if len(num2pointrank[3]) == 1 and len(num2pointrank[2]) == 1:
-            pattern =  roomai.fivecardstud.AllCardsPattern_FiveCardStud["3_2"]
+            pattern =  roomai.fivecardstud.FiveCardStudAllCardsPattern["3_2"]
             return pattern
 
         ##SameSuit
         for s in suitrank2cards:
             if len(suitrank2cards[s]) >= 5:
-                pattern =  roomai.fivecardstud.AllCardsPattern_FiveCardStud["SameSuit"]
+                pattern =  roomai.fivecardstud.FiveCardStudAllCardsPattern["SameSuit"]
                 return pattern
 
         ##Straight_DiffSuit
@@ -498,28 +495,28 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 numStraight = 1
 
             if numStraight == 5:
-                pattern =  roomai.fivecardstud.AllCardsPattern_FiveCardStud["Straight_DiffSuit"]
+                pattern =  roomai.fivecardstud.FiveCardStudAllCardsPattern["Straight_DiffSuit"]
                 for p in xrange(idx, idx + 5):
                     point = sorted_pointrank[p]
                 return pattern
 
         ##3_1_1
         if len(num2pointrank[3]) == 1:
-            pattern =  roomai.fivecardstud.AllCardsPattern_FiveCardStud["3_1_1"]
+            pattern =  roomai.fivecardstud.FiveCardStudAllCardsPattern["3_1_1"]
             return pattern
 
         ##2_2_1
         if len(num2pointrank[2]) >= 2:
-            pattern =  roomai.fivecardstud.AllCardsPattern_FiveCardStud["2_2_1"]
+            pattern =  roomai.fivecardstud.FiveCardStudAllCardsPattern["2_2_1"]
             return pattern
 
         ##2_1_1_1
         if len(num2pointrank[2]) == 1:
-            pattern =  roomai.fivecardstud.AllCardsPattern_FiveCardStud["2_1_1_1"]
+            pattern =  roomai.fivecardstud.FiveCardStudAllCardsPattern["2_1_1_1"]
             return pattern
 
         ##1_1_1_1_1
-        return  roomai.fivecardstud.AllCardsPattern_FiveCardStud["1_1_1_1_1"]
+        return  roomai.fivecardstud.FiveCardStudAllCardsPattern["1_1_1_1_1"]
 
     @classmethod
     def fourcards2pattern(cls, cards):
@@ -530,7 +527,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             else:
                 pointrank2cards[c.get_point_rank()] = [c]
         for p in pointrank2cards:
-            pointrank2cards[p].sort(FiveCardStudPokerCard.compare_cards)
+            pointrank2cards[p].sort(FiveCardStudPokerCard.compare)
 
         suitrank2cards = dict()
         for c in cards:
@@ -539,7 +536,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             else:
                 suitrank2cards[c.get_suit_rank()] = [c]
         for s in suitrank2cards:
-            suitrank2cards[s].sort(FiveCardStudPokerCard.compare_cards)
+            suitrank2cards[s].sort(FiveCardStudPokerCard.compare)
 
         num2pointrank = [[], [], [], [], []]
         for p in pointrank2cards:
@@ -553,34 +550,34 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             sorted_pointrank.append(p)
         sorted_pointrank.sort()
 
-        ##straight_samesuit
+        ##candidate straight_samesuit
         for s in suitrank2cards:
-            if len(suitrank2cards[s]) >= 5:
+            if len(suitrank2cards[s]) >= 4:
                 numStraight = 1
                 for i in xrange(len(suitrank2cards[s]) - 2, -1, -1):
-                    if suitrank2cards[s][i].point == suitrank2cards[s][i + 1].point - 1:
+                    if suitrank2cards[s][i].get_point_rank() == suitrank2cards[s][i + 1].get_point_rank()  - 1:
                         numStraight += 1
                     else:
                         numStraight = 1
 
-                    if numStraight == 5:
-                        pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["Straight_SameSuit"]
+                    if numStraight == 4:
+                        pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["Straight_SameSuit"]
                         return pattern
 
         ##4_1
         if len(num2pointrank[4]) == 1:
-            pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["4_1"]
+            pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["4_1"]
             return pattern
 
-        ##3_2
+        ##3_2 impossible
         if len(num2pointrank[3]) == 1 and len(num2pointrank[2]) == 1:
-            pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["3_2"]
+            pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["3_2"]
             return pattern
 
         ##SameSuit
         for s in suitrank2cards:
-            if len(suitrank2cards[s]) >= 5:
-                pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["SameSuit"]
+            if len(suitrank2cards[s]) >= 4:
+                pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["SameSuit"]
                 return pattern
 
         ##Straight_DiffSuit
@@ -591,26 +588,24 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             else:
                 numStraight = 1
 
-            if numStraight == 5:
-                pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["Straight_DiffSuit"]
-                for p in xrange(idx, idx + 5):
-                    point = sorted_pointrank[p]
+            if numStraight == 4:
+                pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["Straight_DiffSuit"]
                 return pattern
 
         ##3_1_1
         if len(num2pointrank[3]) == 1:
-            pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["3_1_1"]
+            pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["3_1_1"]
             return pattern
 
         ##2_2_1
         if len(num2pointrank[2]) >= 2:
-            pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["2_2_1"]
+            pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["2_2_1"]
             return pattern
 
         ##2_1_1_1
         if len(num2pointrank[2]) == 1:
-            pattern = roomai.fivecardstud.AllCardsPattern_FiveCardStud["2_1_1_1"]
+            pattern = roomai.fivecardstud.FiveCardStudAllCardsPattern["2_1_1_1"]
             return pattern
 
         ##1_1_1_1_1
-        return roomai.fivecardstud.AllCardsPattern_FiveCardStud["1_1_1_1_1"]
+        return roomai.fivecardstud.FiveCardStudAllCardsPattern["1_1_1_1_1"]
