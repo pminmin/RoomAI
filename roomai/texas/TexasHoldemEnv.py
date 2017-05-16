@@ -23,8 +23,6 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
     # Before init, you need set the num_players, dealer_id, and chips
     #@override
     def init(self):
-        isTerminal = False
-        scores     = []
 
         allcards = []
         for i in xrange(13):
@@ -82,6 +80,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             self.public_state.is_allin[small] = True
             self.public_state.num_allin      += 1
 
+        self.public_state.is_terminal         = False
+        self.public_state.scores              = []
+
         # private info
         self.private_state = TexasHoldemPrivateState()
         self.private_state.hand_cards       = [[] for i in xrange(self.num_players)]
@@ -106,7 +107,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.big_blind_bet
             ))
 
-        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
+        return infos, self.public_state, self.person_states, self.private_state
 
     ## we need ensure the action is valid
     #@Overide
@@ -142,11 +143,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.previous_id     = pu.turn
         pu.previous_action = action
         pu.turn            = self.next_player(pu)
+        pu.is_terminal     = False
+        pu.scores          = []
 
         # computing_score
         if TexasHoldemEnv.is_compute_score(self.public_state):
-            isTerminal = True
-            scores = self.compute_score()
+            pu.is_terminal = True
+            pu.scores      = self.compute_score()
             ## need showdown
             if pu.num_quit + 1 < pu.num_players:
                 pu.public_cards = pr.keep_cards[0:5]
@@ -177,7 +180,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.stage\
             ))
 
-        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
+        return infos, self.public_state, self.person_states, self.private_state
 
     #override
     @classmethod

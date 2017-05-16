@@ -7,6 +7,9 @@ class AbstractPublicState:
     previous_id     = None
     previous_action = None
 
+    is_terminal     = False
+    scores          = None
+
 class AbstractPrivateState:
     pass
 

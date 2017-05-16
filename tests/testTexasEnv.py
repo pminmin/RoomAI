@@ -17,7 +17,7 @@ class TexasEnvTester(unittest.TestCase):
         players =  [TexasHoldemRandomPlayer() for i in xrange(3)]
 
 
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.init()
+        infos,public_state, person_states, private_state  = env.init()
         self.assertEqual(infos[0].person_state.id,0)
         env.private_state.hand_cards[0] = [roomai.abstract.PokerCard(0, 0), roomai.abstract.PokerCard(0, 1)]
         env.private_state.hand_cards[0] = [roomai.abstract.PokerCard(2, 0), roomai.abstract.PokerCard(2, 1)]
@@ -35,7 +35,7 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("allin_100")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         self.assertEqual(env.public_state.turn, 1)
         self.assertNotEqual(len(infos[1].person_state.available_actions),0 )
         self.assertTrue("allin_90" in infos[1].person_state.available_actions.keys())
@@ -51,7 +51,7 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("fold_0")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         # dealer_id = 0
         # turn = 2
         # chips:0,   90, 80
@@ -61,24 +61,22 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("fold_0")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         # dealer_id = 0
         # turn = 1
         # chips:0,   90, 80
         # bets :100, 10, 20
         # state:all,  q,  n
-        print isTerminal
         print env.public_state.bets
         print env.public_state.is_allin
         print env.public_state.is_quit
         print env.public_state.chips
-        print scores
         print env.public_state.turn
         self.assertEqual(env.public_state.turn, -1)
-        self.assertTrue(isTerminal)
-        self.assertEqual(scores[0], 30)
-        self.assertEqual(scores[1], -10)
-        self.assertEqual(scores[2], -20)
+        self.assertTrue(public_state.is_terminal)
+        self.assertEqual(public_state.scores[0], 30)
+        self.assertEqual(public_state.scores[1], -10)
+        self.assertEqual(public_state.scores[2], -20)
 
     def testEnv3Players2(self):
         roomai.set_level(logging.DEBUG)
@@ -91,7 +89,7 @@ class TexasEnvTester(unittest.TestCase):
         players =  [TexasHoldemRandomPlayer() for i in xrange(3)]
 
 
-        isTerminal, scores, infos,public_state, person_states, private_state = env.init()
+        infos,public_state, person_states, private_state = env.init()
         self.assertEqual(infos[0].person_state.id,0)
         env.private_state.hand_cards[0] = [roomai.abstract.PokerCard(7, 0), roomai.abstract.PokerCard(7, 1)]
         env.private_state.hand_cards[1] = [roomai.abstract.PokerCard(2, 0), roomai.abstract.PokerCard(2, 1)]
@@ -111,7 +109,7 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("raise_60")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
         self.assertEqual(env.public_state.turn, 1)
         self.assertTrue("raise_60" not in infos[1].person_state.available_actions)
@@ -130,7 +128,7 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("call_50")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
         # dealer_id = 0
         # turn  = 2
@@ -142,7 +140,7 @@ class TexasEnvTester(unittest.TestCase):
         # expected:f,f,t
 
         action = TexasHoldemAction("call_40")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         self.assertEqual(infos[0].public_state.stage,StageSpace.secondStage)
         self.assertEqual(env.public_state.chips[1],440)
         self.assertEqual(env.public_state.turn, 1)
@@ -156,9 +154,9 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("call_0")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         self.assertEqual(env.public_state.stage,3)
         self.assertEqual(len(env.public_state.public_cards),4)
         p = 0
@@ -177,7 +175,7 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("allin_440")
-        isTerminal, score, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         self.assertEqual(infos[0].public_state.max_bet, 500)
         print "2", infos[2].person_state.available_actions.keys()
         self.assertEqual(env.public_state.is_allin[1],True)
@@ -192,16 +190,16 @@ class TexasEnvTester(unittest.TestCase):
 
 
         action = TexasHoldemAction("call_440")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         action = TexasHoldemAction("allin_40")
-        isTerminal, scores, infos,public_state, person_states, private_state  = env.forward(action)
+        infos,public_state, person_states, private_state  = env.forward(action)
         # dealer_id = 0
         # chips:0,     0,    500
         # bets :100,   500,  500
         # 0 > 1 = 2
-        self.assertEqual(scores[0],200)
-        self.assertEqual(scores[1],-100)
-        self.assertEqual(scores[2],-100)
+        self.assertEqual(public_state.scores[0],200)
+        self.assertEqual(public_state.scores[1],-100)
+        self.assertEqual(public_state.scores[2],-100)
 
 
 

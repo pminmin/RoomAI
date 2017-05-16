@@ -66,6 +66,8 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
         self.public_state.round                = 1
         self.public_state.turn                 = FiveCardStudEnv.choose_player_at_begining_of_round(self.public_state)
+        self.public_state.is_terminal          = False
+        self.public_state.scores               = []
 
         ## person_state
         for i in xrange(self.num_players):
@@ -75,7 +77,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
 
 
-        return False,[],self.gen_infos(), self.public_state, self.person_states, self.private_state
+        return self.gen_infos(), self.public_state, self.person_states, self.private_state
 
 
 
@@ -108,11 +110,11 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         elif action.option == FiveCardStudAction.Showhand:
             self.action_showhand(action)
         else:
-            raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]" % (action.option))
+            raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, Showhand]" % (action.option))
         pu.previous_id     = pu.turn
         pu.previous_action = action
         pu.previous_round  = pu.round
-        pu.turn = self.next_player(pu.turn)
+        pu.turn            = self.next_player(pu.turn)
 
         # computing_score
         if FiveCardStudEnv.is_compute_score(self.public_state):

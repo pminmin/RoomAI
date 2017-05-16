@@ -6,17 +6,17 @@ import roomai.abstract
 class FiveCardStudAction(roomai.abstract.AbstractAction):
 
     # 弃牌
-    Fold        = "fold"
+    Fold        = "Fold"
     # 过牌
-    Check       = "check"
+    Check       = "Check"
     # 更注
-    Call        = "call"
+    Call        = "Call"
     # 加注
-    Raise       = "raise"
+    Raise       = "Raise"
     # 下注
-    Bet         = "bet"
+    Bet         = "Bet"
     # all in
-    Showhand    = "showhand"
+    Showhand    = "Showhand"
 
     def __init__(self,key):
         opt_price = key.strip().split("_")
