@@ -12,19 +12,19 @@ def compete(env, players):
    :param players: the array of players
    :return: the final scores of this competition
    '''
-   isTerminal, scores, infos, public_state, person_states, private_state = env.init()
+   infos, public_state, person_states, private_state = env.init()
    for i in xrange(len(players)):
        players[i].receive_info(infos[i])
 
-   while isTerminal == False:
+   while public_state.is_terminal == False:
         turn = public_state.turn
         action = players[turn].take_action()
         
-        isTerminal, scores, infos, public_state, person_states, private_state = env.forward(action)
+        infos, public_state, person_states, private_state = env.forward(action)
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
 
-   return scores                
+   return public.scores                
 </pre>
 
 ![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png)
@@ -42,8 +42,12 @@ class AbstractPrivateState:
     pass
     
 class AbstractPublicState:
-    # players[turn] will take a action
-    turn              = None 
+    turn            = None
+    previous_id     = None
+    previous_action = None
+
+    is_terminal     = False
+    scores          = None
 
 class AbstractPersonState:
     id                = None 
@@ -51,9 +55,8 @@ class AbstractPersonState:
     available_actions = None 
 
 class AbstractInfo:
-    def __init__(self, public_state, private_state, person_state):
-        self.public_state       = None
-        self.person_state       = None
+    public_state       = None
+    person_state       = None
 </pre>
 
 
