@@ -6,7 +6,12 @@ class FiveCardStudPrivateState(roomai.abstract.AbstractPrivateState):
     all_hand_cards    = None
 
 class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
-    public_cards          = None
+    first_hand_cards      = None
+    second_hand_cards     = None
+    third_hand_cards      = None
+    fourth_hand_cards     = None
+    fifth_hand_cards      = None
+
     is_quit               = None
     num_quit              = None
     is_raise              = None
@@ -32,11 +37,19 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     previous_action        = None
     previous_round         = None
 
+    is_terminal            = None
+    scores                 = None
+
 
 class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
     id                = None
-    first_hand_card   = None
     available_actions = None
+
+    first_hand_card   = None
+    second_hand_card  = None
+    third_hand_card   = None
+    fourth_hand_card  = None
+    fifth_hand_card   = None
 
 
 class FiveCardStudInfo(roomai.abstract.AbstractInfo):
