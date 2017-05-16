@@ -19,13 +19,10 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.chips          = [1000 for i in xrange(self.num_players)]
         self.big_blind_bet  = 10
 
-        logger = roomai.get_logger()
 
     # Before init, you need set the num_players, dealer_id, and chips
     #@override
     def init(self):
-        isTerminal = False
-        scores     = []
 
         allcards = []
         for i in xrange(13):
@@ -40,6 +37,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         ## public info
         small = (self.dealer_id + 1) % self.num_players
         big   = (self.dealer_id + 2) % self.num_players
+
         self.public_state                       = TexasHoldemPublicState()
         self.public_state.num_players           = self.num_players
         self.public_state.dealer_id             = self.dealer_id
@@ -50,13 +48,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.public_state.num_quit              = 0
         self.public_state.is_allin              = [False for i in xrange(self.num_players)]
         self.public_state.num_allin             = 0
-        self.public_state.is_expected_to_action = [True for i in xrange(self.num_players)]
-        self.public_state.num_expected_to_action= self.public_state.num_players
+        self.public_state.is_needed_to_action = [True for i in xrange(self.num_players)]
+        self.public_state.num_needed_to_action= self.public_state.num_players
 
         self.public_state.bets                  = [0 for i in xrange(self.num_players)]
         self.public_state.chips                 = self.chips
         self.public_state.stage                 = StageSpace.firstStage
-        self.public_state.turn                  = self.next_player(big)
+        self.public_state.turn                  = (big+1)%self.public_state.num_players
         self.public_state.public_cards          = []
 
         self.public_state.previous_id           = None
@@ -82,6 +80,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             self.public_state.is_allin[small] = True
             self.public_state.num_allin      += 1
 
+        self.public_state.is_terminal         = False
+        self.public_state.scores              = []
+
         # private info
         self.private_state = TexasHoldemPrivateState()
         self.private_state.hand_cards       = [[] for i in xrange(self.num_players)]
@@ -106,7 +107,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.big_blind_bet
             ))
 
-        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
+        return infos, self.public_state, self.person_states, self.private_state
 
     ## we need ensure the action is valid
     #@Overide
@@ -141,18 +142,20 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]"%(action.option))
         pu.previous_id     = pu.turn
         pu.previous_action = action
-        pu.turn            = self.next_player(pu.turn)
+        pu.turn            = self.next_player(pu)
+        pu.is_terminal     = False
+        pu.scores          = []
 
         # computing_score
-        if self.is_compute_score():
-            isTerminal = True
-            scores = self.compute_score()
+        if TexasHoldemEnv.is_compute_score(self.public_state):
+            pu.is_terminal = True
+            pu.scores      = self.compute_score()
             ## need showdown
             if pu.num_quit + 1 < pu.num_players:
                 pu.public_cards = pr.keep_cards[0:5]
 
         # enter into the next stage
-        elif self.is_nextstage():
+        elif TexasHoldemEnv.is_nextround(self.public_state):
             add_cards = []
             if pu.stage == StageSpace.firstStage:   add_cards = pr.keep_cards[0:3]
             if pu.stage == StageSpace.secondStage:  add_cards = [pr.keep_cards[3]]
@@ -161,8 +164,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             pu.public_cards.extend(add_cards)
             pu.stage                      = pu.stage + 1
             pu.turn                       = (pu.dealer_id + 1) % pu.num_players
-            pu.is_expected_to_action      = [True for i in xrange(pu.num_players)]
-            pu.num_expected_to_action     = self.public_state.num_players
+            pu.is_needed_to_action      = [True for i in xrange(pu.num_players)]
+            pu.num_needed_to_action     = self.public_state.num_players
 
         self.person_states[self.public_state.previous_id].available_actions = None
         self.person_states[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
@@ -177,7 +180,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.stage\
             ))
 
-        return isTerminal, scores, infos, self.public_state, self.person_states, self.private_state
+        return infos, self.public_state, self.person_states, self.private_state
 
     #override
     @classmethod
@@ -256,44 +259,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             infos[i].public_state = copy.deepcopy(self.public_state)
         return infos
 
-    def next_player(self,i):
-        pu = self.public_state
-        if pu.num_expected_to_action == 0:
-            return -1
 
-        p = (i+1)%pu.num_players
-        while pu.is_expected_to_action[p] == False:
-            p = (p+1)%pu.num_players
-        return p
-
-
-    def is_nextstage(self):
-        '''
-        :return: 
-        A boolean variable indicates whether is it time to enter the next stage
-        '''
-        pu = self.public_state
-        return pu.num_expected_to_action == 0
-
-    def is_compute_score(self):
-        '''
-        :return: 
-        A boolean variable indicates whether is it time to compute scores
-        '''
-        pu = self.public_state
-
-        if pu.num_players == pu.num_quit + 1:
-            return True
-
-        # below need showdown
-
-        if pu.num_players ==  pu.num_quit + pu.num_allin + 1 and pu.num_expected_to_action == 0:
-            return True
-
-        if pu.stage == StageSpace.fourthStage and self.is_nextstage():
-            return True
-
-        return False
 
     def compute_score(self):
         '''
@@ -369,20 +335,20 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.is_quit[pu.turn] = True
         pu.num_quit += 1
 
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
 
     def action_check(self, action):
         pu = self.public_state
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
 
     def action_call(self, action):
         pu = self.public_state
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
 
     def action_raise(self, action):
         pu = self.public_state
@@ -392,13 +358,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.bets[pu.turn]  += action.price
         pu.max_bet         = pu.bets[pu.turn]
 
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
         p = (pu.turn + 1)%pu.num_players
         while p != pu.turn:
-            if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_expected_to_action[p] == False:
-                pu.num_expected_to_action   += 1
-                pu.is_expected_to_action[p]  = True
+            if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+                pu.num_needed_to_action   += 1
+                pu.is_needed_to_action[p]  = True
             p = (p + 1) % pu.num_players
 
 
@@ -411,63 +377,104 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.bets[pu.turn]      += action.price
         pu.chips[pu.turn]      = 0
 
-        pu.is_expected_to_action[pu.turn] = False
-        pu.num_expected_to_action        -= 1
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
         if pu.bets[pu.turn] > pu.max_bet:
             pu.max_bet = pu.bets[pu.turn]
             p = (pu.turn + 1) % pu.num_players
             while p != pu.turn:
-                if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_expected_to_action[p] == False:
-                    pu.num_expected_to_action  += 1
-                    pu.is_expected_to_action[p] = True
+                if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+                    pu.num_needed_to_action  += 1
+                    pu.is_needed_to_action[p] = True
                 p = (p + 1) % pu.num_players
 
+
 #####################################Utils Function ##############################
+
+    @classmethod
+    def next_player(self, pu):
+        i = pu.turn
+        if pu.num_needed_to_action == 0:
+            return -1
+
+        p = (i+1)%pu.num_players
+        while pu.is_needed_to_action[p] == False:
+            p = (p+1)%pu.num_players
+        return p
+
+    @classmethod
+    def is_compute_score(self, pu):
+        '''
+        :return: 
+        A boolean variable indicates whether is it time to compute scores
+        '''
+
+        if pu.num_players == pu.num_quit + 1:
+            return True
+
+        # below need showdown
+
+        if pu.num_players ==  pu.num_quit + pu.num_allin + 1 and pu.num_needed_to_action == 0:
+            return True
+
+        if pu.stage == StageSpace.fourthStage and self.is_nextround():
+            return True
+
+        return False
+
+    @classmethod
+    def is_nextround(self, public_state):
+        '''
+        :return: 
+        A boolean variable indicates whether is it time to enter the next stage
+        '''
+        return public_state.num_needed_to_action == 0
+
     @classmethod
     def cards2pattern(cls, hand_cards, remaining_cards):
-        point2cards = dict()
+        pointrank2cards = dict()
         for c in hand_cards + remaining_cards:
-            if c.point in point2cards:
-                point2cards[c.point].append(c)
+            if c.get_point_rank() in pointrank2cards:
+                pointrank2cards[c.get_point_rank()].append(c)
             else:
-                point2cards[c.point] = [c]
-        for p in point2cards:
-            point2cards[p].sort(roomai.abstract.PokerCard.compare)
+                pointrank2cards[c.get_point_rank()] = [c]
+        for p in pointrank2cards:
+            pointrank2cards[p].sort(roomai.abstract.PokerCard.compare)
 
-        suit2cards = dict()
+        suitrank2cards = dict()
         for c in hand_cards + remaining_cards:
-            if c.suit in suit2cards:
-                suit2cards[c.suit].append(c)
+            if c.get_suit_rank() in suitrank2cards:
+                suitrank2cards[c.get_suit_rank()].append(c)
             else:
-                suit2cards[c.suit] = [c]
-        for s in suit2cards:
-            suit2cards[s].sort(roomai.abstract.PokerCard.compare)
+                suitrank2cards[c.get_suit_rank()] = [c]
+        for s in suitrank2cards:
+            suitrank2cards[s].sort(roomai.abstract.PokerCard.compare)
 
         num2point = [[], [], [], [], []]
-        for p in point2cards:
-            num = len(point2cards[p])
+        for p in pointrank2cards:
+            num = len(pointrank2cards[p])
             num2point[num].append(p)
         for i in xrange(5):
             num2point[num].sort()
 
         sorted_point = []
-        for p in point2cards:
+        for p in pointrank2cards:
             sorted_point.append(p)
         sorted_point.sort()
 
         ##straight_samesuit
-        for s in suit2cards:
-            if len(suit2cards[s]) >= 5:
+        for s in suitrank2cards:
+            if len(suitrank2cards[s]) >= 5:
                 numStraight = 1
-                for i in xrange(len(suit2cards[s]) - 2, -1, -1):
-                    if suit2cards[s][i].point == suit2cards[s][i + 1].point - 1:
+                for i in xrange(len(suitrank2cards[s]) - 2, -1, -1):
+                    if suitrank2cards[s][i].get_point_rank() == suitrank2cards[s][i + 1].get_point_rank() - 1:
                         numStraight += 1
                     else:
                         numStraight = 1
 
                     if numStraight == 5:
                         pattern = AllCardsPattern["Straight_SameSuit"]
-                        pattern[6] = suit2cards[s][i:i + 5]
+                        pattern[6] = suitrank2cards[s][i:i + 5]
                         return pattern
 
         ##4_1
@@ -479,8 +486,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                     p1 = sorted_point[i]
                     break
             pattern = AllCardsPattern["4_1"]
-            pattern[6] = point2cards[p4][0:4]
-            pattern[6].append(point2cards[p1][0])
+            pattern[6] = pointrank2cards[p4][0:4]
+            pattern[6].append(pointrank2cards[p1][0])
             return pattern
 
         ##3_2
@@ -489,26 +496,26 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
             if len(num2point[3]) == 2:
                 p3 = num2point[3][1]
-                pattern[6] = point2cards[p3][0:3]
+                pattern[6] = pointrank2cards[p3][0:3]
                 p2 = num2point[3][0]
-                pattern[6].append(point2cards[p2][0])
-                pattern[6].append(point2cards[p2][1])
+                pattern[6].append(pointrank2cards[p2][0])
+                pattern[6].append(pointrank2cards[p2][1])
                 return pattern
 
             if len(num2point[2]) >= 1:
                 p3 = num2point[3][0]
-                pattern[6] = point2cards[p3][0:3]
+                pattern[6] = pointrank2cards[p3][0:3]
                 p2 = num2point[2][len(num2point[2]) - 1]
-                pattern[6].append(point2cards[p2][0])
-                pattern[6].append(point2cards[p2][1])
+                pattern[6].append(pointrank2cards[p2][0])
+                pattern[6].append(pointrank2cards[p2][1])
                 return pattern
 
         ##SameSuit
-        for s in suit2cards:
-            if len(suit2cards[s]) >= 5:
+        for s in suitrank2cards:
+            if len(suitrank2cards[s]) >= 5:
                 pattern = AllCardsPattern["SameSuit"]
-                len1 = len(suit2cards[s])
-                pattern[6] = suit2cards[s][len1 - 5:len1]
+                len1 = len(suitrank2cards[s])
+                pattern[6] = suitrank2cards[s][len1 - 5:len1]
                 return pattern
 
         ##Straight_DiffSuit
@@ -523,7 +530,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 pattern = AllCardsPattern["Straight_DiffSuit"]
                 for p in xrange(idx, idx + 5):
                     point = sorted_point[p]
-                    pattern[6].append(point2cards[point][0])
+                    pattern[6].append(pointrank2cards[point][0])
                 return pattern
 
         ##3_1_1
@@ -531,13 +538,13 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             pattern = AllCardsPattern["3_1_1"]
 
             p3 = num2point[3][0]
-            pattern[6] = point2cards[p3][0:3]
+            pattern[6] = pointrank2cards[p3][0:3]
 
             num = 0
             for i in xrange(len(sorted_point) - 1, -1, -1):
                 p = sorted_point[i]
                 if p != p3:
-                    pattern[6].append(point2cards[p][0])
+                    pattern[6].append(pointrank2cards[p][0])
                     num += 1
                 if num == 2:    break
             return pattern
@@ -546,17 +553,17 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         if len(num2point[2]) >= 2:
             pattern = AllCardsPattern["2_2_1"]
             p21 = num2point[2][len(num2point[2]) - 1]
-            for c in point2cards[p21]:
+            for c in pointrank2cards[p21]:
                 pattern[6].append(c)
             p22 = num2point[2][len(num2point[2]) - 2]
-            for c in point2cards[p22]:
+            for c in pointrank2cards[p22]:
                 pattern[6].append(c)
 
             flag = False
             for i in xrange(len(sorted_point) - 1, -1, -1):
                 p = sorted_point[i]
                 if p != p21 and p != p22:
-                    c = point2cards[p][0]
+                    c = pointrank2cards[p][0]
                     pattern[6].append(c)
                     flag = True
                 if flag == True:    break;
@@ -566,12 +573,12 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         if len(num2point[2]) == 1:
             pattern = AllCardsPattern["2_1_1_1"]
             p2 = num2point[2][0]
-            pattern[6] = point2cards[p2][0:2]
+            pattern[6] = pointrank2cards[p2][0:2]
             num = 0
             for p in xrange(len(sorted_point) - 1, -1, -1):
                 p1 = sorted_point[p]
                 if p1 != p2:
-                    pattern[6].append(point2cards[p1][0])
+                    pattern[6].append(pointrank2cards[p1][0])
                 if num == 3:    break
             return pattern
 
@@ -580,7 +587,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         count = 0
         for i in xrange(len(sorted_point) - 1, -1, -1):
             p = sorted_point[i]
-            for c in point2cards[p]:
+            for c in pointrank2cards[p]:
                 pattern[6].append(c)
                 count += 1
                 if count == 5: break

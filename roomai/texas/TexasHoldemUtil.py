@@ -9,6 +9,7 @@ class StageSpace:
     thirdStage  = 3
     fourthStage = 4
 
+
 class TexasHoldemAction(roomai.abstract.AbstractAction):
     # 弃牌
     Fold        = "fold"
@@ -42,8 +43,8 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.num_quit                       = None
         self.is_allin                       = None
         self.num_allin                      = None
-        self.is_expected_to_action          = None
-        self.num_expected_to_action         = None
+        self.is_needed_to_action            = None
+        self.num_needed_to_action           = None
 
         # who is expected to take a action
         self.turn               = None
@@ -62,6 +63,7 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.previous_id        = None
         self.previous_action    = None        
 
+
 class TexasHoldemPrivateState(roomai.abstract.AbstractPrivateState):
     def __init__(self):
         self.keep_cards = None
@@ -71,11 +73,13 @@ class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
     hand_cards        =    None
     available_actions =    None
 
+
 class TexasHoldemInfo(roomai.abstract.AbstractInfo):
     def __init__(self):
         self.public_state            = None
         self.private_state           = None
         self.person_state            = None
+
 
 
 AllCardsPattern = dict()
@@ -99,6 +103,7 @@ AllCardsPattern["2_1_1_1"] = \
 ["2_1_1_1",             False, True,  False, [2,1,1,1], 92,  []]
 AllCardsPattern["1_1_1_1_1"] = \
 ["1_1_1_1_1",           False, True,  False, [1,1,1,1,1],91, []]
+
 
 
 

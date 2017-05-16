@@ -12,7 +12,6 @@ def compete(env, players):
    :param players: the array of players
    :return: the final scores of this competition
    '''
-   
    isTerminal, scores, infos, public_state, person_states, private_state = env.init()
    for i in xrange(len(players)):
        players[i].receive_info(infos[i])
@@ -69,6 +68,8 @@ A player takes a action, and env forwards with this action.
 
 <pre>
 class AbstractAction:
+    def __init__(self,key):
+        raise NotImplementedError("The __init__ function hasn't been implemented"
     def get_key(self):
         raise NotImplementedError("The get_key function hasn't been implemented")
 </pre>
@@ -116,5 +117,4 @@ The round function holds a competition for the players, and computes the scores.
 The info and action are  important concepts for AI-bot developers, and are very different for different games. We list info and action structures for the games supported by roomai:
 
 ##### [KuhnPoker]()
-##### [DouDiZhu](https://github.com/roomai/RoomAI/blob/master/docs/DouDiZhuPoker/doudizhu.md)
 ##### [Texas]()

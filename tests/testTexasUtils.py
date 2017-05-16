@@ -1,5 +1,6 @@
 #!/bin/python
 import unittest
+
 import roomai.abstract
 from roomai.texas import TexasHoldemAction
 from roomai.texas import TexasHoldemEnv
@@ -8,6 +9,7 @@ from roomai.texas import TexasHoldemEnv
 class TexasUtilsTester(unittest.TestCase):
 
     def test_pattern(self):
+
         handcards1 =[roomai.abstract.PokerCard(0,0),roomai.abstract.PokerCard(1,1)]
         keepcards  =[roomai.abstract.PokerCard(2,2),roomai.abstract.PokerCard(3,3),roomai.abstract.PokerCard(4,0),roomai.abstract.PokerCard(5,1),roomai.abstract.PokerCard(6,2)]
         pattern    = TexasHoldemEnv.cards2pattern(handcards1, keepcards)
@@ -26,19 +28,20 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertEqual(pattern[3],False)
         self.assertEqual(pattern[4][0], 3)
         self.assertEqual(pattern[4][1], 2)
-        self.assertEqual(pattern[6][0].point, 3)
-        self.assertEqual(pattern[6][1].point, 3)
-        self.assertEqual(pattern[6][2].point, 3)
-        self.assertEqual(pattern[6][3].point, 2)
-        self.assertEqual(pattern[6][4].point, 2)
+        self.assertEqual(pattern[6][0].get_point_rank(), 3)
+        self.assertEqual(pattern[6][1].get_point_rank(), 3)
+        self.assertEqual(pattern[6][2].get_point_rank(), 3)
+        self.assertEqual(pattern[6][3].get_point_rank(), 2)
+        self.assertEqual(pattern[6][4].get_point_rank(), 2)
 
-        self.assertEqual(pattern[6][0].suit, 1)
-        self.assertEqual(pattern[6][1].suit, 2)
-        self.assertEqual(pattern[6][2].suit, 3)
-        self.assertEqual(pattern[6][3].suit, 0)
-        self.assertEqual(pattern[6][4].suit, 1)
+        self.assertEqual(pattern[6][0].get_suit_rank(), 1)
+        self.assertEqual(pattern[6][1].get_suit_rank(), 2)
+        self.assertEqual(pattern[6][2].get_suit_rank(), 3)
+        self.assertEqual(pattern[6][3].get_suit_rank(), 0)
+        self.assertEqual(pattern[6][4].get_suit_rank(), 1)
 
     def test_cards2(self):
+
         h1     = [roomai.abstract.PokerCard(7, 0), roomai.abstract.PokerCard(7, 1)]
         keep   = [roomai.abstract.PokerCard(3,1),roomai.abstract.PokerCard(4,2),roomai.abstract.PokerCard(5,3),roomai.abstract.PokerCard(6,0),roomai.abstract.PokerCard(7,2)]
         pattern = TexasHoldemEnv.cards2pattern(h1, keep)
@@ -56,17 +59,18 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertEqual(pattern[3],False)
         self.assertEqual(pattern[4][0], 4)
         self.assertEqual(pattern[4][1], 1)
-        self.assertEqual(pattern[6][0].point, 0)
-        self.assertEqual(pattern[6][1].point, 0)
-        self.assertEqual(pattern[6][2].point, 0)
-        self.assertEqual(pattern[6][3].point, 0)
-        self.assertEqual(pattern[6][4].point, 3)
+        self.assertEqual(pattern[6][0].get_point_rank(), 0)
+        self.assertEqual(pattern[6][1].get_point_rank(), 0)
+        self.assertEqual(pattern[6][2].get_point_rank(), 0)
+        self.assertEqual(pattern[6][3].get_point_rank(), 0)
+        self.assertEqual(pattern[6][4].get_point_rank(), 3)
 
-        self.assertEqual(pattern[6][0].suit, 0)
-        self.assertEqual(pattern[6][1].suit, 1)
-        self.assertEqual(pattern[6][2].suit, 2)
-        self.assertEqual(pattern[6][3].suit, 3)
-        self.assertEqual(pattern[6][4].suit, 3)
+        self.assertEqual(pattern[6][0].get_suit_rank(), 0)
+        self.assertEqual(pattern[6][1].get_suit_rank(), 1)
+        self.assertEqual(pattern[6][2].get_suit_rank(), 2)
+        self.assertEqual(pattern[6][3].get_suit_rank(), 3)
+        self.assertEqual(pattern[6][4].get_suit_rank(), 3)
+
 
         pattern1 = TexasHoldemEnv.cards2pattern(handcards1, keepcards)
         pattern2 = TexasHoldemEnv.cards2pattern(handcards2, keepcards)
@@ -78,6 +82,7 @@ class TexasUtilsTester(unittest.TestCase):
     def test_available_actions(self):
         env = TexasHoldemEnv()
         env.init()
+
         actions = TexasHoldemEnv.available_actions(env.public_state)
         self.assertTrue("allin_1000" in actions)
 
@@ -95,9 +100,11 @@ class TexasUtilsTester(unittest.TestCase):
             self.assertTrue(TexasHoldemEnv.is_action_valid(env.public_state, act))
 
 
+
     def test_is_action_valid(self):
         env = TexasHoldemEnv()
         env.init()
+
 
         print TexasHoldemAction.AllIn
         action = TexasHoldemAction("allin_1000")
@@ -116,3 +123,4 @@ class TexasUtilsTester(unittest.TestCase):
         p3 = TexasHoldemEnv.cards2pattern(h3, k)
         print TexasHoldemEnv.compare_patterns(p1, p2)
         print TexasHoldemEnv.compare_patterns(p2, p3)
+

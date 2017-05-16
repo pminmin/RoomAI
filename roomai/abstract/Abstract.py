@@ -3,7 +3,12 @@
 
 ######################################################################### Basic Concepts #####################################################
 class AbstractPublicState:
-    pass
+    turn            = None
+    previous_id     = None
+    previous_action = None
+
+    is_terminal     = False
+    scores          = None
 
 class AbstractPrivateState:
     pass
@@ -18,12 +23,6 @@ class AbstractInfo:
 
 class AbstractAction:
     def __init__(self, key):
-        '''
-        :return:
-            key: action's key 
-        :raises:
-            NotImplementedError: An error occurred when we doesn't implement this function
-        '''
         raise NotImplementedError("The __init__ function hasn't been implemented")
 
     def get_key(self):
@@ -91,8 +90,6 @@ class PokerCard:
             if isinstance(suit, str):
                 suit1 = suit_str_to_key[suit]
 
-        self.point  = point1
-        self.suit   = suit1
         self.point_str = point_key_to_str[point1]
         self.suit_str  = suit_key_to_str[suit1]
         self.String = "%s_%s"%(self.point_str, self.suit_str)
@@ -101,10 +98,10 @@ class PokerCard:
         return self.String
 
     def get_point_rank(self):
-        return self.point
+        return point_str_to_key[self.point_str]
 
     def get_suit_rank(self):
-        return self.suit
+        return suit_str_to_key[self.suit_str]
 
     @classmethod
     def compare(cls, pokercard1, pokercard2):

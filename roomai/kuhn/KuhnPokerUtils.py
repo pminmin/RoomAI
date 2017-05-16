@@ -3,6 +3,7 @@ import random
 import math
 import roomai.abstract
 
+
 class KuhnPokerAction(roomai.abstract.AbstractAction):
     bet   = 0;
     check = 1;
@@ -18,6 +19,7 @@ class KuhnPokerAction(roomai.abstract.AbstractAction):
             return "bet"
         else:
             return "check"
+
 
 class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
