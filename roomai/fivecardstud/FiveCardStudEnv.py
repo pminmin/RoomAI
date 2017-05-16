@@ -106,7 +106,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         elif action.option == FiveCardStudAction.Raise:
             self.action_raise(action)
         elif action.option == FiveCardStudAction.Showhand:
-            self.action_allin(action)
+            self.action_showhand(action)
         else:
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]" % (action.option))
         pu.previous_id     = pu.turn
@@ -219,7 +219,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     def action_fold(self, action):
         pu = self.public_state
         pu.is_quit[pu.turn] = True
-        pu.num_quit += 1
+        pu.num_quit        += 1
 
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
@@ -236,29 +236,42 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
 
-    def action_raise(self, action):
+
+    def action_bet(self, action):
         pu = self.public_state
 
-        pu.raise_account   = action.price + pu.bets[pu.turn] - pu.max_bet
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
-        pu.max_bet         = pu.bets[pu.turn]
+        pu.max_bet_sofar   = pu.bets[pu.turn]
 
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
         p = (pu.turn + 1)%pu.num_players
         while p != pu.turn:
-            if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+            if  pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+                pu.num_needed_to_action   += 1
+                pu.is_needed_to_action[p]  = True
+            p = (p + 1) % pu.num_players
+
+    def action_raise(self, action):
+        pu = self.public_state
+
+        pu.chips[pu.turn] -= action.price
+        pu.bets[pu.turn]  += action.price
+        pu.max_bet_sofar   = pu.bets[pu.turn]
+
+        pu.is_needed_to_action[pu.turn] = False
+        pu.num_needed_to_action        -= 1
+        p = (pu.turn + 1)%pu.num_players
+        while p != pu.turn:
+            if pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
                 pu.num_needed_to_action   += 1
                 pu.is_needed_to_action[p]  = True
             p = (p + 1) % pu.num_players
 
 
-    def action_allin(self, action):
+    def action_showhand(self, action):
         pu = self.public_state
-
-        pu.is_allin[pu.turn]   = True
-        pu.num_allin          += 1
 
         pu.bets[pu.turn]      += action.price
         pu.chips[pu.turn]      = 0
