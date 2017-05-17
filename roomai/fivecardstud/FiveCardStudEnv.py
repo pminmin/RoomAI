@@ -36,8 +36,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.public_state   = FiveCardStudPublicState()
         self.private_state  = FiveCardStudPrivateState()
         self.person_states  = [FiveCardStudPersonState for i in xrange(3)]
-        for i in xrange(self.num_players):
-            self.person_states[i].id = i
+
 
         ## initialize the cards
         allcards = []
@@ -71,6 +70,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
         ## person_state
         for i in xrange(self.num_players):
+            self.person_states[i].id = i
             self.person_states[i].first_hand_card  = self.private_state.all_hand_cards[i]
             self.person_states[i].second_hand_card = self.private_state.all_hand_cards[self.num_players+i]
         turn = self.public_state.turn
@@ -383,7 +383,9 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         return p
 
     @classmethod
-    def is_action_valid(cls, public_state, action):
+    def is_action_valid(cls, public_state, person_state, action):
+        if action.get_key() not in person_state.available_actions:
+            return False
         return True
 
     @classmethod
