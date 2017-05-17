@@ -47,12 +47,12 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         random.shuffle(allcards)
 
         ## private_state
-        self.private_state.all_hand_cards    = allcards
+        self.private_state.all_hand_cards      = allcards
 
         ## public_state
         self.public_state.num_players          = self.num_players
         self.public_state.chips                = self.chips
-        self.public_state.public_cards         = [self.private_state.all_hand_cards[0:1*self.num_players]]
+        self.public_state.second_hand_cards    = self.private_state.all_hand_cards[1*self.num_players:  2 * self.num_players]
         self.public_state.floor_bet            = self.floor_bet
         self.public_state.upper_bet            = min(self.public_state.chips)
 
@@ -72,6 +72,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         ## person_state
         for i in xrange(self.num_players):
             self.person_states[i].first_hand_card  = self.private_state.all_hand_cards[i]
+            self.person_states[i].second_hand_card = self.private_state.all_hand_cards[self.num_players+i]
         turn = self.public_state.turn
         print turn
         self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
@@ -92,9 +93,6 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             self.logger.critical("action=%s is invalid" % (action.get_key()))
             raise ValueError("action=%s is invalid" % (action.get_key()))
 
-        isTerminal = False
-        scores = []
-        infos = []
         pu = self.public_state
         pe = self.person_states
         pr = self.private_state
@@ -118,22 +116,39 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
         # computing_score
         if FiveCardStudEnv.is_compute_score(self.public_state):
-            isTerminal = True
-            scores = self.compute_score()
+            self.public_state.is_terminal = True
+            self.public_state.scores = self.compute_score()
+            if self.public_state.round < 4:
+                num_players                    = self.public_state.num_players
+                self.public_state.first_hand_cards  = self.private_state.all_hand_cards[0:                1 * num_players]
+                self.public_state.second_hand_cards = self.private_state.all_hand_cards[1 * num_players:  2 * num_players]
+                self.public_state.third_hand_cards  = self.private_state.all_hand_cards[2 * num_players:  3 * num_players]
+                self.public_state.fourth_hand_cards = self.private_state.all_hand_cards[3 * num_players:  4 * num_players]
+                self.public_state.fifth_hand_cards  = self.private_state.all_hand_cards[4 * num_players:  5 * num_players]
 
         # enter into the next stage
         elif FiveCardStudEnv.is_nextround(self.public_state):
-            add_cards = []
-            if pu.round == 1:   add_cards = pr.keep_cards[0:3]
-            if pu.round == 2:   add_cards = [pr.keep_cards[3]]
-            if pu.round == 3:   add_cards = [pr.keep_cards[4]]
+            num_players = self.public_state.num_players
+            add_cards   = []
+            if pu.round == 1:
+                self.public_state.third_hand_cards  = self.private_state.all_hand_cards[2 * num_players:  3 * num_players]
+                for i in xrange(num_players):
+                    self.person_states[i].third_hand_card  = self.private_state.all_hand_cards[2 * num_players:  3 * num_players]
+            if pu.round == 2:
+                self.public_state.fourth_hand_cards = self.private_state.all_hand_cards[3 * num_players:  4 * num_players]
+                for i in xrange(num_players):
+                    self.person_states[i].fourth_hand_card = self.private_state.all_hand_cards[3 * num_players:  4 * num_players]
+            if pu.round == 3:
+                self.public_state.fifth_hand_cards  = self.private_state.all_hand_cards[4 * num_players:  5 * num_players]
+                for i in xrange(num_players):
+                    self.person_states[i].fifth_hand_card  = self.private_state.all_hand_cards[4 * num_players:  5 * num_players]
 
 
-            pu.public_cards.extend(add_cards)
             pu.round = pu.round + 1
             pu.turn  = FiveCardStudEnv.choose_player_at_begining_of_round(pu)
-            pu.is_needed_to_action = [True for i in xrange(pu.num_players)]
+            pu.is_needed_to_action  = [True for i in xrange(pu.num_players)]
             pu.num_needed_to_action = self.public_state.num_players
+
 
         self.person_states[self.public_state.previous_id].available_actions = None
         self.person_states[self.public_state.turn].available_actions = self.available_actions(self.public_state)
@@ -297,29 +312,27 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     @classmethod
     def choose_player_at_begining_of_round(cls, public_state):
 
-        if len(public_state.public_cards) < public_state.round:
-            raise ValueError("len(public_state.public_cards)_%d < public_state.round_%d" % ( \
-                len(public_state.public_cards), public_state.round))
-        if len(public_state.public_cards[public_state.round - 1]) != public_state.num_players:
-            raise ValueError("len(public_state.public_cards[round-1])_%d != public_state.num_players_%d" % ( \
-                len(public_state.public_cards[public_state.round - 1]), public_state.num_players))
-
-        public_cards = public_state.public_cards
-        round        = public_state.round
+        round = public_state.round
         if round in [1,2,3]:
-            max_card = public_cards[round-1][0]
+            public_cards = None
+            if   round == 1: public_cards = public_state.second_hand_cards
+            elif round == 2: public_cards = public_state.third_hand_cards
+            elif round == 3: public_cards = public_state.fourth_hand_cards
+            max_card = public_cards[0]
             max_id   = 0
             for i in xrange(1, public_state.num_players):
-                if FiveCardStudPokerCard.compare(max_card, public_cards[round-1][i]) < 0:
-                    max_card = public_cards[round-1][i]
+                if FiveCardStudPokerCard.compare(max_card, public_cards[i]) < 0:
+                    max_card = public_cards[i]
                     max_id   = i
             return max_id
 
         elif round == 4:
-            max_cards = public_cards[0:4][0]
+            max_cards = [public_state.second_hand_cards[0], public_state.third_hand_cards[0],\
+                         public_state.fourth_hand_cards[0], public_state.fifth_hand_cards[0]]
             max_id    = 0
             for i in xrange(1, public_state.num_players):
-                tmp = public_cards[0:4][i]
+                tmp = [public_state.second_hand_cards[i], public_state.third_hand_cards[i], \
+                       public_state.fourth_hand_cards[i], public_state.fifth_hand_cards[i]]
                 if FiveCardStudEnv.compare_cards(max_cards, tmp) < 0:
                     max_cards = tmp
                     max_id    = i
