@@ -18,3 +18,15 @@ class FiveCardStudTester(unittest.TestCase):
                  FiveCardStudPokerCard("6_Spade")]
 
 
+    def testEnv(self):
+        env = FiveCardStudEnv();
+        infos, pu, pes, pr = env.init()
+
+        turn = pu.turn
+        assert(pes[turn].available_actions is not None)
+        print pes[turn].available_actions
+        available_actions = pes[turn].available_actions
+        assert("call_0" not in available_actions)
+        assert("fold_0" in available_actions)
+        assert("check_0"  in available_actions)
+        

@@ -121,7 +121,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             pu.fifth_hand_cards  = pr.all_hand_cards[4 * num_players:  5 * num_players]
             
             pu.is_terminal = True
-            pu.scores      = self.compute_score(pu):
+            pu.scores      = self.compute_score(pu)
 
             for i in xrange(num_players):
                 pu.chips[i] += pu.bets[i] + pu.scores[i]
