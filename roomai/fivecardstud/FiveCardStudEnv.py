@@ -99,15 +99,17 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         if action.option == FiveCardStudAction.Fold:
             self.action_fold(action)
         elif action.option == FiveCardStudAction.Check:
-            self.action_Check(action)
+            self.action_check(action)
         elif action.option == FiveCardStudAction.Call:
             self.action_call(action)
         elif action.option == FiveCardStudAction.Raise:
             self.action_raise(action)
         elif action.option == FiveCardStudAction.Showhand:
             self.action_showhand(action)
+        elif action.option == FiveCardStudAction.Bet:
+            self.action_bet(action)
         else:
-            raise Exception("action.option(%s) not in [Fold, Check_, Call, Raise, Showhand]" % (action.option))
+            raise Exception("action.option(%s) not in [Fold, Check_, Call, Raise, Showhand, Bet]" % (action.option))
         pu.previous_id     = pu.turn
         pu.previous_action = action
         pu.previous_round  = pu.round
@@ -121,12 +123,22 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             pu.third_hand_cards  = pr.all_hand_cards[2 * num_players:  3 * num_players]
             pu.fourth_hand_cards = pr.all_hand_cards[3 * num_players:  4 * num_players]
             pu.fifth_hand_cards  = pr.all_hand_cards[4 * num_players:  5 * num_players]
-            
+            pu.round             = 4
+
             pu.is_terminal = True
             pu.scores      = self.compute_scores(pu)
 
             for i in xrange(num_players):
                 pu.chips[i] += pu.bets[i] + pu.scores[i]
+
+            for i in xrange(num_players):
+                pe[i].first_hand_card  = pr.all_hand_cards[0 * num_players + i]
+                pe[i].second_hand_card = pr.all_hand_cards[1 * num_players + i]
+                pe[i].third_hand_card  = pr.all_hand_cards[2 * num_players + i]
+                pe[i].fourth_hand_card = pr.all_hand_cards[3 * num_players + i]
+                pe[i].fifth_hand_card  = pr.all_hand_cards[4 * num_players + i]
+
+            pe[pu.previous_id].available_actions = None
 
         # enter into the next stage
         elif FiveCardStudEnv.is_nextround(self.public_state):
@@ -146,17 +158,20 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                     pe[i].fifth_hand_card  = pr.all_hand_cards[4 * num_players + i]
 
 
-            pu.round = pu.round + 1
-            pu.turn  = FiveCardStudEnv.choose_player_at_begining_of_round(pu)
+            pu.round                = pu.round + 1
+            pu.turn                 = FiveCardStudEnv.choose_player_at_begining_of_round(pu)
             pu.is_needed_to_action  = [True for i in xrange(pu.num_players)]
             pu.num_needed_to_action = self.public_state.num_players
             pu.is_raise             = [False for i in xrange(pu.num_players)]
             pu.num_raise            = 0
 
+            pe[pu.previous_id].available_actions = None
+            pe[pu.turn].available_actions        = self.available_actions(pu)
 
-        pe[pu.previous_id].available_actions = None
-        pe[pu.turn].available_actions        = self.available_actions(pu)
-        infos = self.gen_infos()
+        else:
+            pe[pu.previous_id].available_actions = None
+            pe[pu.turn].available_actions        = self.available_actions(pu)
+        infos                                = self.gen_infos()
 
 
         return infos, self.public_state, self.person_states, self.private_state
@@ -311,7 +326,8 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 ############################################# Utils Function ######################################################
     @classmethod
     def is_valid_initialization(cls, env):
-        env.chips
+        if len(env.chips) != env.num_players:
+            raise ValueError("len(env.chips)%d != env.num_players%d"%(len(env.chips, env.num_players)))
 
         return True
 
@@ -427,11 +443,11 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                     if Call_count == 0:
                         actions["Check_0"]                 = FiveCardStudAction("Check_0")
                     else:
-                        actions["Call_%d"%(Call_count )]   = FiveCardStudAction("Call_%d".format(Call_count))
+                        actions["Call_%d"%(Call_count )]   = FiveCardStudAction("Call_%d"%(Call_count))
                 ## "raise"
                 if pu.is_raise[turn] == False:
                     for i in xrange(Call_count + 1,Showhandcount):
-                        actions["Raise_%d".format(i)] = FiveCardStudAction("Raise_%d"%i)
+                        actions["Raise_%d"%(i)] = FiveCardStudAction("Raise_%d"%i)
 
 
         elif round == 4:
@@ -449,11 +465,11 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 actions["Fold_0"]     = FiveCardStudAction("Fold_0")
                 ## Call
                 if Call_count  == Showhandcount:
-                    actions["Showhand_%d".format(Call_count)] = FiveCardStudAction("Showhand_%d".format(Call_count))
+                    actions["Showhand_%d"%(Call_count)]       = FiveCardStudAction("Showhand_%d"%(Call_count))
                 elif Call_count == 0:
                     actions["Check_0"]                        = FiveCardStudAction("Check_0")
                 else:
-                    actions["Call_%d"%(Call_count )]          = FiveCardStudAction("Call_%d".format(Call_count))
+                    actions["Call_%d"%(Call_count )]          = FiveCardStudAction("Call_%d"%(Call_count))
 
         else:
             raise ValueError("pulic_state.round(%d) not in [1,2,3,4]" % (public_state.turn))
@@ -530,7 +546,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             if len(suitrank2cards[s]) >= 5:
                 numStraight = 1
                 for i in xrange(len(suitrank2cards[s]) - 2, -1, -1):
-                    if suitrank2cards[s][i].point == suitrank2cards[s][i + 1].point - 1:
+                    if suitrank2cards[s][i].get_point_rank() == suitrank2cards[s][i + 1].get_point_rank() - 1:
                         numStraight += 1
                     else:
                         numStraight = 1
