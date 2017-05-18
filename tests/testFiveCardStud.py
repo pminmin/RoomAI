@@ -1,6 +1,7 @@
 #!/bin/python
 from roomai.fivecardstud import FiveCardStudEnv
 from roomai.fivecardstud import FiveCardStudPokerCard
+from roomai.fivecardstud import FiveCardStudAction
 import unittest
 
 class FiveCardStudTester(unittest.TestCase):
@@ -26,7 +27,20 @@ class FiveCardStudTester(unittest.TestCase):
         assert(pes[turn].available_actions is not None)
         print pes[turn].available_actions
         available_actions = pes[turn].available_actions
-        assert("call_0" not in available_actions)
-        assert("fold_0" in available_actions)
-        assert("check_0"  in available_actions)
-        
+        assert("Call_0" not in available_actions)
+        assert("Fold_0" in available_actions)
+        assert("Check_0"  in available_actions)
+
+        showhand_act_key = ""
+        for act_str in available_actions:
+            if "Showhand" in act_str:
+                showhand_act_key = act_str
+
+        env.forward(FiveCardStudAction(showhand_act_key))
+        env.forward(FiveCardStudAction(showhand_act_key))
+        env.forward(FiveCardStudAction(showhand_act_key))
+
+        assert(env.public_state.is_terminal == True)
+
+
+

@@ -48,8 +48,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.public_state.num_quit              = 0
         self.public_state.is_allin              = [False for i in xrange(self.num_players)]
         self.public_state.num_allin             = 0
-        self.public_state.is_needed_to_action = [True for i in xrange(self.num_players)]
-        self.public_state.num_needed_to_action= self.public_state.num_players
+        self.public_state.is_needed_to_action   = [True for i in xrange(self.num_players)]
+        self.public_state.num_needed_to_action  = self.public_state.num_players
 
         self.public_state.bets                  = [0 for i in xrange(self.num_players)]
         self.public_state.chips                 = self.chips
@@ -68,7 +68,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             self.public_state.chips[big]    = 0
             self.public_state.is_allin[big] = True
             self.public_state.num_allin    += 1
-        self.public_state.max_bet       = self.public_state.bets[big]
+        self.public_state.max_bet_sofar     = self.public_state.bets[big]
         self.public_state.raise_account = self.big_blind_bet
 
         if self.public_state.chips[small] > self.big_blind_bet / 2:
@@ -353,10 +353,10 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
     def action_raise(self, action):
         pu = self.public_state
 
-        pu.raise_account   = action.price + pu.bets[pu.turn] - pu.max_bet
+        pu.raise_account   = action.price + pu.bets[pu.turn] - pu.max_bet_sofar
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
-        pu.max_bet         = pu.bets[pu.turn]
+        pu.max_bet_sofar   = pu.bets[pu.turn]
 
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
@@ -379,8 +379,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
-        if pu.bets[pu.turn] > pu.max_bet:
-            pu.max_bet = pu.bets[pu.turn]
+        if pu.bets[pu.turn] > pu.max_bet_sofar:
+            pu.max_bet_sofar = pu.bets[pu.turn]
             p = (pu.turn + 1) % pu.num_players
             while p != pu.turn:
                 if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
@@ -388,6 +388,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                     pu.is_needed_to_action[p] = True
                 p = (p + 1) % pu.num_players
 
+            pu.max_bet_sofar = pu.bets[pu.turn]
 
 #####################################Utils Function ##############################
 
@@ -624,23 +625,23 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             key_actions[action.get_key()] = action
 
         ## for check
-        if pu.bets[turn] == pu.max_bet:
+        if pu.bets[turn] == pu.max_bet_sofar:
             action = TexasHoldemAction(TexasHoldemAction.Check + "_0")
             if cls.is_action_valid(public_state, action):
                 key_actions[action.get_key()] = action
 
         ## for call
-        if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn]:
-            action = TexasHoldemAction(TexasHoldemAction.Call + "_%d" % (pu.max_bet - pu.bets[turn]))
+        if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn]:
+            action = TexasHoldemAction(TexasHoldemAction.Call + "_%d" % (pu.max_bet_sofar - pu.bets[turn]))
             if cls.is_action_valid(public_state, action):
                 key_actions[action.get_key()] = action
 
         ## for raise
-        if pu.bets[turn] != pu.max_bet and pu.chips[turn] > pu.max_bet - pu.bets[turn] + pu.raise_account:
-            num = (pu.chips[turn] - (pu.max_bet - pu.bets[turn])) / pu.raise_account
+        if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn] + pu.raise_account:
+            num = (pu.chips[turn] - (pu.max_bet_sofar - pu.bets[turn])) / pu.raise_account
             for i in xrange(1, num + 1):
                 action = TexasHoldemAction(
-                    TexasHoldemAction.Raise + "_%d" % ((pu.max_bet - pu.bets[turn]) + pu.raise_account * i))
+                    TexasHoldemAction.Raise + "_%d" % ((pu.max_bet_sofar - pu.bets[turn]) + pu.raise_account * i))
                 if cls.is_action_valid(public_state, action):
                     key_actions[action.get_key()] = action
 
@@ -667,19 +668,19 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             return True
 
         elif action.option == TexasHoldemAction.Check:
-            if pu.bets[pu.turn] == pu.max_bet:
+            if pu.bets[pu.turn] == pu.max_bet_sofar:
                 return True
             else:
                 return False
 
         elif action.option == TexasHoldemAction.Call:
-            if action.price == pu.max_bet - pu.bets[pu.turn]:
+            if action.price == pu.max_bet_sofar - pu.bets[pu.turn]:
                 return True
             else:
                 return False
 
         elif action.option == TexasHoldemAction.Raise:
-            raise_account = action.price - (pu.max_bet - pu.bets[pu.turn])
+            raise_account = action.price - (pu.max_bet_sofar - pu.bets[pu.turn])
             if raise_account == 0:    return False
             if raise_account % pu.raise_account == 0:
                 return True

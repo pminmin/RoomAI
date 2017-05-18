@@ -56,7 +56,7 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.bets               = None
 
         #max_bet = max(self.bets)
-        self.max_bet            = None
+        self.max_bet_sofar      = None
         #the raise acount
         self.raise_account      = None
 

@@ -176,7 +176,7 @@ class TexasEnvTester(unittest.TestCase):
 
         action = TexasHoldemAction("allin_440")
         infos,public_state, person_states, private_state  = env.forward(action)
-        self.assertEqual(infos[0].public_state.max_bet, 500)
+        self.assertEqual(infos[0].public_state.max_bet_sofar, 500)
         print "2", infos[2].person_state.available_actions.keys()
         self.assertEqual(env.public_state.is_allin[1],True)
         self.assertEqual(infos[0].public_state.stage, 3)
