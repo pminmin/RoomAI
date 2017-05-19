@@ -51,7 +51,7 @@ class FiveCardStudTester(unittest.TestCase):
 
     def testRandomPlayer(self):
 
-        for i in xrange(1000):
+        for i in xrange(100):
             players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in xrange(3)]
             env     = roomai.fivecardstud.FiveCardStudEnv()
             env.num_players = 3

@@ -122,10 +122,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             raise ValueError("action=%s is invalid" % (action.get_key()))
 
 
-        isTerminal = False
-        scores     = []
-        infos      = []
         pu         = self.public_state
+        pe         = self.person_states
         pr         = self.private_state
 
         if action.option == TexasHoldemAction.Fold:
@@ -142,17 +140,17 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             raise Exception("action.option(%s) not in [Fold, Check, Call, Raise, AllIn]"%(action.option))
         pu.previous_id     = pu.turn
         pu.previous_action = action
-        pu.turn            = self.next_player(pu)
         pu.is_terminal     = False
         pu.scores          = []
 
         # computing_score
         if TexasHoldemEnv.is_compute_score(self.public_state):
             pu.is_terminal = True
-            pu.scores      = self.compute_score()
+            pu.scores      = self.compute_scores()
             ## need showdown
             if pu.num_quit + 1 < pu.num_players:
                 pu.public_cards = pr.keep_cards[0:5]
+            pu.turn        = -1
 
         # enter into the next stage
         elif TexasHoldemEnv.is_nextround(self.public_state):
@@ -163,13 +161,25 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
             pu.public_cards.extend(add_cards)
             pu.stage                      = pu.stage + 1
-            pu.turn                       = (pu.dealer_id + 1) % pu.num_players
-            pu.is_needed_to_action      = [True for i in xrange(pu.num_players)]
-            pu.num_needed_to_action     = self.public_state.num_players
 
-        self.person_states[self.public_state.previous_id].available_actions = None
-        self.person_states[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
-        infos = self.gen_infos()
+            pu.num_needed_to_action       = 0
+            pu.is_needed_to_action        = [False for i in xrange(pu.num_players)]
+            for i in xrange(pu.num_players):
+                if pu.is_quit[i] != True and pu.is_allin[i] != True:
+                    pu.is_needed_to_action[i]      = True
+                    pu.num_needed_to_action       += 1
+
+            pu.turn                                             = pu.dealer_id
+            pu.turn                                             = self.next_player(pu)
+            pe[self.public_state.previous_id].available_actions = None
+            pe[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
+
+        ##normal
+        else:
+            pu.turn                                                             = self.next_player(pu)
+            self.person_states[self.public_state.previous_id].available_actions = None
+            self.person_states[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
+
 
         if self.logger.level <= logging.DEBUG:
             self.logger.debug("TexasHoldemEnv.forward: num_quit+num_allin = %d+%d = %d, action = %s, stage = %d"%(\
@@ -180,6 +190,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.stage\
             ))
 
+        infos = self.gen_infos()
         return infos, self.public_state, self.person_states, self.private_state
 
     #override
@@ -261,7 +272,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
 
 
-    def compute_score(self):
+    def compute_scores(self):
         '''
         :return: a score array
         '''
@@ -332,8 +343,8 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
     def action_fold(self, action):
         pu = self.public_state
-        pu.is_quit[pu.turn] = True
-        pu.num_quit += 1
+        pu.is_quit[pu.turn]             = True
+        pu.num_quit                    += 1
 
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
@@ -415,10 +426,10 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
         # below need showdown
 
-        if pu.num_players ==  pu.num_quit + pu.num_allin + 1 and pu.num_needed_to_action == 0:
+        if pu.num_players <=  pu.num_quit + pu.num_allin +1 and pu.num_needed_to_action == 0:
             return True
 
-        if pu.stage == StageSpace.fourthStage and self.is_nextround():
+        if pu.stage == StageSpace.fourthStage and self.is_nextround(pu):
             return True
 
         return False

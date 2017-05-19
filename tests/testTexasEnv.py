@@ -129,18 +129,27 @@ class TexasEnvTester(unittest.TestCase):
 
         action = TexasHoldemAction("call_50")
         infos,public_state, person_states, private_state  = env.forward(action)
+        assert(public_state.stage, StageSpace.firstStage)
         print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
+        print public_state.stage
+        print public_state.chips
+        print public_state.bets
+        print public_state.dealer_id
         # dealer_id = 0
         # turn  = 2
         # stage = 1
-        # chips:40,   450, 980
-        # bets :60,   50,  20
+        # chips:40,   440, 980
+        # bets :60,   60,  20
         # state:n,   n,  n
         # raise_account: 40
         # expected:f,f,t
 
         action = TexasHoldemAction("call_40")
         infos,public_state, person_states, private_state  = env.forward(action)
+        print "\n\n"
+        print "stage",public_state.stage
+        print "dealer_id+1", (public_state.dealer_id+1)%public_state.num_players
+        print "is_needed_to_action", public_state.is_needed_to_action
         self.assertEqual(infos[0].public_state.stage,StageSpace.secondStage)
         self.assertEqual(env.public_state.chips[1],440)
         self.assertEqual(env.public_state.turn, 1)
@@ -206,3 +215,23 @@ class TexasEnvTester(unittest.TestCase):
     def testEnv2players(self):
         env = TexasHoldemEnv()
         env.num_players = 2
+
+    def testRandomPlayer(self):
+        import random
+        random.seed(0)
+
+        for i in xrange(100):
+            players = [TexasHoldemRandomPlayer() for i in xrange(3)]
+
+            env = TexasHoldemEnv()
+            env.num_players = 3
+            env.chips = [1000 for i in xrange(env.num_players)]
+            infos, public_state, person_states, private_state = env.init()
+
+            while public_state.is_terminal != True:
+                for i in xrange(3):
+                    players[i].receive_info(infos[i])
+                turn   = public_state.turn
+                action = players[turn].take_action()
+
+                infos, public_state, person_states, private_state = env.forward(action)
