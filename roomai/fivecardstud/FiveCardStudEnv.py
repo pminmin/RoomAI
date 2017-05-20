@@ -23,8 +23,8 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     def gen_infos(self):
         infos = [FiveCardStudInfo() for i in xrange(self.public_state.num_players)]
         for i in xrange(self.public_state.num_players):
-            infos[i].person_state = self.person_states[i].roomai_deepcopy()
-            infos[i].public_state = self.public_state.roomai_deepcopy()
+            infos[i].person_state = self.person_states[i].__deepcopy__()
+            infos[i].public_state = self.public_state.__deepcopy__()
 
         return infos
 
@@ -46,7 +46,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         random.shuffle(allcards)
 
         ## private_state
-        self.private_state.all_hand_cards      = allcards
+        self.private_state.all_hand_cards      = allcards[0: 5 * self.num_players]
 
         ## public_state
         self.public_state.num_players          = self.num_players
@@ -297,7 +297,10 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     @classmethod
     def is_valid_initialization(cls, env):
         if len(env.chips) != env.num_players:
-            raise ValueError("len(env.chips)%d != env.num_players%d"%(len(env.chips, env.num_players)))
+            raise ValueError("len(env.chips)%d != env.num_players%d"%(len(env.chips), env.num_players))
+
+        if env.num_players * 5 > 52:
+            raise ValueError("env.num_players * 5 must be less than 51, now env.num_players = %d"%(env.num_players))
 
         return True
 

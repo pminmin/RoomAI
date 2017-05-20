@@ -257,7 +257,7 @@ class TexasEnvTester(unittest.TestCase):
     def testCompete(self):
         import random
         random.seed(100)
-        players = [TexasHoldemRandomPlayer() for i in xrange(2)]
+        players = [TexasHoldemRandomPlayer() for i in xrange(5)]
         env = TexasHoldemEnv()
 
         scores = TexasHoldemEnv.compete(env, players)

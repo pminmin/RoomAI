@@ -6,12 +6,12 @@ import copy
 class FiveCardStudPrivateState(roomai.abstract.AbstractPrivateState):
     all_hand_cards    = None
 
-    def roomai_deepcopy(self, memodict={}):
+    def __deepcopy__(self, memodict={}):
         copyinstance = FiveCardStudPrivateState()
         if self.all_hand_cards is None:
             copyinstance.all_hand_cards = None
         else:
-            copyinstance.all_hand_cards = [self.all_hand_cards[i].roomai_deepcopy() for i in xrange(len(self.all_hand_cards))]
+            copyinstance.all_hand_cards = [self.all_hand_cards[i].__deepcopy__() for i in xrange(len(self.all_hand_cards))]
         return copyinstance
 
 
@@ -50,33 +50,33 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     is_terminal            = None
     scores                 = None
 
-    def roomai_deepcopy(self):
+    def __deepcopy__(self,memodict={}):
         copyinstance = FiveCardStudPublicState()
 
         if self.first_hand_cards is None:
             copyinstance.first_hand_cards = None
         else:
-            copyinstance.first_hand_cards = [self.first_hand_cards[i].roomai_deepcopy() for i in xrange(len(self.first_hand_cards))]
+            copyinstance.first_hand_cards = [self.first_hand_cards[i].__deepcopy__() for i in xrange(len(self.first_hand_cards))]
 
         if self.second_hand_cards is None:
             copyinstance.second_hand_cards = None
         else:
-            copyinstance.second_hand_cards = [self.second_hand_cards[i].roomai_deepcopy() for i in xrange(len(self.second_hand_cards))]
+            copyinstance.second_hand_cards = [self.second_hand_cards[i].__deepcopy__() for i in xrange(len(self.second_hand_cards))]
 
         if self.third_hand_cards is None:
             copyinstance.third_hand_cards = None
         else:
-            copyinstance.third_hand_cards = [self.third_hand_cards[i].roomai_deepcopy() for i in xrange(len(self.third_hand_cards))]
+            copyinstance.third_hand_cards = [self.third_hand_cards[i].__deepcopy__() for i in xrange(len(self.third_hand_cards))]
 
         if self.fourth_hand_cards is None:
             copyinstance.fourth_hand_cards = None
         else:
-            copyinstance.fourth_hand_cards = [self.fourth_hand_cards[i].roomai_deepcopy() for i in xrange(len(self.fourth_hand_cards))]
+            copyinstance.fourth_hand_cards = [self.fourth_hand_cards[i].__deepcopy__() for i in xrange(len(self.fourth_hand_cards))]
 
         if self.fifth_hand_cards is None:
             copyinstance.fifth_hand_cards = None
         else:
-            copyinstance.fifth_hand_cards = [self.fifth_hand_cards[i].roomai_deepcopy() for i in xrange(len(self.fifth_hand_cards))]
+            copyinstance.fifth_hand_cards = [self.fifth_hand_cards[i].__deepcopy__() for i in xrange(len(self.fifth_hand_cards))]
 
         copy.num_quit          = self.num_quit
         if self.is_quit is None:
@@ -121,7 +121,7 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
         if self.previous_action is None:
             copyinstance.previous_action = None
         else:
-            copyinstance.previous_action = self.previous_action.roomai_deepcopy()
+            copyinstance.previous_action = self.previous_action.__deepcopy__()
         copyinstance.previous_round  = self.previous_round
 
         copyinstance.is_terminal = self.is_terminal
@@ -145,39 +145,39 @@ class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
     fifth_hand_card   = None
 
 
-    def roomai_deepcopy(self, memodict={}):
+    def __deepcopy__(self, memodict={}):
         copyinstance    = FiveCardStudPersonState()
         copyinstance.id = self.id
 
         if self.available_actions is not None:
             copyinstance.available_actions = dict()
             for key in self.available_actions:
-                copyinstance.available_actions[key] = self.available_actions[key].roomai_deepcopy()
+                copyinstance.available_actions[key] = self.available_actions[key].__deepcopy__()
         else:
             copyinstance.available_actions = None
 
         if self.first_hand_card is not None:
-            copyinstance.first_hand_card = self.first_hand_card.roomai_deepcopy()
+            copyinstance.first_hand_card = self.first_hand_card.__deepcopy__()
         else:
             copyinstance.first_hand_card = None
 
         if self.second_hand_card is not None:
-            copyinstance.second_hand_card = self.second_hand_card.roomai_deepcopy()
+            copyinstance.second_hand_card = self.second_hand_card.__deepcopy__()
         else:
             copyinstance.second_hand_card = None
 
         if self.third_hand_card is not None:
-            copyinstance.third_hand_card = self.third_hand_card.roomai_deepcopy()
+            copyinstance.third_hand_card = self.third_hand_card.__deepcopy__()
         else:
             copyinstance.third_hand_card = None
 
         if self.fourth_hand_card is not None:
-            copyinstance.fourth_hand_card = self.fourth_hand_card.roomai_deepcopy()
+            copyinstance.fourth_hand_card = self.fourth_hand_card.__deepcopy__()
         else:
             copyinstance.fourth_hand_card = None
 
         if self.fifth_hand_card is not None:
-            copyinstance.fifth_hand_card = self.fifth_hand_card.roomai_deepcopy()
+            copyinstance.fifth_hand_card = self.fifth_hand_card.__deepcopy__()
         else:
             copyinstance.fifth_hand_card = None
 
@@ -190,8 +190,8 @@ class FiveCardStudInfo(roomai.abstract.AbstractInfo):
     person_state  = None
 
 
-    def roomai_deepcopy(self, memodict={}):
+    def __deepcopy__(self, memodict={}):
         info = FiveCardStudInfo()
-        info.public_state = self.public_state.roomai_deepcopy()
-        info.public_state = self.person_state.roomai_deepcopy()
+        info.public_state = self.public_state.__deepcopy__()
+        info.public_state = self.person_state.__deepcopy__()
         return info

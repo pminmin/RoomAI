@@ -19,10 +19,21 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.chips          = [1000 for i in xrange(self.num_players)]
         self.big_blind_bet  = 10
 
+    @classmethod
+    def is_valid_initialization(cls, env):
+        if len(env.chips) != env.num_players:
+            raise ValueError("len(env.chips)%d != env.num_players%d" % (len(env.chips), env.num_players))
+
+        if env.num_players * 7 > 52:
+            raise ValueError("env.num_players * 5 must be less than 51, now env.num_players = %d" % (env.num_players))
+
+        return True
 
     # Before init, you need set the num_players, dealer_id, and chips
     #@override
     def init(self):
+
+        self.is_valid_initialization(self)
 
         allcards = []
         for i in xrange(13):
@@ -87,14 +98,14 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         self.private_state = TexasHoldemPrivateState()
         self.private_state.hand_cards       = [[] for i in xrange(self.num_players)]
         for i in xrange(self.num_players):
-            self.private_state.hand_cards[i]  = copy.deepcopy(hand_cards[i])
-        self.private_state.keep_cards = copy.deepcopy(keep_cards)
+            self.private_state.hand_cards[i]  = [hand_cards[i][j].__deepcopy__() for j in xrange(len(hand_cards[i]))]
+        self.private_state.keep_cards         = [keep_cards[i].__deepcopy__() for i in xrange(len(keep_cards))]
 
         ## person info
         self.person_states                      = [TexasHoldemPersonState() for i in xrange(self.num_players)]
         for i in xrange(self.num_players):
             self.person_states[i].id = i
-            self.person_states[i].hand_cards = copy.deepcopy(hand_cards[i])
+            self.person_states[i].hand_cards = [hand_cards[i][j].__deepcopy__() for j in xrange(len(hand_cards[i]))]
         self.person_states[self.public_state.turn].available_actions = self.available_actions(self.public_state)
 
         infos = self.gen_infos()
@@ -255,9 +266,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
     def gen_infos(self):
         infos = [TexasHoldemInfo() for i in xrange(self.public_state.num_players)]
         for i in xrange(len(infos)):
-            infos[i].person_state = self.person_states[i].roomai_deepcopy()
+            infos[i].person_state = self.person_states[i].__deepcopy__()
         for i in xrange(len(infos)):
-            infos[i].public_state = copy.deepcopy(self.public_state)
+            infos[i].public_state = self.public_state.__deepcopy__()
         return infos
 
 
@@ -701,3 +712,4 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 return False
         else:
             raise Exception("Invalid action.option" + action.option)
+
