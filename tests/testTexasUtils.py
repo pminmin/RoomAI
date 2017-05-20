@@ -123,4 +123,3 @@ class TexasUtilsTester(unittest.TestCase):
         p3 = TexasHoldemEnv.cards2pattern(h3, k)
         print TexasHoldemEnv.compare_patterns(p1, p2)
         print TexasHoldemEnv.compare_patterns(p2, p3)
-

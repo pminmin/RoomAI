@@ -112,3 +112,6 @@ class PokerCard:
             return pr1 - pr2
         else:
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
+    def roomai_deepcopy(self, memodict={}):
+        copyinstance = PokerCard(self.String)
+        return copyinstance

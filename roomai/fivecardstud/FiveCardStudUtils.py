@@ -31,7 +31,9 @@ class FiveCardStudPokerCard(roomai.abstract.PokerCard):
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
 
 
-
+    def roomai_deepcopy(self, memodict={}):
+        copyinstance = FiveCardStudPokerCard(self.String)
+        return copyinstance
 
 
 

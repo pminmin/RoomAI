@@ -28,7 +28,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state.epoch         = 0
         self.public_state.action_list   = []
         self.public_state.is_terminal   = False
-        self.public_state.scores        = []
+        self.public_state.scores        = None
         self.person_states[0].id = 0
         self.person_states[0].card      = card0
         self.person_states[1].id        = 1
@@ -48,7 +48,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
         if self.public_state.epoch == 1:
             self.public_state.is_terminal = False
-            self.public_state.scores      = []
+            self.public_state.scores      = None
             infos = self.gen_infos()
             return infos, self.public_state, self.person_states, self.private_state
 
@@ -61,7 +61,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
                 return infos,self.public_state, self.person_states, self.private_state
             else:
                 self.public_state.is_terminal = False
-                self.public_state.scores      = []
+                self.public_state.scores      = None
                 infos                         = self.gen_infos()
                 return infos,self.public_state, self.person_states, self.private_state
 

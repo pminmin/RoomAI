@@ -2,6 +2,7 @@
 #coding:utf-8
 
 import roomai.abstract
+import copy
 
 class StageSpace:
     firstStage  = 1
@@ -28,6 +29,9 @@ class TexasHoldemAction(roomai.abstract.AbstractAction):
         self.String = "%s_%d"%(self.option, self.price)
     def get_key(self):
         return self.String
+
+    def roomai_deepcopy(self):
+        return TexasHoldemAction(self.String)
 
 class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
     def __init__(self):
@@ -65,21 +69,40 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
 
 
 class TexasHoldemPrivateState(roomai.abstract.AbstractPrivateState):
-    def __init__(self):
-        self.keep_cards = None
-        self.hand_cards = None
+    keep_cards = None
+    hand_cards = None
+
+
 class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
     id                =    None
     hand_cards        =    None
     available_actions =    None
 
+    def roomai_deepcopy(self, memodict={}):
+        copyinstance    = TexasHoldemPersonState()
+        copyinstance.id = self.id
+        if self.hand_cards is not None:
+            copyinstance.hand_cards = [copy.deepcopy(self.hand_cards[i]) for i in xrange(len(self.hand_cards))]
+        else:
+            copyinstance.hand_cards = None
+
+        if self.available_actions is not None:
+            copyinstance.available_actions = dict()
+            for key in self.available_actions:
+                copyinstance.available_actions[key] = copy.deepcopy(self.available_actions[key])
+        else:
+            copyinstance.available_actions = None
+        return copyinstance
 
 class TexasHoldemInfo(roomai.abstract.AbstractInfo):
-    def __init__(self):
-        self.public_state            = None
-        self.private_state           = None
-        self.person_state            = None
+    public_state            = None
+    person_state            = None
 
+    def roomai_deepcopy(self, memodict={}):
+        info = TexasHoldemInfo()
+        info.public_state = copy.deepcopy(self.public_state)
+        info.public_state = copy.deepcopy(self.person_state)
+        return info
 
 
 AllCardsPattern = dict()

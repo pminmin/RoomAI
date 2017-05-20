@@ -81,7 +81,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             self.public_state.num_allin      += 1
 
         self.public_state.is_terminal         = False
-        self.public_state.scores              = []
+        self.public_state.scores              = None
 
         # private info
         self.private_state = TexasHoldemPrivateState()
@@ -141,16 +141,17 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         pu.previous_id     = pu.turn
         pu.previous_action = action
         pu.is_terminal     = False
-        pu.scores          = []
+        pu.scores          = None
 
         # computing_score
-        if TexasHoldemEnv.is_compute_score(self.public_state):
-            pu.is_terminal = True
-            pu.scores      = self.compute_scores()
+        if TexasHoldemEnv.is_compute_scores(self.public_state):
             ## need showdown
-            if pu.num_quit + 1 < pu.num_players:
-                pu.public_cards = pr.keep_cards[0:5]
-            pu.turn        = -1
+            pu.public_cards = pr.keep_cards[0:5]
+            pu.is_terminal  = True
+            pu.scores       = self.compute_scores()
+            pu.turn                                             = None
+            pe[self.public_state.previous_id].available_actions = None
+
 
         # enter into the next stage
         elif TexasHoldemEnv.is_nextround(self.public_state):
@@ -196,76 +197,65 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
     #override
     @classmethod
     def compete(cls, env, players):
-        total_scores = [0    for i in xrange(len(players))]
-        count        = 0
 
-        ## the first match
-        env.chips           = [5000 for i in xrange(len(players))]
-        env.num_players     = len(players)
-        env.dealer_id       = int(random.random * len(players))
-        env.big_blind_bet   = 100
+        total_scores       = [0    for i in xrange(len(players))]
+        total_count        = 1000
 
-        isTerminal, _, infos, public, persons, private = env.init()
-        for i in xrange(len(players)):
-            players[i].receive_info(infos[i])
-        while isTerminal == False:
-            turn = public.turn
-            action = players[turn].take_action()
-            isTerminal, scores, infos, public, persons, private = env.forward(action)
+
+        for count in xrange(total_count):
+
+            env.chips          = [(1000 + int(random.random() * 200)) for i in xrange(len(players))]
+            env.num_players    = len(players)
+            env.dealer_id      = int(random.random() * len(players))
+            env.big_blind_bet  = 50
+
+            infos, public, persons, private = env.init()
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
-
-        for i in xrange(len(players)):  total_scores[i] += scores[i]
-        count += 1
-
-        ## the following matches
-        while True:
-            dealer = (env.public_state.dealer_id + 1)%len(players)
-            while env.public_state.chips[dealer]  == 0:
-                dealer = (env.public_state.dealer_id + 1) % len(players)
-            next_players_id = []  ## the available players (who still have bets) for the next match
-            next_chips      = []
-            next_dealer_id  = -1
-            for i in xrange(len(env.public_state.chips)):
-                if env.public_state.chips[i] > 0:
-                    next_players_id.append(i)
-                    next_chips.append(env.public_state.chips[i])
-                    if i == dealer: next_dealer_id = len(next_players_id) - 1
-
-            if len(next_players_id) == 1: break;
-
-            if count % 10 == 0:
-                env.big_blind_bet = env.big_blind_bet + 100
-            env.chips       = next_chips
-            env.dealer_id   = next_dealer_id
-            env.num_players = len(next_players_id)
-            
-            isTerminal, scores, infos, public, persons, private = env.init()
-            for i in xrange(len(next_players_id)):
-                idx = next_players_id[i]
-                players[idx].receive_info(infos[i])
-            while isTerminal == False:
+            while public.is_terminal == False:
                 turn = public.turn
-                idx = next_players_id[turn]
-                action = players[idx].take_action()
-                isTerminal, scores, infos, public, persons, private = env.forward(action)
-                for i in xrange(len(next_players_id)):
-                    idx = next_players_id[i]
-                    players[idx].receive_info(infos[i])
+                action = players[turn].take_action()
+                #print len(infos[turn].person_state.available_actions),action.get_key(),turn
+                infos, public, persons, private = env.forward(action)
+                for i in xrange(len(players)):
+                    players[i].receive_info(infos[i])
 
-            for i in xrange(len(next_players_id)):
-                idx = next_players_id[i]
-                total_scores[idx] += scores[i]
-            count += 1
+            for i in xrange(len(players)):
+                players[i].receive_info(infos[i])
+                total_scores[i] += public.scores[i]
 
-        for i in xrange(len(players)): total_scores[i] /= count * 1.0
-        return total_scores;
+            '''
+            if count < 1000:
+                print count,public.dealer_id,public.scores,public.stage
+                for i in xrange(public.num_players):
+                    for j in xrange(len(private.hand_cards[i])):
+                        print private.hand_cards[i][j].get_key(),
+                    print ""
+                print len(public.public_cards)
+                for j in xrange(len(public.public_cards)):
+                    print public.public_cards[j].get_key(),
+                print ""
+                for i in xrange(public.num_players):
+                    x = cls.cards2pattern(private.hand_cards[i], public.public_cards)
+                    print x[0],x[5]
+            '''
+
+            if (count + 1)%500 == 0:
+                tmp_scores = [0 for i in xrange(len(total_scores))]
+                for i in xrange(len(total_scores)):
+                    tmp_scores[i] = total_scores[i] / (count+1)
+                print "complete %d competitions, scores"%(count+1), tmp_scores
+
+        for i in xrange(len(total_scores)):
+            total_scores[i] /= 1.0 * total_count
+
+        return total_scores
 
 
     def gen_infos(self):
         infos = [TexasHoldemInfo() for i in xrange(self.public_state.num_players)]
         for i in xrange(len(infos)):
-            infos[i].person_state = copy.deepcopy(self.person_states[i])
+            infos[i].person_state = self.person_states[i].roomai_deepcopy()
         for i in xrange(len(infos)):
             infos[i].public_state = copy.deepcopy(self.public_state)
         return infos
@@ -313,8 +303,10 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                         num1          = len(tmp_playerid_pattern_bets) - k
                         sum1          = 0
                         max_win_score = pu.bets[tmp_playerid_pattern_bets[k][0]]
-                        for p in xrange(pu.num_players):    sum1      += min(max(0, pu.bets[p] - pot_line), max_win_score)
-                        for p in xrange(k, len(tmp_playerid_pattern_bets)):       scores[p] += sum1 / num1
+                        for p in xrange(pu.num_players):
+                            sum1      += min(max(0, pu.bets[p] - pot_line), max_win_score)
+                        for p in xrange(k, len(tmp_playerid_pattern_bets)):
+                            scores[tmp_playerid_pattern_bets[p][0]] += sum1 / num1
                         scores[pu.dealer_id] += sum1 % num1
                         if pot_line <= max_win_score:
                             pot_line = max_win_score
@@ -335,9 +327,12 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                         scores[tmp_playerid_pattern_bets[p][0]] += sum1 / num1
                     scores[pu.dealer_id] += sum1 % num1
                     if pot_line <= max_win_score: pot_line = max_win_score
+
         for p in xrange(pu.num_players):
             pu.chips[p] += scores[p]
             scores[p]   -= pu.bets[p]
+        for p in xrange(pu.num_players):
+            scores[p]   /= pu.big_blind_bet * 1.0
         return scores
 
 
@@ -363,6 +358,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
     def action_raise(self, action):
         pu = self.public_state
+
 
         pu.raise_account   = action.price + pu.bets[pu.turn] - pu.max_bet_sofar
         pu.chips[pu.turn] -= action.price
@@ -415,7 +411,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         return p
 
     @classmethod
-    def is_compute_score(self, pu):
+    def is_compute_scores(self, pu):
         '''
         :return: 
         A boolean variable indicates whether is it time to compute scores
@@ -651,8 +647,9 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn] + pu.raise_account:
             num = (pu.chips[turn] - (pu.max_bet_sofar - pu.bets[turn])) / pu.raise_account
             for i in xrange(1, num + 1):
-                action = TexasHoldemAction(
-                    TexasHoldemAction.Raise + "_%d" % ((pu.max_bet_sofar - pu.bets[turn]) + pu.raise_account * i))
+                price = pu.max_bet_sofar - pu.bets[turn] + pu.raise_account * i
+                if price == pu.chips[pu.turn]:  continue
+                action = TexasHoldemAction(TexasHoldemAction.Raise + "_%d" % (price))
                 if cls.is_action_valid(public_state, action):
                     key_actions[action.get_key()] = action
 

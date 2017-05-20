@@ -4,11 +4,11 @@ import logging
 
 from roomai.texas import *
 import roomai
+import random
 
 class TexasEnvTester(unittest.TestCase):
-    def testEnv3players(self):
-        roomai.set_level(logging.DEBUG)
 
+    def testEnv3players(self):
         env = TexasHoldemEnv()
         env.num_players   = 3
         env.dealer_id     = 0
@@ -72,14 +72,13 @@ class TexasEnvTester(unittest.TestCase):
         print env.public_state.is_quit
         print env.public_state.chips
         print env.public_state.turn
-        self.assertEqual(env.public_state.turn, -1)
+        assert(env.public_state.turn is None)
         self.assertTrue(public_state.is_terminal)
-        self.assertEqual(public_state.scores[0], 30)
-        self.assertEqual(public_state.scores[1], -10)
-        self.assertEqual(public_state.scores[2], -20)
+        self.assertEqual(public_state.scores[0], 30.0/public_state.big_blind_bet)
+        self.assertEqual(public_state.scores[1], -10.0/public_state.big_blind_bet)
+        self.assertEqual(public_state.scores[2], -20.0/public_state.big_blind_bet)
 
     def testEnv3Players2(self):
-        roomai.set_level(logging.DEBUG)
 
         env = TexasHoldemEnv()
         env.num_players   = 3
@@ -129,7 +128,7 @@ class TexasEnvTester(unittest.TestCase):
 
         action = TexasHoldemAction("call_50")
         infos,public_state, person_states, private_state  = env.forward(action)
-        assert(public_state.stage, StageSpace.firstStage)
+        assert(public_state.stage == StageSpace.firstStage)
         print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
         print public_state.stage
         print public_state.chips
@@ -206,9 +205,9 @@ class TexasEnvTester(unittest.TestCase):
         # chips:0,     0,    500
         # bets :100,   500,  500
         # 0 > 1 = 2
-        self.assertEqual(public_state.scores[0],200)
-        self.assertEqual(public_state.scores[1],-100)
-        self.assertEqual(public_state.scores[2],-100)
+        self.assertEqual(public_state.scores[0],200.0/public_state.big_blind_bet)
+        self.assertEqual(public_state.scores[1],-100.0/public_state.big_blind_bet)
+        self.assertEqual(public_state.scores[2],-100.0/public_state.big_blind_bet)
 
 
 
@@ -217,7 +216,7 @@ class TexasEnvTester(unittest.TestCase):
         env.num_players = 2
 
     def testRandomPlayer(self):
-        import random
+
         random.seed(0)
 
         for i in xrange(100):
@@ -235,3 +234,31 @@ class TexasEnvTester(unittest.TestCase):
                 action = players[turn].take_action()
 
                 infos, public_state, person_states, private_state = env.forward(action)
+
+
+
+        for i in xrange(100):
+            players = [TexasHoldemRandomPlayer() for i in xrange(2)]
+
+            env = TexasHoldemEnv()
+            env.num_players = 2
+            env.chips     = [1000 for i in xrange(env.num_players)]
+            env.dealer_id = i%2
+            infos, public_state, person_states, private_state = env.init()
+
+            while public_state.is_terminal != True:
+                for i in xrange(2):
+                    players[i].receive_info(infos[i])
+                turn   = public_state.turn
+                action = players[turn].take_action()
+
+                infos, public_state, person_states, private_state = env.forward(action)
+
+    def testCompete(self):
+        import random
+        random.seed(100)
+        players = [TexasHoldemRandomPlayer() for i in xrange(2)]
+        env = TexasHoldemEnv()
+
+        scores = TexasHoldemEnv.compete(env, players)
+        print scores

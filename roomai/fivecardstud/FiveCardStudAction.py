@@ -31,3 +31,8 @@ class FiveCardStudAction(roomai.abstract.AbstractAction):
 
     def get_key(self):
         return self.String
+
+
+    def roomai_deepcopy(self, memodict={}):
+        copyinstnce = FiveCardStudAction(self.String)
+        return copyinstnce

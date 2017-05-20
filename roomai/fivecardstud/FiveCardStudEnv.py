@@ -17,14 +17,14 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     def __init__(self):
         self.logger         = roomai.get_logger()
         self.num_players    = 3
-        self.chips          = [1000 for i in xrange(self.num_players)]
+        self.chips          = [500 for i in xrange(self.num_players)]
         self.floor_bet      = 10
 
     def gen_infos(self):
         infos = [FiveCardStudInfo() for i in xrange(self.public_state.num_players)]
         for i in xrange(self.public_state.num_players):
-            infos[i].person_state = copy.deepcopy(self.person_states[i])
-            infos[i].public_state = copy.deepcopy(self.public_state)
+            infos[i].person_state = self.person_states[i].roomai_deepcopy()
+            infos[i].public_state = self.public_state.roomai_deepcopy()
 
         return infos
 
@@ -35,7 +35,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
         self.public_state   = FiveCardStudPublicState()
         self.private_state  = FiveCardStudPrivateState()
-        self.person_states  = [FiveCardStudPersonState for i in xrange(3)]
+        self.person_states  = [FiveCardStudPersonState() for i in xrange(self.num_players)]
 
 
         ## initialize the cards
@@ -68,7 +68,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.public_state.round                = 1
         self.public_state.turn                 = FiveCardStudEnv.choose_player_at_begining_of_round(self.public_state)
         self.public_state.is_terminal          = False
-        self.public_state.scores               = []
+        self.public_state.scores               = None
 
         ## person_state
         for i in xrange(self.num_players):
@@ -113,7 +113,6 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         pu.previous_id     = pu.turn
         pu.previous_action = action
         pu.previous_round  = pu.round
-        pu.turn            = self.next_player(pu)
 
         # computing_score
         if FiveCardStudEnv.is_compute_scores(self.public_state):
@@ -138,6 +137,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 pe[i].fourth_hand_card = pr.all_hand_cards[3 * num_players + i]
                 pe[i].fifth_hand_card  = pr.all_hand_cards[4 * num_players + i]
 
+            pu.turn                              = None
             pe[pu.previous_id].available_actions = None
 
         # enter into the next stage
@@ -169,81 +169,51 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             pe[pu.turn].available_actions        = self.available_actions(pu)
 
         else:
+            pu.turn                              = self.next_player(pu)
             pe[pu.previous_id].available_actions = None
             pe[pu.turn].available_actions        = self.available_actions(pu)
+
+
         infos                                = self.gen_infos()
 
 
         return infos, self.public_state, self.person_states, self.private_state
 
     #@override
+    @classmethod
     def compete(cls, env, players):
         total_scores = [0 for i in xrange(len(players))]
-        count = 0
+        total_count    = 1000
 
-        ## the first match
-        env.chips = [5000 for i in xrange(len(players))]
-        env.num_players = len(players)
-        env.dealer_id = int(random.random * len(players))
-        env.big_blind_bet = 100
-
-        infos, public, persons, private = env.init()
-        for i in xrange(len(players)):
-            players[i].receive_info(infos[i])
-        while public.is_terminal == False:
-            turn = public.turn
-            action = players[turn].take_action()
-            isTerminal, scores, infos, public, persons, private = env.forward(action)
+        for count in xrange(total_count):
+            env.chips       = [(100 +random.random()*500) for i in xrange(len(players))]
+            env.num_players = len(players)
+            env.floor_bet   = 10
+            infos, public, persons, private = env.init()
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
 
-        for i in xrange(len(players)):  
-            players[i].reset()
-            total_scores[i] += public.scores[i]
-        count += 1
-
-        ## the following matches
-        while True:
-            dealer = (env.public_state.dealer_id + 1) % len(players)
-            while env.public_state.chips[dealer] == 0:
-                dealer = (env.public_state.dealer_id + 1) % len(players)
-            next_players_id = []  ## the available players (who still have bets) for the next match
-            next_chips = []
-            next_dealer_id = -1
-            for i in xrange(len(env.public_state.chips)):
-                if env.public_state.chips[i] > 0:
-                    next_players_id.append(i)
-                    next_chips.append(env.public_state.chips[i])
-                    if i == dealer: next_dealer_id = len(next_players_id) - 1
-
-            if len(next_players_id) == 1: break;
-
-            if count % 10 == 0:
-                env.big_blind_bet = env.big_blind_bet + 100
-            env.chips = next_chips
-            env.dealer_id = next_dealer_id
-            env.num_players = len(next_players_id)
-
-            infos, public, persons, private = env.init()
-            for i in xrange(len(next_players_id)):
-                idx = next_players_id[i]
-                players[idx].receive_info(infos[i])
             while public.is_terminal == False:
                 turn = public.turn
-                idx = next_players_id[turn]
-                action = players[idx].take_action()
-                isTerminal, scores, infos, public, persons, private = env.forward(action)
-                for i in xrange(len(next_players_id)):
-                    idx = next_players_id[i]
-                    players[idx].receive_info(infos[i])
+                action = players[turn].take_action()
+                infos, public, persons, private = env.forward(action)
+                for i in xrange(len(players)):
+                    players[i].receive_info(infos[i])
 
-            for i in xrange(len(next_players_id)):
-                idx = next_players_id[i]
-                players[idx].reset()
-                total_scores[idx] += scores[i]
-            count += 1
+            for i in xrange(len(players)):
+                players[i].reset()
+                total_scores[i] += public.scores[i]
 
-        for i in xrange(len(players)): total_scores[i] /= count * 1.0
+
+            if (count + 1)%500 == 0:
+                tmp_scores = [0 for i in xrange(len(total_scores))]
+                for i in xrange(len(total_scores)):
+                    tmp_scores[i] = total_scores[i] / (count+1)
+                print "complete %d competitions, scores"%(count+1), tmp_scores
+
+        for i in xrange(len(players)):
+            total_scores[i]   /= total_count * 1.0
+
         return total_scores;
 
 
@@ -361,6 +331,8 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 scores[i] = sum(public_state.bets) - public_state.bets[i]
             else:
                 scores[i] = -public_state.bets[i]
+        for i in xrange(public_state.num_players):
+            scores[i]    /= public_state.floor_bet * 1.0
 
         return scores
 
@@ -425,7 +397,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         if round  == 1 or round == 2 or round == 3:
             if pu.previous_round is None or pu.previous_round == round -1:
                 ## bet
-                for i in xrange(pu.bets[turn]+1, pu.upper_bet-pu.bets[turn]):
+                for i in xrange(int(pu.bets[turn]+1), int(pu.upper_bet-pu.bets[turn])):
                     actions["Bet_%d"%i]                 = FiveCardStudAction("Bet_%d"%i)
                 ## fold
                 actions["Fold_0"]                       = FiveCardStudAction("Fold_0")
@@ -446,7 +418,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                         actions["Call_%d"%(Call_count )]   = FiveCardStudAction("Call_%d"%(Call_count))
                 ## "raise"
                 if pu.is_raise[turn] == False:
-                    for i in xrange(Call_count + 1,Showhandcount):
+                    for i in xrange(int(Call_count + 1),int(Showhandcount)):
                         actions["Raise_%d"%(i)] = FiveCardStudAction("Raise_%d"%i)
 
 
@@ -455,7 +427,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 ## showhand
                 actions["Showhand_%d"%(Showhandcount)] = FiveCardStudAction("Showhand_%d"%(Showhandcount))
                 ## bet
-                for i in xrange(1, pu.upper_bet - pu.bets[turn]):
+                for i in xrange(1, int(pu.upper_bet) - int(pu.bets[turn])):
                     actions["Bet_%d"%i] = FiveCardStudAction("Bet_%d"%i)
                 ## fold
                 actions["Fold_0"]     = FiveCardStudAction("Fold_0")
