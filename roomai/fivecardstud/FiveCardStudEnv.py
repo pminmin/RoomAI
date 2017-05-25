@@ -209,7 +209,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
                 tmp_scores = [0 for i in xrange(len(total_scores))]
                 for i in xrange(len(total_scores)):
                     tmp_scores[i] = total_scores[i] / (count+1)
-                print "complete %d competitions, scores"%(count+1), tmp_scores
+                roomai.get_logger().info("FiveCardStud completes %d competitions, scores=%s"%(count+1, ",".join([str(i) for i in tmp_scores])))
 
         for i in xrange(len(players)):
             total_scores[i]   /= total_count * 1.0

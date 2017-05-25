@@ -13,7 +13,6 @@ class TexasUtilsTester(unittest.TestCase):
         handcards1 =[roomai.abstract.PokerCard(0,0),roomai.abstract.PokerCard(1,1)]
         keepcards  =[roomai.abstract.PokerCard(2,2),roomai.abstract.PokerCard(3,3),roomai.abstract.PokerCard(4,0),roomai.abstract.PokerCard(5,1),roomai.abstract.PokerCard(6,2)]
         pattern    = TexasHoldemEnv.cards2pattern(handcards1, keepcards)
-        print pattern
 
     
     def test_cards1(self):
@@ -96,7 +95,6 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertTrue("allin_1000" in actions)
         for key in actions:
             act = actions[key]
-            print act.get_key()
             self.assertTrue(TexasHoldemEnv.is_action_valid(env.public_state, act))
 
 
@@ -121,5 +119,3 @@ class TexasUtilsTester(unittest.TestCase):
         p1 = TexasHoldemEnv.cards2pattern(h1, k)
         p2 = TexasHoldemEnv.cards2pattern(h2, k)
         p3 = TexasHoldemEnv.cards2pattern(h3, k)
-        print TexasHoldemEnv.compare_patterns(p1, p2)
-        print TexasHoldemEnv.compare_patterns(p2, p3)

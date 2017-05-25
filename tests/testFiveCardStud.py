@@ -29,7 +29,6 @@ class FiveCardStudTester(unittest.TestCase):
 
         turn = pu.turn
         assert(pes[turn].available_actions is not None)
-        print pes[turn].available_actions
         available_actions = pes[turn].available_actions
         assert("Call_0" not in available_actions)
         assert("Fold_0" in available_actions)
