@@ -2,6 +2,7 @@
 import random
 import math
 import roomai.abstract
+import copy
 
 
 class KuhnPokerAction(roomai.abstract.AbstractAction):
@@ -39,7 +40,11 @@ class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
         self.card               = None
 
 class KuhnPokerInfo(roomai.abstract.AbstractInfo):
-    def __init__(self):
-        self.public_state       = None
-        self.person_state       = None
+    public_state       = None
+    person_state       = None
 
+    def __deepcopy__(self, memodict={}):
+        info = KuhnPokerInfo()
+        info.public_state = copy.deepcopy(self.public_state)
+        info.public_state = copy.deepcopy(self.person_state)
+        return info

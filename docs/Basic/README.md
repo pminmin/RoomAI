@@ -24,7 +24,7 @@ def compete(env, players):
         for i in xrange(len(players)):
             players[i].receive_info(infos[i])
 
-   return public.scores                
+   return public_state.scores                
 </pre>
 
 ![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png)
