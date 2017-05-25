@@ -49,15 +49,40 @@ if __name__ == "__main__":
 
 ## 2  [Detailed Guidance](https://github.com/roomai/RoomAI/blob/master/docs/Basic/README.md)
 
-## 3  Info and Action Structures
+There are some basic concepts in RoomAI: Player, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
+
+<pre>
+def compete(env, players):
+   '''
+   :param env: the game environments
+   :param players: the array of players
+   :return: the final scores of this competition
+   '''
+   infos, public_state, person_states, private_state = env.init()
+   for i in xrange(len(players)):
+       players[i].receive_info(infos[i])
+
+   while public_state.is_terminal == False:
+        turn = public_state.turn
+        action = players[turn].take_action()
+        
+        infos, public_state, person_states, private_state = env.forward(action)
+        for i in xrange(len(players)):
+            players[i].receive_info(infos[i])
+
+   return public_state.scores                
+</pre>
+
+
+## 3  Things You Need Know Before Developing AI
 
 The info and action are important concepts for AI-bot developers, and are very different for different games. We list info and action structures for the games supported by roomai:
 
-### 3.1 [Info and Action Structures for KuhnPoker ]
+### 3.1 [Things You Need Know Before Developing an KuhnPoker AI ]
 
+### 3.2 [Things You Need Know Before Developing an FiveCardStud AI ]
 
-
-### 3.3 [Info and Action Structures for Texas]
+### 3.3 [Things You Need Know Before Developing an TexasHoldem AI]
 
 # License
 
