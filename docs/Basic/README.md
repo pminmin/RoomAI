@@ -121,6 +121,8 @@ The compete function holds a competition for the players, and computes the score
 
 If you want to develop an AI-bot for a particular game, you need to know the structure of Info and action in this game. 
 For example,  if you want to deveop an AI for TexasHoldem, you need to know where to find your hand cards.
-We list this thing as follows(https://github.com/roomai/RoomAI#3--info-and-action-structures) for the games supported by roomai.
+We list this thing as follows.
+
+#### 1. []()
 
 
