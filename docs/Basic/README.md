@@ -1,5 +1,5 @@
 
-#  Detailed Guidance
+#  RoomAI Tutorials
 
 ## Basic Concepts
 
@@ -123,6 +123,10 @@ If you want to develop an AI-bot for a particular game, you need to know the str
 For example,  if you want to deveop an AI for TexasHoldem, you need to know where to find your hand cards.
 We list this thing as follows.
 
-#### 1. []()
+#### 1. KuhnPoker
+
+#### 2. FiveCardStud
+
+#### 3. TexasHoldEm
 
 
