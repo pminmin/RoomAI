@@ -125,7 +125,19 @@ We list this thing as follows.
 
 #### 1. KuhnPoker
 
+In conventional poker terms, a game of Kuhn poker proceeds as follows:
 
+&nbsp;- Each player antes 1.
+&nbsp;- Each player is dealt one of the three cards, and the third is put aside unseen.
+&nbsp;- Player one can check or bet 1.
+&nbsp;&nbsp;&nbsp;&nbsp;- If player one checks then player two can check or bet 1.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two checks there is a showdown for the pot of 2 (i.e. the higher card wins 1 from the other player).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two bets then player one can fold or call.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player one folds then player two takes the pot of 3 (i.e. winning 1 from player 1).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player one calls there is a showdown for the pot of 4 (i.e. the higher card wins 2 from the other player).
+&nbsp;&nbsp;&nbsp;&nbsp;If player one bets then player two can fold or call.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two folds then player one takes the pot of 3 (i.e. winning 1 from player 2).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two calls there is a showdown for the pot of 4 (i.e. the higher card wins 2 from the other player).
 
 #### 2. FiveCardStud
 
