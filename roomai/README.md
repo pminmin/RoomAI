@@ -184,15 +184,31 @@ It is still a popular game in parts of the world, especially in Finland where a 
 The word sökö is also used for checking in Finland ("I check" = "minä sökötän"). You can see details of Five Card Stud in [Wikipedia](https://en.wikipedia.org/wiki/Five-card_stud).
 
 In Five Card Stud, the action has two parts: option (action type) and price (count of chips). The option has six types: Fold, Check, Call, Raise, Bet
-and Showhand. The prices for Fold and Check must be zero. Some action examples:
+and Showhand. The prices for Fold and Check must be zero. The basic usage is as follows:
 <pre>
-roomai.fivecardstud.FiveCardStudAction("Fold_0"),
-roomai.fivecardstud.FiveCardStudAction("Check_0"),
-roomai.fivecardstud.FiveCardStudAction("Call_15"),
-roomai.fivecardstud.FiveCardStudAction("Raise_15"),
-roomai.fivecardstud.FiveCardStudAction("Bet_15"),
-roomai.fivecardstud.FiveCardStudAction("Showhand_15")
+>> action = roomai.fivecardstud.FiveCardStudAction("Fold_0")
+>> action.option
+"Fold"
+>> action.price
+0
+>> action.get_key()
+"Fold_0"
 </pre>
+
+In Five Card Stud, we use the class roomai.fivecardstud.FiveCardStudPokerCard as the poker card. The poker card has the point (2, 3, A for example) and suit(Spade, Heart, Club and Diamond).
+The basic usage is as follows:
+</pre>
+>>> import roomai.fivecardstud
+>>> poker_card = roomai.fivecardstud.FiveCardStudPoker("A_Spade")
+>>> poker_card.point_str
+'A'
+>>> poker_card.suit_str
+"Spade"
+>>> poker_card.get_key()
+"A_Spade"
+>>>
+</pre>
+
 
 #### 3. TexasHoldEm
 
