@@ -149,7 +149,8 @@ class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
 class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
         available_actions          = None
         ## the available actions for the player, who receives this person state.
-        ## for example, available_actions = {} or availabel_actions = {"bet": roomai.kuhn.KuhnPokerAction("bet"), "check":roomai.kuhn.KuhnPokerAction("check")}
+        ## for example, available_actions = {}
+        ## or availabel_actions = {"bet": roomai.kuhn.KuhnPokerAction("bet"), "check":roomai.kuhn.KuhnPokerAction("check")}
 
         id                         = None
         ## the id of the player, who receives this person state.
