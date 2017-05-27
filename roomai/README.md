@@ -131,33 +131,38 @@ In Kuhn poker, the deck includes only three playing cards, for example a King, Q
 One card is dealt to each player, which may place bets similarly to a standard poker.
 If both players bet or both players pass, the player with the higher card wins, otherwise, the betting player wins. You can see details of Kuhn poker in [Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker).
 
+In Kuhn poker, the player has two actions to choose: roomai.kuhn.KuhnPokerAction("bet") and roomai.kuhn.KuhnPokerAction("check").
 
 <pre>
-
-
 class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
         turn                       = None
-        first                      = None
-        epoch                      = None
-        action_list                = None
+        ## players[turn] takes a action
+        ## turn = 0 or turn = 1 (turn is in [0,1])
 
-class KuhnPokerPrivateState(roomai.abstract.AbstractPrivateState):
-        hand_cards                 = None
+        first                      = None
+        ## player[first] firstly t a action
+
+        action_list                = None
+        ## action history.
+        ## for exampke, action_list = ["bet","check"]
 
 class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
         available_actions          = None
+        ## the available actions for the player, who receives this person state.
+        ## for example, available_actions = {} or availabel_actions = {"bet": roomai.kuhn.KuhnPokerAction("bet"), "check":roomai.kuhn.KuhnPokerAction("check")}
+
         id                         = None
+        ## the id of the player, who receives this person state.
+        ## for example, id = 0 means the player receiving this person state is players[0]
+
         card                       = None
+        ## the card dealt to the player receving this person state
+        ## card = 0 or card = 1 or card = 2. (card is in [0,1,2])
+
 
 class KuhnPokerInfo(roomai.abstract.AbstractInfo):
         public_state               = None
         person_state               = None
-</pre>
-
-The player has two actions to choose.
-<pre>
-action = roomai.kuhn.KuhnPokerAction("bet")
-action = roomai.kuhn.KuhnPokerAction("check")
 </pre>
 
 
