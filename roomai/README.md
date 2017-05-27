@@ -29,7 +29,7 @@ def compete(env, players):
    return public_state.scores                
 </pre>
 
-![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/docs/game.png)
+![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/roomai/game.png)
 
 We define these basic concepts as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
 
@@ -124,6 +124,8 @@ For example,  if you want to deveop an AI for TexasHoldem, you need to know wher
 We list this thing as follows.
 
 #### 1. KuhnPoker
+
+
 
 #### 2. FiveCardStud
 
