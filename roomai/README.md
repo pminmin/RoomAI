@@ -125,28 +125,15 @@ We list this thing as follows.
 
 #### 1. KuhnPoker
 
-In conventional poker terms, a game of Kuhn poker proceeds as follows:
+Kuhn poker is an extremely simplified form of poker developed by Harold W.
+Kuhn as a simple model zero-sum two-player imperfect-information game, amenable to a complete game-theoretic analysis.
+In Kuhn poker, the deck includes only three playing cards, for example a King, Queen, and Jack.
+One card is dealt to each player, which may place bets similarly to a standard poker.
+If both players bet or both players pass, the player with the higher card wins, otherwise, the betting player wins. You can see details of Kuhn poker in [Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker).
 
-&nbsp;- Each player antes 1.
 
-&nbsp;- Each player is dealt one of the three cards, and the third is put aside unseen.
 
-&nbsp;- Player one can check or bet 1.
 
-&nbsp;&nbsp;&nbsp;&nbsp;- If player one checks then player two can check or bet 1.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two checks there is a showdown for the pot of 2 (i.e. the higher card wins 1 from the other player).
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two bets then player one can fold or call.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player one folds then player two takes the pot of 3 (i.e. winning 1 from player 1).
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player one calls there is a showdown for the pot of 4 (i.e. the higher card wins 2 from the other player).
-&nbsp;&nbsp;&nbsp;&nbsp;If player one bets then player two can fold or call.
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two folds then player one takes the pot of 3 (i.e. winning 1 from player 2).
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- If player two calls there is a showdown for the pot of 4 (i.e. the higher card wins 2 from the other player).
 
 
 #### 2. FiveCardStud
