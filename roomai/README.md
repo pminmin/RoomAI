@@ -197,7 +197,7 @@ and Showhand. The prices for Fold and Check must be zero. The basic usage is as 
 
 In Five Card Stud, we use the class roomai.fivecardstud.FiveCardStudPokerCard as the poker card. The poker card has the point (2, 3, A for example) and suit(Spade, Heart, Club and Diamond).
 The basic usage is as follows:
-</pre>
+<pre>
 >>> import roomai.fivecardstud
 >>> poker_card = roomai.fivecardstud.FiveCardStudPoker("A_Spade")
 >>> poker_card.point_str
