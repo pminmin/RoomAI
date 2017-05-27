@@ -129,7 +129,8 @@ Kuhn poker is an extremely simplified form of poker developed by Harold W.
 Kuhn as a simple model zero-sum two-player imperfect-information game, amenable to a complete game-theoretic analysis.
 In Kuhn poker, the deck includes only three playing cards, for example a King, Queen, and Jack.
 One card is dealt to each player, which may place bets similarly to a standard poker.
-If both players bet or both players pass, the player with the higher card wins, otherwise, the betting player wins. You can see details of Kuhn poker in [Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker).
+If both players bet or both players pass, the player with the higher card wins, otherwise, the betting player wins.
+You can see details of Kuhn poker in [Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker).
 
 In Kuhn poker, the player has two actions to choose: roomai.kuhn.KuhnPokerAction("bet") and roomai.kuhn.KuhnPokerAction("check").
 
@@ -146,11 +147,19 @@ class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
         ## action history.
         ## for exampke, action_list = ["bet","check"]
 
+
+        is_terminal                = None
+        ## is_terminal = true means the game is over. At this time, scores is not None
+        scores                     = None
+        ## when is_terminal = true, scores = [float0, float1].
+        ## float0 is the score gained by player[0]
+        ## float1 is the score gained by player[1]
+
 class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
         available_actions          = None
         ## the available actions for the player, who receives this person state.
         ## for example, available_actions = {}
-        ## or availabel_actions = {"bet": roomai.kuhn.KuhnPokerAction("bet"), "check":roomai.kuhn.KuhnPokerAction("check")}
+        ## or availabel_actions = {"bet": roomai.kuhn.KuhnPokerAction("bet")}
 
         id                         = None
         ## the id of the player, who receives this person state.
@@ -168,7 +177,38 @@ class KuhnPokerInfo(roomai.abstract.AbstractInfo):
 
 
 
-#### 2. FiveCardStud
+#### 2. Five Card Stud
+
+Five Card Stud is the earliest form of the card game stud poker, originating during the American Civil War, but is less commonly played today than many other more popular poker games.
+It is still a popular game in parts of the world, especially in Finland where a specific variant of five-card stud called Sökö (also known as Canadian stud or Scandinavian stud) is played.
+The word sökö is also used for checking in Finland ("I check" = "minä sökötän"). You can see details of Five Card Stud in [Wikipedia](https://en.wikipedia.org/wiki/Five-card_stud).
+
+    # 弃牌
+    Fold        = "Fold"
+    # 过牌
+    Check       = "Check"
+    # 更注
+    Call        = "Call"
+    # 加注
+    Raise       = "Raise"
+    # 下注
+    Bet         = "Bet"
+    # all in
+    Showhand    = "Showhand"
+
+In Five Card Stud, the action has two parts: option and price. The actions has six types:
+- roomai.fivecardstud.FiveCardStudAction("Fold_0").
+
+- roomai.fivecardstud.FiveCardStudAction("Check_0")
+
+- roomai.fivecardstud.FiveCardStudAction("Call_15")
+
+- roomai.fivecardstud.FiveCardStudAction("Raise_15")
+
+- roomai.fivecardstud.FiveCardStudAction("Bet_15")
+
+- roomai.fivecardstud.FiveCardStudAction("Showhand_15")
+
 
 #### 3. TexasHoldEm
 
