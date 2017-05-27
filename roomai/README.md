@@ -196,18 +196,13 @@ The word sökö is also used for checking in Finland ("I check" = "minä sököt
     # all in
     Showhand    = "Showhand"
 
-In Five Card Stud, the action has two parts: option and price. The actions has six types:
-- roomai.fivecardstud.FiveCardStudAction("Fold_0").
-
-- roomai.fivecardstud.FiveCardStudAction("Check_0")
-
-- roomai.fivecardstud.FiveCardStudAction("Call_15")
-
-- roomai.fivecardstud.FiveCardStudAction("Raise_15")
-
-- roomai.fivecardstud.FiveCardStudAction("Bet_15")
-
-- roomai.fivecardstud.FiveCardStudAction("Showhand_15")
+In Five Card Stud, the action has two parts: option (action type) and price (count of chips). The option has six types: Fold, Check, Call, Raise, Bet
+and Showhand. The prices for Fold and Check must be zero. Some action examples: roomai.fivecardstud.FiveCardStudAction("Fold_0"),
+roomai.fivecardstud.FiveCardStudAction("Check_0"),
+roomai.fivecardstud.FiveCardStudAction("Call_15"),
+roomai.fivecardstud.FiveCardStudAction("Raise_15"),
+roomai.fivecardstud.FiveCardStudAction("Bet_15"),
+roomai.fivecardstud.FiveCardStudAction("Showhand_15")
 
 
 #### 3. TexasHoldEm
