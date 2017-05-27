@@ -183,27 +183,16 @@ Five Card Stud is the earliest form of the card game stud poker, originating dur
 It is still a popular game in parts of the world, especially in Finland where a specific variant of five-card stud called Sökö (also known as Canadian stud or Scandinavian stud) is played.
 The word sökö is also used for checking in Finland ("I check" = "minä sökötän"). You can see details of Five Card Stud in [Wikipedia](https://en.wikipedia.org/wiki/Five-card_stud).
 
-    # 弃牌
-    Fold        = "Fold"
-    # 过牌
-    Check       = "Check"
-    # 更注
-    Call        = "Call"
-    # 加注
-    Raise       = "Raise"
-    # 下注
-    Bet         = "Bet"
-    # all in
-    Showhand    = "Showhand"
-
 In Five Card Stud, the action has two parts: option (action type) and price (count of chips). The option has six types: Fold, Check, Call, Raise, Bet
-and Showhand. The prices for Fold and Check must be zero. Some action examples: roomai.fivecardstud.FiveCardStudAction("Fold_0"),
+and Showhand. The prices for Fold and Check must be zero. Some action examples:
+<pre>
+roomai.fivecardstud.FiveCardStudAction("Fold_0"),
 roomai.fivecardstud.FiveCardStudAction("Check_0"),
 roomai.fivecardstud.FiveCardStudAction("Call_15"),
 roomai.fivecardstud.FiveCardStudAction("Raise_15"),
 roomai.fivecardstud.FiveCardStudAction("Bet_15"),
 roomai.fivecardstud.FiveCardStudAction("Showhand_15")
-
+</pre>
 
 #### 3. TexasHoldEm
 
