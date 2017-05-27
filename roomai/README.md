@@ -132,7 +132,33 @@ One card is dealt to each player, which may place bets similarly to a standard p
 If both players bet or both players pass, the player with the higher card wins, otherwise, the betting player wins. You can see details of Kuhn poker in [Wikipedia](https://en.wikipedia.org/wiki/Kuhn_poker).
 
 
+<pre>
 
+
+class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
+        turn                       = None
+        first                      = None
+        epoch                      = None
+        action_list                = None
+
+class KuhnPokerPrivateState(roomai.abstract.AbstractPrivateState):
+        hand_cards                 = None
+
+class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
+        available_actions          = None
+        id                         = None
+        card                       = None
+
+class KuhnPokerInfo(roomai.abstract.AbstractInfo):
+        public_state               = None
+        person_state               = None
+</pre>
+
+The player has two actions to choose.
+<pre>
+action = roomai.kuhn.KuhnPokerAction("bet")
+action = roomai.kuhn.KuhnPokerAction("check")
+</pre>
 
 
 
