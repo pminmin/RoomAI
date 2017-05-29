@@ -94,7 +94,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
 
     def gen_infos(self):
-        infos = [KuhnPokerInfo(), KuhnPokerInfo()]
+        infos = [ roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo(),  roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo()]
         for i in xrange(len(infos)):
             infos[i].person_state = copy.deepcopy(self.person_states[i])
             infos[i].public_state = copy.deepcopy(self.public_state)

@@ -184,7 +184,7 @@ It is still a popular game in parts of the world, especially in Finland where a 
 The word sökö is also used for checking in Finland ("I check" = "minä sökötän"). You can see details of Five Card Stud in [Wikipedia](https://en.wikipedia.org/wiki/Five-card_stud).
 
 In Five Card Stud, the action has two parts: option (action type) and price (count of chips). The option has six types: Fold, Check, Call, Raise, Bet
-and Showhand. The prices for Fold and Check must be zero. The basic usage is as follows:
+and Showhand. The prices for Fold must be zero. The basic usage is as follows:
 <pre>
 >> action = roomai.fivecardstud.FiveCardStudAction("Fold_0")
 >> action.option
@@ -269,6 +269,86 @@ class FiveCardStudInfo(roomai.abstract.AbstractInfo):
 
 </pre>
 
-#### 3. TexasHoldEm
+#### 3. TexasHoldEm Poker
 
 
+Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of the card game of poker. Two cards, known as the hole cards, are dealt face down to each player, and then five community cards are dealt face up in three stages. The stages consist of a series of three cards ("the flop"), later an additional single card ("the turn" or "fourth street") and a final card ("the river" or "fifth street"). Each player seeks the best five card poker hand from the combination of the community cards and their own hole cards. If a player's best five card poker hand consists only of the five community cards and none of the player's hole cards, it is called "playing the board". Players have betting options to check, call, raise or fold. Rounds of betting take place before the flop is dealt, and after each subsequent deal.
+You can see details of TexasHoldEm Poker in [Wikipedia](https://en.wikipedia.org/wiki/Texas_hold_%27em).
+
+In TexasHoldEm Poker, the action has two parts: option (action type) and price (count of chips). 
+The option has five types: Fold,Check,Call,Raise and Allin. The prices for Fold must be zero. The basic usage is as follows:
+<pre>
+>> action = roomai.texas.TexasHoldemAction("Fold_0")
+>> action.option
+"Fold"
+>> action.price
+0
+>> action.get_key()
+"Fold_0"
+</pre>
+
+In TexasHoldEm, we use the class roomai.abstract.PokerCard as the poker card. The poker card has the point (2, 3, A for example) and suit(Spade, Heart, Club and Diamond).
+The basic usage is as follows:
+<pre>
+>>> import roomai.abstract
+>>> poker_card = roomai.abstract.PokerCard("A_Spade")
+>>> poker_card.point_str
+'A'
+>>> poker_card.suit_str
+"Spade"
+>>> poker_card.get_key()
+"A_Spade"
+>>>
+</pre>
+
+
+The structure of Info in TexasHoldEm.
+
+<pre>
+class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
+    def __init__(self):
+        self.stage              = None
+        self.num_players        = None
+        self.dealer_id          = None
+        self.public_cards       = None
+        self.num_players        = None
+        self.big_blind_bet      = None
+
+        #state of players
+        self.is_quit                        = None
+        self.num_quit                       = None
+        self.is_allin                       = None
+        self.num_allin                      = None
+        self.is_needed_to_action            = None
+        self.num_needed_to_action           = None
+
+        # who is expected to take a action
+        self.turn               = None
+
+        #chips is array which contains the chips of all players
+        self.chips              = None
+
+        #bets is array which contains the bets from all players
+        self.bets               = None
+
+        #max_bet = max(self.bets)
+        self.max_bet_sofar      = None
+        #the raise acount
+        self.raise_account      = None
+
+        self.previous_id        = None
+        self.previous_action    = None
+
+
+
+class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
+    id                =    None
+    hand_cards        =    None
+    available_actions =    None
+
+class TexasHoldemInfo(roomai.abstract.AbstractInfo):
+    public_state            = None
+    person_state            = None
+
+
+</pre>
