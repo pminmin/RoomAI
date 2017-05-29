@@ -123,6 +123,10 @@ If you want to develop an AI-bot for a particular game, you need to know the str
 For example,  if you want to deveop an AI for TexasHoldem, you need to know where to find your hand cards.
 We list this thing as follows.
 
+- [KuhnPoker](https://github.com/roomai/RoomAI/blob/master/roomai/README.md#1-kuhnpoker)
+- [FiveCardStud](https://github.com/roomai/RoomAI/blob/master/roomai/README.md#2-five-card-stud)
+- [TexasHoldEm](https://github.com/roomai/RoomAI/blob/master/roomai/README.md#3-texasholdem-poker)
+
 #### 1. KuhnPoker
 
 Kuhn poker is an extremely simplified form of poker developed by Harold W.
@@ -254,8 +258,15 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
 
 
 class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
-    id                = None
-    available_actions = None
+    available_actions          = None
+    ## the available actions for the player, who receives this person state.
+    ## for example, available_actions = {}
+    ## or availabel_actions = {"bet": roomai.kuhn.KuhnPokerAction("bet")}
+
+    id                         = None
+    ## the id of the player, who receives this person state.
+    ## for example, id = 0 means the player receiving this person state is players[0]
+
 
     first_hand_card   = None
     second_hand_card  = None
@@ -342,13 +353,24 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
 
 
 class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
-    id                =    None
-    hand_cards        =    None
-    available_actions =    None
+    available_actions          = None
+    ## the available actions for the player, who receives this person state.
+    ## for example, available_actions = {}
+    ## or availabel_actions = {"bet": roomai.kuhn.KuhnPokerAction("bet")}
+
+    id                         = None
+    ## the id of the player, who receives this person state.
+    ## for example, id = 0 means the player receiving this person state is players[0]
+
+    hand_cards                 =    None
+    ## the hand cards of the player
+    ## len(hand_cards) = 2
+    ## for example, hand_cards = [PokerCard("A_Spade"), PokerCard("2_Club")]
+
 
 class TexasHoldemInfo(roomai.abstract.AbstractInfo):
-    public_state            = None
-    person_state            = None
+    public_state               = None
+    person_state                = None
 
 
 </pre>
