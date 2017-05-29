@@ -3,7 +3,6 @@
 
 ## Basic Concepts
 
-Before read detailed guidance, please read [quick guidance](https://github.com/roomai/RoomAI#1-quick-guidance)
 
 There are some basic concepts in RoomAI: Player, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
 
@@ -143,6 +142,7 @@ class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
         turn                       = None
         ## players[turn] takes a action
         ## turn = 0 or turn = 1 (turn is in [0,1])
+        ## Kuhn Poker is a game with two players
 
         first                      = None
         ## player[first] firstly t a action
@@ -333,22 +333,32 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.is_needed_to_action            = None
         self.num_needed_to_action           = None
 
-        # who is expected to take a action
         self.turn               = None
+        ## players[turn] takes a action
+        ## for example turn = 0, turn in [0,1,..,num_players-1]
 
-        #chips is array which contains the chips of all players
         self.chips              = None
+        ## the chips the players have now
+        ## for example, chips = [100,110, 30] (if 3 players)
 
-        #bets is array which contains the bets from all players
         self.bets               = None
+        ## the bets the players bet so far
+        ## for exaple, bets = [0,100,20] (if 3 players)
 
-        #max_bet = max(self.bets)
         self.max_bet_sofar      = None
-        #the raise acount
+        
         self.raise_account      = None
+        ## If a player want to raise the bet, he/she raises at least raise_account
+        ## for example, max_bet_sofar = 100, raise_account = 200, 
+        ## the current player's bet = 60, a player raises at least (max_bet_sofar-current_bet) + raise_account = 240
+        ## because a player makes his bet == max_bet_sofar firstly, and then raise
+        
 
         self.previous_id        = None
         self.previous_action    = None
+        ## players[previous_id] take a previous_action just before. These are history records
+        ## At first, previous_id and previous_action = None
+        
 
 
 
