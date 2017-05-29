@@ -2,21 +2,18 @@
 
 RoomAI is a toolkit for developing and comparing AI-bots of imperfect information games.
 
-# Contents
-
-## 1 Quick Guidance
 
 
-### 1.1 Installation
+# Installation
 
-you can install roomai with pip
+You can install roomai with pip
 
 <pre>
 pip install roomai
 </pre>
 
+Try your first RoomAI program
 
-### 1.2 Developing an AI-bot and Testing It with Enviroments
 
 <pre>
 #!/bin/python
@@ -47,19 +44,14 @@ if __name__ == "__main__":
         print scores
 </pre>
 
-## 2  [Detailed Guidance](https://github.com/roomai/RoomAI/blob/master/docs/Basic/README.md)
-
-## 3  Info and Action Structures
-
-The info and action are important concepts for AI-bot developers, and are very different for different games. We list info and action structures for the games supported by roomai:
-
-### 3.1 [Info and Action Structures for KuhnPoker ]
 
 
 
-### 3.3 [Info and Action Structures for Texas]
+# For More Information
 
-# License
+ - [RoomAI Tutorials](https://github.com/roomai/RoomAI/blob/master/roomai/README.md)
+ - [RoomAI Model Zoo](https://github.com/roomai/RoomAI/blob/master/models/README.md)
+
 
 # Contributors
 

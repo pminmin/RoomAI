@@ -3,19 +3,19 @@ import random
 import math
 import copy
 import roomai.abstract
-from KuhnPokerUtils import *;
+import roomai.kuhn.KuhnPokerUtils
 
 class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
     #@override
     def init(self):
         self.available_action = dict()
-        self.available_action[KuhnPokerAction("check").get_key()] = KuhnPokerAction("check")
-        self.available_action[KuhnPokerAction("bet").get_key()]   = KuhnPokerAction("bet")
+        self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check").get_key()] = roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check")
+        self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet").get_key()]   = roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet")
 
-        self.private_state = KuhnPokerPrivateState()
-        self.public_state  = KuhnPokerPublicState()
-        self.person_states = [KuhnPokerPersonState() for i in xrange(2)]
+        self.private_state = roomai.kuhn.KuhnPokerUtils.KuhnPokerPrivateState()
+        self.public_state  = roomai.kuhn.KuhnPokerUtils.KuhnPokerPublicState()
+        self.person_states = [roomai.kuhn.KuhnPokerUtils.KuhnPokerPersonState() for i in xrange(2)]
 
         card0 = math.floor(random.random() * 3)
         card1 = math.floor(random.random() * 3)
@@ -94,7 +94,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
 
     def gen_infos(self):
-        infos = [KuhnPokerInfo(), KuhnPokerInfo()]
+        infos = [ roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo(),  roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo()]
         for i in xrange(len(infos)):
             infos[i].person_state = copy.deepcopy(self.person_states[i])
             infos[i].public_state = copy.deepcopy(self.public_state)

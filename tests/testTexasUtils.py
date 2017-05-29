@@ -83,16 +83,16 @@ class TexasUtilsTester(unittest.TestCase):
         env.init()
 
         actions = TexasHoldemEnv.available_actions(env.public_state)
-        self.assertTrue("allin_1000" in actions)
+        self.assertTrue("Allin_1000" in actions)
 
         env.public_state.raise_account = 200
         actions = TexasHoldemEnv.available_actions(env.public_state)
-        self.assertTrue("call_10" in actions)
-        self.assertTrue("raise_210" in actions)
-        self.assertTrue("raise_410" in actions)
-        self.assertTrue("raise_410" in actions)
-        self.assertTrue("raise_810" in actions)
-        self.assertTrue("allin_1000" in actions)
+        self.assertTrue("Call_10" in actions)
+        self.assertTrue("Raise_210" in actions)
+        self.assertTrue("Raise_410" in actions)
+        self.assertTrue("Raise_410" in actions)
+        self.assertTrue("Raise_810" in actions)
+        self.assertTrue("Allin_1000" in actions)
         for key in actions:
             act = actions[key]
             self.assertTrue(TexasHoldemEnv.is_action_valid(env.public_state, act))
@@ -105,7 +105,7 @@ class TexasUtilsTester(unittest.TestCase):
 
 
         print TexasHoldemAction.AllIn
-        action = TexasHoldemAction("allin_1000")
+        action = TexasHoldemAction("Allin_1000")
         print action.get_key()
         self.assertTrue(env.is_action_valid(env.public_state,action))
 

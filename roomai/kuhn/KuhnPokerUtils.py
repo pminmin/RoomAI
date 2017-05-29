@@ -1,6 +1,4 @@
 #!/bin/python
-import random
-import math
 import roomai.abstract
 import copy
 
