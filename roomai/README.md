@@ -230,16 +230,28 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
 
     is_quit               = None
     num_quit              = None
+    ## for example, is_quit = [False, True, False] (3 players)
+    ## for example, num_quit = 1
+    
     is_raise              = None
     num_raise             = None
+    ## have the players raise the bet in the current round
+    ## for example, is_raise = [False, True, False] (3 players)
+    ## for example, num_raise = 1
+    
     is_needed_to_action   = None
     num_needed_to_action  = None
+    ## for is_needed_to_action =[False, True, Flase] (3 players)
+    ## for example, num_needed_to_action = 1
+    
 
-    # chips is array which contains the chips of all players
-    chips = None
+    chips              = None
+    ## the chips the players have now
+    ## for example, chips = [100,110, 30] (if 3 players)
 
-    # bets is array which contains the bets from all players
-    bets = None
+    bets               = None
+    ## the bets the players bet so far
+    ## for exaple, bets = [0,100,20] (if 3 players)
 
     upper_bet              = None
     floor_bet              = None
@@ -252,9 +264,16 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     previous_id            = None
     previous_action        = None
     previous_round         = None
+    ## players[previous_id] took the previous_action, and the round was previous_round before this action. 
+    ## if previous_round != round (previous_round +1 = round) means the round changes
+    ## These are history records
+    ## At first, previous_id, previous_action and previous_round = None
 
-    is_terminal            = None
-    scores                 = None
+    is_terminal                = None
+    scores                     = None
+    ## is_terminal = true means the game is over. At this time, scores is not None
+    ## when is_terminal = true,  scores = [float0, float1, ..., float_n].
+    ## when is_terminal = false, scores = None
 
 
 class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
@@ -325,13 +344,21 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.num_players        = None
         self.big_blind_bet      = None
 
-        #state of players
+
         self.is_quit                        = None
         self.num_quit                       = None
+        #for example, is_quit = [False, True, False] (3 players)
+        #for example, num_quit = 1
+        
         self.is_allin                       = None
         self.num_allin                      = None
+        #for example, is_allin = [False, True, False] (3 players)
+        #for example, num_allin = 1
+        
         self.is_needed_to_action            = None
         self.num_needed_to_action           = None
+        #for is_needed_to_action =[False, True, Flase] (3 players)
+        #for example, num_needed_to_action = 1
 
         self.turn               = None
         ## players[turn] takes a action
@@ -356,9 +383,16 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
 
         self.previous_id        = None
         self.previous_action    = None
-        ## players[previous_id] take a previous_action just before. These are history records
+        ## players[previous_id] took the previous_action just before this action
+        ## These are history records
         ## At first, previous_id and previous_action = None
         
+        self.is_terminal         = None
+        self.scores              = None
+        ## is_terminal = true means the game is over. At this time, scores is not None
+        ## when is_terminal = true,  scores = [float0, float1, ..., float_n].
+        ## when is_terminal = false, scores = None
+
 
 
 
