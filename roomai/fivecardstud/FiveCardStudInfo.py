@@ -16,11 +16,7 @@ class FiveCardStudPrivateState(roomai.abstract.AbstractPrivateState):
 
 
 class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
-    first_hand_cards      = None
-    second_hand_cards     = None
-    third_hand_cards      = None
-    fourth_hand_cards     = None
-    fifth_hand_cards      = None
+    hand_cards            = None
 
     is_quit               = None
     num_quit              = None
@@ -53,6 +49,7 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     def __deepcopy__(self,memodict={}):
         copyinstance = FiveCardStudPublicState()
 
+        '''
         if self.first_hand_cards is None:
             copyinstance.first_hand_cards = None
         else:
@@ -77,6 +74,11 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
             copyinstance.fifth_hand_cards = None
         else:
             copyinstance.fifth_hand_cards = [self.fifth_hand_cards[i].__deepcopy__() for i in xrange(len(self.fifth_hand_cards))]
+        '''
+        if self.hand_cards is None:
+            copyinstance.hand_cards = None
+        else:
+            copyinstance.hand_cards = copy.deepcopy(self.hand_cards)
 
         copy.num_quit          = self.num_quit
         if self.is_quit is None:
