@@ -22,8 +22,6 @@ class AbstractInfo:
     person_state       = None
 
 class AbstractAction:
-    def __init__(self, key):
-        raise NotImplementedError("The __init__ function hasn't been implemented")
 
     def get_key(self):
         '''
@@ -56,9 +54,6 @@ class AbstractPlayer:
 
 
 class AbstractEnv:
-
-    def init(self):
-        raise NotImplementedError("The init function hasn't been implemented")
 
     def forward(self, action):
         raise NotImplementedError("The receiveAction hasn't been implemented")
