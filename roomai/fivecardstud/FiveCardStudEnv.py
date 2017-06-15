@@ -117,12 +117,14 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         # computing_score
         if FiveCardStudEnv.is_compute_scores(self.public_state):
             num_players          = pu.num_players
+            pu.hand_cards        = []
             pu.first_hand_cards  = pr.all_hand_cards[0:                1 * num_players]
             pu.second_hand_cards = pr.all_hand_cards[1 * num_players:  2 * num_players]
             pu.third_hand_cards  = pr.all_hand_cards[2 * num_players:  3 * num_players]
             pu.fourth_hand_cards = pr.all_hand_cards[3 * num_players:  4 * num_players]
             pu.fifth_hand_cards  = pr.all_hand_cards[4 * num_players:  5 * num_players]
             pu.round             = 4
+
 
             pu.is_terminal = True
             pu.scores      = self.compute_scores(pu)
