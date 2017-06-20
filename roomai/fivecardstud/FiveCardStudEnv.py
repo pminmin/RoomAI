@@ -184,7 +184,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
     #@override
     @classmethod
     def compete(cls, env, players):
-        total_scores = [0 for i in xrange(len(players))]
+        total_scores   = [0 for i in xrange(len(players))]
         total_count    = 1000
 
         for count in xrange(total_count):
