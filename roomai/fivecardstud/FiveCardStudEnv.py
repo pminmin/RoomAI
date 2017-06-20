@@ -28,6 +28,11 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
         return infos
 
+    def gen_history(self):
+        self.public_state_history.append(self.public_state.__deepcopy__())
+        self.private_state_history.append(self.private_state.__deepcopy__())
+        self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
+
     #@override
     def init(self):
         if FiveCardStudEnv.is_valid_initialization(self) == False:
@@ -81,9 +86,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         turn = self.public_state.turn
         self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
 
-        self.public_state_history  = [self.public_state.__deepcopy__()]
-        self.private_state_history = [self.private_state.__deepcopy__()]
-        self.person_states_history = [[person_state.__deepcopy__() for  person_state in self.person_states]]
+        self.gen_history()
 
         return self.gen_infos(), self.public_state, self.person_states, self.private_state
 
@@ -183,11 +186,9 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             pe[pu.turn].available_actions        = self.available_actions(pu)
 
 
-        infos                                = self.gen_infos()
+        self.gen_history()
+        infos  = self.gen_infos()
 
-        self.public_state_history.append(self.public_state.__deepcopy__())
-        self.private_state_history.append(self.private_state.__deepcopy__())
-        self.person_states_history.append([person_state.__deepcopy__() for  person_state in self.person_states])
 
         return infos, self.public_state, self.person_states, self.private_state
 

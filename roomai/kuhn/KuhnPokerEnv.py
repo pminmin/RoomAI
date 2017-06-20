@@ -17,6 +17,10 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.public_state  = roomai.kuhn.KuhnPokerUtils.KuhnPokerPublicState()
         self.person_states = [roomai.kuhn.KuhnPokerUtils.KuhnPokerPersonState() for i in xrange(2)]
 
+        self.public_state_history  = []
+        self.private_state_history = []
+        self.person_states_history = []
+
         card0 = math.floor(random.random() * 3)
         card1 = math.floor(random.random() * 3)
         while card0 == card1:
@@ -34,7 +38,7 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.person_states[1].id        = 1
         self.person_states[1].card      = card1
 
-
+        self.gen_history()
         infos = self.gen_infos()
         
         return  infos, self.public_state, self.person_states, self.private_state
@@ -49,6 +53,8 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         if self.public_state.epoch == 1:
             self.public_state.is_terminal = False
             self.public_state.scores      = None
+
+            self.gen_history()
             infos = self.gen_infos()
             return infos, self.public_state, self.person_states, self.private_state
 
@@ -57,22 +63,42 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
             if scores[0] != -1:
                 self.public_state.is_terminal = True
                 self.public_state.scores      = scores
+
+                self.gen_history()
                 infos = self.gen_infos()
                 return infos,self.public_state, self.person_states, self.private_state
             else:
                 self.public_state.is_terminal = False
                 self.public_state.scores      = None
+
+                self.gen_history()
                 infos                         = self.gen_infos()
                 return infos,self.public_state, self.person_states, self.private_state
 
         elif self.public_state.epoch == 3:
             self.public_state.is_terminal = True
             self.public_state.scores      = self.evaluteThree()
+
+            self.gen_history()
             infos                         = self.gen_infos()
             return infos,self.public_state, self.person_states, self.private_state
 
         else:
             raise Exception("KuhnPoker has 3 turns at most")
+
+    #@override
+    def backward(self):
+        self.public_state_history.pop()
+        self.private_state_history.pop()
+        self.person_states_history.pop()
+
+        p = len(self.public_state_history) - 1
+        self.public_state  = self.public_state_history[p].__deepcopy__()
+        self.private_state = self.private_state_history[p].__deepcopy__()
+        self.person_states = [person_state.__deepcopy__() for person_state in self.person_states_history[p]]
+
+        infos                                = self.gen_infos()
+        return infos, self.public_state, self.person_states, self.private_state
 
     #@Overide
     @classmethod
@@ -92,6 +118,11 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
         return public_state.scores
 
+
+    def gen_history(self):
+        self.public_state_history.append(self.public_state.__deepcopy__())
+        self.private_state_history.append(self.private_state.__deepcopy__())
+        self.person_states_history = [[person_state.__deepcopy__() for  person_state in self.person_states]]
 
     def gen_infos(self):
         infos = [ roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo(),  roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo()]

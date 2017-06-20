@@ -184,14 +184,3 @@ class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
 
         return copyinstance
 
-
-class FiveCardStudInfo(roomai.abstract.AbstractInfo):
-    public_state  = None
-    person_state  = None
-
-
-    def __deepcopy__(self, memodict={}):
-        info = FiveCardStudInfo()
-        info.public_state = self.public_state.__deepcopy__()
-        info.public_state = self.person_state.__deepcopy__()
-        return info

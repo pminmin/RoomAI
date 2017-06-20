@@ -17,9 +17,14 @@ class AbsractPersonState:
     id                = None
     available_actions = None
 
-class AbstractInfo:
+class Info:
     public_state       = None
     person_state       = None
+    def __deepcopy__(self, memodict={}):
+        info = Info()
+        info.public_state = self.public_state.__deepcopy__()
+        info.public_state = self.person_state.__deepcopy__()
+        return info
 
 class AbstractAction:
 
@@ -53,13 +58,47 @@ class AbstractPlayer:
         raise NotImplementedError("The reset function hasn't been implemented")
 
 
+
+
 class AbstractEnv:
+    public_state          = AbstractPublicState()
+    private_state         = AbstractPrivateState()
+    person_states         = [AbstractPrivateState()]
+
+    public_state_history  = []
+    private_state_history = []
+    person_states_history = []
+
+    def gen_infos(self):
+        num_players = len(self.person_states)
+        infos = [Info() for i in xrange(num_players)]
+        for i in xrange(num_players):
+            infos[i].person_state = self.person_states[i].__deepcopy__()
+            infos[i].public_state = self.public_state.__deepcopy__()
+
+        return infos
+
+    def gen_history(self):
+        self.public_state_history.append(self.public_state.__deepcopy__())
+        self.private_state_history.append(self.private_state.__deepcopy__())
+        self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
+
 
     def forward(self, action):
         raise NotImplementedError("The forward hasn't been implemented")
 
     def backward(self):
-        raise NotImplementedError("The backward function hasn't been implemented")
+        self.public_state_history.pop()
+        self.private_state_history.pop()
+        self.person_states_history.pop()
+
+        p = len(self.public_state_history) - 1
+        self.public_state  = self.public_state_history[p].__deepcopy__()
+        self.private_state = self.private_state_history[p].__deepcopy__()
+        self.person_states = [person_state.__deepcopy__() for person_state in self.person_states_history[p]]
+
+        infos  = self.gen_infos()
+        return infos, self.public_state, self.person_states, self.private_state
 
     @classmethod
     def compete(cls, env, players):
