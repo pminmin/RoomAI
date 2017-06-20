@@ -37,6 +37,9 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.private_state  = FiveCardStudPrivateState()
         self.person_states  = [FiveCardStudPersonState() for i in xrange(self.num_players)]
 
+        self.public_state_history  = []
+        self.private_state_history = []
+        self.person_states_history = []
 
         ## initialize the cards
         allcards = []
@@ -77,6 +80,10 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             self.person_states[i].second_hand_card = self.private_state.all_hand_cards[self.num_players+i]
         turn = self.public_state.turn
         self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
+
+        self.public_state_history  = [self.public_state.__deepcopy__()]
+        self.private_state_history = [self.private_state.__deepcopy__()]
+        self.person_states_history = [[person_state.__deepcopy__() for  person_state in self.person_states]]
 
         return self.gen_infos(), self.public_state, self.person_states, self.private_state
 
@@ -178,8 +185,26 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
 
         infos                                = self.gen_infos()
 
+        self.public_state_history.append(self.public_state.__deepcopy__())
+        self.private_state_history.append(self.private_state.__deepcopy__())
+        self.person_states_history.append([person_state.__deepcopy__() for  person_state in self.person_states])
 
         return infos, self.public_state, self.person_states, self.private_state
+
+    #@override
+    def backward(self):
+        self.public_state_history.pop()
+        self.private_state_history.pop()
+        self.person_states_history.pop()
+
+        p = len(self.public_state_history) - 1
+        self.public_state  = self.public_state_history[p].__deepcopy__()
+        self.private_state = self.private_state_history[p].__deepcopy__()
+        self.person_states = [person_state.__deepcopy__() for person_state in self.person_states_history[p]]
+
+        infos                                = self.gen_infos()
+        return infos, self.public_state, self.person_states, self.private_state
+
 
     #@override
     @classmethod

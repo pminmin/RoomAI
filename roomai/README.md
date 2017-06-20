@@ -4,7 +4,7 @@
 ## Basic Concepts
 
 
-There are some basic concepts in RoomAI: Player, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
+There are some basic concepts in RoomAI: PlayerCRM, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
 
 <pre>
 def compete(env, players):
@@ -80,9 +80,9 @@ class AbstractAction:
 
 The get_key function generate the action's key.
 
-#### 3. Player
+#### 3. PlayerCRM
 
-A Player is an AI-bot.
+A PlayerCRM is an AI-bot.
 
 <pre>
 class AbstractPlayer:

@@ -3,17 +3,16 @@ import roomai.abstract
 import tensorflow as tf
 import numpy as np
 
-class Player(roomai.abstract.AbstractPlayer):
+class PlayerCRM(roomai.abstract.AbstractPlayer):
 
-
-    def __init__(self, is_train = True, num_players = 3):
-        self.is_train    =  is_train
+    def __init__(self, num_players = 2):
         self.num_players =  num_players
 
         self.chips_variables              = tf.placeholder(tf.float32,[None,self.num_players],"chips_variables")
         self.bets_variables               = tf.placeholder(tf.float32,[None,self.num_players],"bets_variables")
         self.handcards_variables          = tf.placeholder(tf.float32,[None,13,4,1], "handcards_variables")
         self.opponent_handcards_variables = tf.placeholder(tf.float32,[None,13,4,self.num_players],"opponent_handcards_variables")
+
 
         ########### chips and bets ###
         self.chips_w                    = tf.Variable(tf.float32, [self.num_players, 50])
@@ -60,6 +59,10 @@ class Player(roomai.abstract.AbstractPlayer):
         )
         self.output2      = tf.add(tf.matmul(self.output1, self.total_w2), self.total_bias2)
 
+
+
+        ### init ###
+
         self.init         = tf.global_variables_initializer()
         self.sess         = tf.Session()
         self.sess.run(self.init)
@@ -67,7 +70,7 @@ class Player(roomai.abstract.AbstractPlayer):
 
     #@take a action
     def take_action(self):
-        pass
+
 
     #@reset
     def reset(self):
@@ -91,6 +94,9 @@ class Player(roomai.abstract.AbstractPlayer):
             if i != pe.id:
                 self.opponent_hand_cards.append(parseCards(pu,i))
         self.opponent_hand_cards = np.asarray(self.opponent_hand_cards).reshape([1,13,4,pu.num_players])
+
+
+
 
 
 def parseCards(public_state, player_id):

@@ -56,7 +56,10 @@ class AbstractPlayer:
 class AbstractEnv:
 
     def forward(self, action):
-        raise NotImplementedError("The receiveAction hasn't been implemented")
+        raise NotImplementedError("The forward hasn't been implemented")
+
+    def backward(self):
+        raise NotImplementedError("The backward function hasn't been implemented")
 
     @classmethod
     def compete(cls, env, players):
