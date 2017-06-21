@@ -87,8 +87,9 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
 
         self.gen_history()
+        infos = self.gen_infos()
 
-        return self.gen_infos(), self.public_state, self.person_states, self.private_state
+        return infos, self.public_state, self.person_states, self.private_state
 
 
     #@override
@@ -190,20 +191,6 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         infos  = self.gen_infos()
 
 
-        return infos, self.public_state, self.person_states, self.private_state
-
-    #@override
-    def backward(self):
-        self.public_state_history.pop()
-        self.private_state_history.pop()
-        self.person_states_history.pop()
-
-        p = len(self.public_state_history) - 1
-        self.public_state  = self.public_state_history[p].__deepcopy__()
-        self.private_state = self.private_state_history[p].__deepcopy__()
-        self.person_states = [person_state.__deepcopy__() for person_state in self.person_states_history[p]]
-
-        infos                                = self.gen_infos()
         return infos, self.public_state, self.person_states, self.private_state
 
 

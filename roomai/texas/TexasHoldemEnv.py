@@ -108,6 +108,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             self.person_states[i].hand_cards = [hand_cards[i][j].__deepcopy__() for j in xrange(len(hand_cards[i]))]
         self.person_states[self.public_state.turn].available_actions = self.available_actions(self.public_state)
 
+        self.gen_history()
         infos = self.gen_infos()
 
         if self.logger.level <= logging.DEBUG:
@@ -202,6 +203,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
                 self.public_state.stage\
             ))
 
+        self.gen_history()
         infos = self.gen_infos()
         return infos, self.public_state, self.person_states, self.private_state
 
