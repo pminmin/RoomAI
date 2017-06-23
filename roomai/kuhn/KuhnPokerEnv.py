@@ -106,21 +106,6 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         return public_state.scores
 
 
-    def gen_history(self):
-        self.public_state_history.append(self.public_state.__deepcopy__())
-        self.private_state_history.append(self.private_state.__deepcopy__())
-        self.person_states_history = [[person_state.__deepcopy__() for  person_state in self.person_states]]
-
-    def gen_infos(self):
-        infos = [ roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo(),  roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo()]
-        for i in xrange(len(infos)):
-            infos[i].person_state = copy.deepcopy(self.person_states[i])
-            infos[i].public_state = copy.deepcopy(self.public_state)
-
-        turn = self.public_state.turn
-        infos[turn].person_state.available_actions = self.available_action
-
-        return infos
 
     def WhoHasHigherCard(self):
         hand_cards = self.private_state.hand_cards

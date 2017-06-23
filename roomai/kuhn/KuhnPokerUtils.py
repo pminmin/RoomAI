@@ -37,12 +37,3 @@ class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
         self.id                 = None
         self.card               = None
 
-class KuhnPokerInfo(roomai.abstract.AbstractInfo):
-    public_state       = None
-    person_state       = None
-
-    def __deepcopy__(self, memodict={}):
-        info = KuhnPokerInfo()
-        info.public_state = copy.deepcopy(self.public_state)
-        info.public_state = copy.deepcopy(self.person_state)
-        return info

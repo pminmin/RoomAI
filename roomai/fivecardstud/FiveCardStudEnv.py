@@ -20,18 +20,6 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.chips          = [500 for i in xrange(self.num_players)]
         self.floor_bet      = 10
 
-    def gen_infos(self):
-        infos = [FiveCardStudInfo() for i in xrange(self.public_state.num_players)]
-        for i in xrange(self.public_state.num_players):
-            infos[i].person_state = self.person_states[i].__deepcopy__()
-            infos[i].public_state = self.public_state.__deepcopy__()
-
-        return infos
-
-    def gen_history(self):
-        self.public_state_history.append(self.public_state.__deepcopy__())
-        self.private_state_history.append(self.private_state.__deepcopy__())
-        self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
 
     #@override
     def init(self):
