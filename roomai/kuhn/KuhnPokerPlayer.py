@@ -1,10 +1,10 @@
 #!/bin/python
 #coding:utf-8
 import random
-import roomai.abstract
+import roomai.common
 import roomai.kuhn.KuhnPokerUtils
 
-class KuhnPokerAlwaysBetPlayer(roomai.abstract.AbstractPlayer):
+class KuhnPokerAlwaysBetPlayer(roomai.common.AbstractPlayer):
     def __init__(self):
         pass
            

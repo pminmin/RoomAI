@@ -1,6 +1,6 @@
 #!/bin/python
 import unittest
-from roomai.abstract import *
+from roomai.common import *
 
 class AbstractEnvTester(unittest.TestCase):
     def test_functions(self):

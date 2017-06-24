@@ -4,7 +4,7 @@
 ## Basic Concepts
 
 
-There are some basic concepts in RoomAI: PlayerCRM, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
+There are some basic concepts in RoomAI: Player, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
 
 <pre>
 def compete(env, players):
@@ -13,6 +13,9 @@ def compete(env, players):
    :param players: the array of players
    :return: the final scores of this competition
    '''
+   for player in players:
+        players.reset()
+   
    infos, public_state, person_states, private_state = env.init()
    for i in xrange(len(players)):
        players[i].receive_info(infos[i])
@@ -30,7 +33,7 @@ def compete(env, players):
 
 ![the basic procedure of roomai](https://github.com/roomai/RoomAI/blob/master/roomai/game.png)
 
-We define these basic concepts as abstract classes in [roomai/abstract/Abstract.py](https://github.com/roomai/RoomAI/blob/master/roomai/abstract/Abstract.py), and all corresponding classes must extend them.  
+We define these basic concepts as classes in [roomai/common/common.py](https://github.com/roomai/RoomAI/blob/master/roomai/common/common.py), and all corresponding classes must extend them.  
 
 
 #### 1. Info
@@ -43,32 +46,31 @@ class AbstractPrivateState:
     pass
     
 class AbstractPublicState:
-    turn            = None
-    previous_id     = None
+    turn            = 0
+    previous_id     = 0
     previous_action = None
 
     is_terminal     = False
-    scores          = None
+    scores          = []
 
 class AbstractPersonState:
-    id                = None 
+    id                = 0 
     # if avilable_actions is non-None, it is a dict with (action_key, action) 
-    available_actions = None 
+    available_actions = dict() 
 
-class AbstractInfo:
+class Info:
     public_state       = None
     person_state       = None
 </pre>
 
+Infos sent to different players are different. They contain the same public states and different person states. Only the person_state in the Info w.r.t the player who will take a action, contains non-None available_actions dict. 
 
-All Infos contain the same public state. 
+The private_state isn't in any Info, hence no player can access it.
 
-All Infos contain the person state, and the person state is different for different players. Only the person_state in the Info w.r.t the player who will take a action, contains non-None available_actions dict. 
 
-The private_state won't be in any Info, hence no player can access it.
 #### 2. Action
 
-A player takes a action, and env forwards with this action.
+Player takes a action, and Env forwards with this action.
 
 <pre>
 class AbstractAction:
@@ -78,11 +80,11 @@ class AbstractAction:
         raise NotImplementedError("The get_key function hasn't been implemented")
 </pre>
 
-The get_key function generate the action's key.
+The get_key function returns the action's key. 
 
-#### 3. PlayerCRM
+#### 3. Player
 
-A PlayerCRM is an AI-bot.
+Player is an AI-bot.
 
 <pre>
 class AbstractPlayer:
@@ -96,6 +98,8 @@ class AbstractPlayer:
         raise NotImplementedError("The reset function hasn't been implemented")
 </pre>
 
+To develop an AI-bot, you should extend this AbstractPlayer and implement the receive_info、take_action and reset function.
+
 
 #### 4. Env
 
@@ -103,16 +107,26 @@ Env is a environment of a game.
 <pre>
 class AbstractEnv:
 
-    def init(self):
-        raise NotImplementedError("The init function hasn't been implemented")
+    def backward(self):
+        '''
+        The game goes back to the previous states
+        :return:infos, public_state, person_states, private_state 
+        '''
+        ... // The backward function has been implemented
 
     def forward(self, action):
-        raise NotImplementedError("The receiveAction hasn't been implemented")
+        '''
+        :return:infos, public_state, person_states, private_state 
+        '''
+        raise NotImplementedError("The forward function hasn't been implemented")
 
     @classmethod
     def compete(cls, env, players):
         raise NotImplementedError("The round function hasn't been implemented")
+        
 </pre>
+
+
 
 The compete function holds a competition for the players, and computes the scores.
 
@@ -150,6 +164,7 @@ class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
         action_list                = None
         ## action history.
         ## for exampke, action_list = ["bet","check"]
+        ## "bet" "check" are keys of KuhnPokerAction
 
 
         is_terminal                = None
@@ -173,10 +188,6 @@ class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
         ## the card dealt to the player receving this person state
         ## card = 0 or card = 1 or card = 2. (card is in [0,1,2])
 
-
-class KuhnPokerInfo(roomai.abstract.AbstractInfo):
-        public_state               = None
-        person_state               = None
 </pre>
 
 
@@ -293,9 +304,6 @@ class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
     fourth_hand_card  = None
     fifth_hand_card   = None
 
-class FiveCardStudInfo(roomai.abstract.AbstractInfo):
-    public_state  = None
-    person_state  = None
 
 </pre>
 
@@ -411,10 +419,6 @@ class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
     ## len(hand_cards) = 2
     ## for example, hand_cards = [PokerCard("A_Spade"), PokerCard("2_Club")]
 
-
-class TexasHoldemInfo(roomai.abstract.AbstractInfo):
-    public_state               = None
-    person_state                = None
 
 
 </pre>

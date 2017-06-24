@@ -1,6 +1,6 @@
 #!/bin/python
 #coding:utf-8
-import roomai.abstract
+import roomai.common
 import copy
 import logging
 import random
@@ -10,10 +10,9 @@ from FiveCardStudUtils  import FiveCardStudPokerCard
 from FiveCardStudInfo   import FiveCardStudPublicState
 from FiveCardStudInfo   import FiveCardStudPersonState
 from FiveCardStudInfo   import FiveCardStudPrivateState
-from FiveCardStudInfo   import FiveCardStudInfo
 from FiveCardStudAction import FiveCardStudAction
 
-class FiveCardStudEnv(roomai.abstract.AbstractEnv):
+class FiveCardStudEnv(roomai.common.AbstractEnv):
     def __init__(self):
         self.logger         = roomai.get_logger()
         self.num_players    = 3

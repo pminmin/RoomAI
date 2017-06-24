@@ -3,23 +3,23 @@
 
 ######################################################################### Basic Concepts #####################################################
 class AbstractPublicState:
-    turn            = None
-    previous_id     = None
-    previous_action = None
+    turn            = 0
+    previous_id     = 0
+    previous_action = []
 
     is_terminal     = False
-    scores          = None
+    scores          = []
 
 class AbstractPrivateState:
     pass
 
 class AbsractPersonState:
-    id                = None
-    available_actions = None
+    id                = 0
+    available_actions = dict()
 
 class Info:
-    public_state       = None
-    person_state       = None
+    public_state       = AbstractPublicState()
+    person_state       = AbsractPersonState()
     def __deepcopy__(self, memodict={}):
         info = Info()
         info.public_state = self.public_state.__deepcopy__()
@@ -85,9 +85,17 @@ class AbstractEnv:
 
 
     def forward(self, action):
+        '''
+        :param action: 
+        :return: infos, public_state, person_states, private_state
+        '''
         raise NotImplementedError("The forward hasn't been implemented")
 
     def backward(self):
+        '''
+        The game goes back to the previous states
+        :return:infos, public_state, person_states, private_state 
+        '''
         self.public_state_history.pop()
         self.private_state_history.pop()
         self.person_states_history.pop()
@@ -102,14 +110,20 @@ class AbstractEnv:
 
     @classmethod
     def compete(cls, env, players):
+        '''
+        :param env: 
+        :param players: 
+        :return: [score_for_player0, score_for_player1,...]
+        '''
         raise NotImplementedError("The round function hasn't been implemented")
 
 ############################################################### Some Utils ############################################################################
 
 point_str_to_key  = {'2':0, '3':1, '4':2, '5':3, '6':4, '7':5, '8':6, '9':7, 'T':8, 'J':9, 'Q':10, 'K':11, 'A':12, 'r':13, 'R':14}
 point_key_to_str  = {0: '2', 1: '3', 2: '4', 3: '5', 4: '6', 5: '7', 6: '8', 7: '9', 8: 'T', 9: 'J', 10: 'Q', 11: 'K', 12: 'A', 13:'r', 14:'R'}
-suit_key_to_str  = {0: 'Spade', 1: 'Heart', 2: 'Diamond', 3: 'Club'}
 suit_str_to_key   = {'Spade':0, 'Heart':1, 'Diamond':2, 'Club':3}
+suit_key_to_str   = {0: 'Spade', 1: 'Heart', 2: 'Diamond', 3: 'Club'}
+
 
 class PokerCard:
     def __init__(self, point, suit = None):

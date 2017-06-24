@@ -1,9 +1,9 @@
 #!/bin/python
 #coding:utf-8
-import roomai.abstract
+import roomai.common
 
 
-class FiveCardStudAction(roomai.abstract.AbstractAction):
+class FiveCardStudAction(roomai.common.AbstractAction):
 
     # 弃牌
     Fold        = "Fold"

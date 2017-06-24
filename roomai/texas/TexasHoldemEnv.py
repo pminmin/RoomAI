@@ -3,14 +3,15 @@
 
 import random
 import copy
-import roomai.abstract
+import roomai.common
 import roomai
 import logging
 
+from roomai.common import Info
 from TexasHoldemUtil import *
 
 
-class TexasHoldemEnv(roomai.abstract.AbstractEnv):
+class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     def __init__(self):
         self.logger         = roomai.get_logger()
@@ -38,7 +39,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
         allcards = []
         for i in xrange(13):
             for j in xrange(4):
-                allcards.append(roomai.abstract.PokerCard(i, j))
+                allcards.append(roomai.common.PokerCard(i, j))
         random.shuffle(allcards)
         hand_cards       = []
         for i in xrange(self.num_players):
@@ -266,7 +267,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
 
 
     def gen_infos(self):
-        infos = [TexasHoldemInfo() for i in xrange(self.public_state.num_players)]
+        infos = [Info() for i in xrange(self.public_state.num_players)]
         for i in xrange(len(infos)):
             infos[i].person_state = self.person_states[i].__deepcopy__()
         for i in xrange(len(infos)):
@@ -460,7 +461,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             else:
                 pointrank2cards[c.get_point_rank()] = [c]
         for p in pointrank2cards:
-            pointrank2cards[p].sort(roomai.abstract.PokerCard.compare)
+            pointrank2cards[p].sort(roomai.common.PokerCard.compare)
 
         suitrank2cards = dict()
         for c in hand_cards + remaining_cards:
@@ -469,7 +470,7 @@ class TexasHoldemEnv(roomai.abstract.AbstractEnv):
             else:
                 suitrank2cards[c.get_suit_rank()] = [c]
         for s in suitrank2cards:
-            suitrank2cards[s].sort(roomai.abstract.PokerCard.compare)
+            suitrank2cards[s].sort(roomai.common.PokerCard.compare)
 
         num2point = [[], [], [], [], []]
         for p in pointrank2cards:

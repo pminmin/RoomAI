@@ -6,7 +6,6 @@ import random
 
 class KuhnPokerCRMPlayer(CRMPlayer):
     def __init__(self):
-        super.__init__()
         self.regret_dict         = dict()
         self.state               = None
         self.actions_regret      = []
@@ -17,7 +16,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
 
         id      = info.person_state.id
         card    = info.person_state.card
-        history = info.public_state.action_history
+        history = info.public_state.action_list
 
         self.state   = "%d_%d_%s"%(id,card,"".join(history))
         if self.state not in self.regret_dict:
@@ -67,4 +66,4 @@ if __name__ == "__main__":
 
     algo    = CRMAlgorithm()
     for i in xrange(1000):
-        algo.dfs(env = env,players=players,player_probs = [1,1],action=None,deep = 0)
+        algo.dfs(env = env,players=players,players_prob = [1,1],action=None,deep = 0)

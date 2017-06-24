@@ -1,8 +1,8 @@
 #!/bin/python
-import roomai.abstract
+import roomai.common
 import random
 
-class CRMPlayer(roomai.abstract.AbstractPlayer):
+class CRMPlayer(roomai.common.AbstractPlayer):
     def get_actions_regret(self):
         raise NotImplementedError("get_counterfactual_values hasn't been implemented")
     def update_actions_regret(self, origin_actions_regret, target_actions_regret):
@@ -29,12 +29,12 @@ class CRMAlgorithm:
             turn   = public_state.turn
             scores = public_state.scores
             result = scores[turn]
-            env.backforward()
+            env.backward()
             return result
 
         else:
             for i in xrange(len(infos)):
-                players.receive_info(infos[i])
+                players[i].receive_info(infos[i])
 
             turn           = public_state.turn
             actions_regret = players[turn].get_actions_regret()
@@ -54,7 +54,7 @@ class CRMAlgorithm:
 
             players[turn].update_actions_regret(actions_regret, new_actions_regret)
 
-            env.backforward()
+            env.backward()
             return sum1
 
 

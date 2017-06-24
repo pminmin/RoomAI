@@ -1,9 +1,9 @@
 #!/bin/python
-import roomai.abstract
+import roomai.common
 import tensorflow as tf
 import numpy as np
 
-class PlayerCRM(roomai.abstract.AbstractPlayer):
+class PlayerCRM(roomai.common.AbstractPlayer):
 
     def __init__(self, num_players = 2):
         self.num_players =  num_players

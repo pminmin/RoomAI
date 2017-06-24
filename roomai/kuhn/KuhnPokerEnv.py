@@ -2,10 +2,10 @@
 import random
 import math
 import copy
-import roomai.abstract
+import roomai.common
 import roomai.kuhn.KuhnPokerUtils
 
-class KuhnPokerEnv(roomai.abstract.AbstractEnv):
+class KuhnPokerEnv(roomai.common.AbstractEnv):
 
     #@override
     def init(self):

@@ -1,8 +1,8 @@
 #!/bin/python
-import roomai.abstract
+import roomai.common
 import random
 
-class FiveCardStudRandomPlayer(roomai.abstract.AbstractPlayer):
+class FiveCardStudRandomPlayer(roomai.common.AbstractPlayer):
 
     available_actions = None
     def receive_info(self, info):
