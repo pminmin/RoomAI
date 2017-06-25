@@ -94,8 +94,12 @@ class AbstractEnv:
     def backward(self):
         '''
         The game goes back to the previous states
-        :return:infos, public_state, person_states, private_state 
+        :return: infos, public_state, person_states, private_state 
+        :ValueError: if Env has reached the initializaiton state, and we call this backward function, we will get ValueError.
         '''
+
+        if len(self.public_state_history) == 1:
+            raise ValueError("Env has reached the initialization state and can't go back further. ")
         self.public_state_history.pop()
         self.private_state_history.pop()
         self.person_states_history.pop()

@@ -20,8 +20,7 @@ class KuhnPokerAction(roomai.common.AbstractAction):
             return "check"
 
     def __deepcopy__(self, memodict={}):
-        copy = KuhnPokerAction()
-        copy.action = self.action
+        copy = KuhnPokerAction(self.get_key())
         return copy
 
 
