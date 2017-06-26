@@ -4,19 +4,20 @@ import random
 import copy
 
 class CRMPlayer(roomai.common.AbstractPlayer):
-    def get_state_actions_regrets(self, state):
-        raise NotImplementedError("get_counterfactual_values hasn't been implemented")
-    def update_state_actions_regrets(self, state, origin_actions_regret, target_actions_regret):
-        raise NotImplementedError("update_counterfactual_values hasn't been implemented")
-
-    def get_state_actions_probs(self):
-        raise NotImplementedError("get_action_probs hasn't been implemented")
-
-    def pop_info(self):
-        raise NotImplementedError("The pop_info function hasn't been implemented")
+    def gen_state(self,info):
+        raise NotImplementedError("")
+    def update_strategies(self, state, actions, targets):
+        raise NotImplementedError("")
+    def get_strategies(self, state, actions):
+        raise NotImplementedError("")
+    def update_regrets(self, state, actions, targets):
+        raise NotImplementedError("")
+    def get_regrets(self, state, actions):
+        raise NotImplementedError("")
 
 
 class CRMAlgorithm:
+    regrets = dict()
 
     def dfs(self, env, player, players_probs, action = None, deep = 0):
         infos         = None
@@ -36,30 +37,33 @@ class CRMAlgorithm:
             result = scores[turn]
 
         else:
-            turn           = public_state.turn
-            #print turn, infos[turn].public_state.action_list, infos[turn].person_state.id
 
-            player.receive_info(infos[turn])
+            turn                  = public_state.turn
+            state                 = player.gen_state(infos[turn])
+            available_actions     = infos[turn].person_state.available_actions.values()
+            num_available_actions = len(available_actions)
+            cur_regrets           = player.get_regrets(state, available_actions)
+            cur_strategy          = [0 for i in xrange(num_available_actions)]
+            
 
-            actions_regrets = player.get_state_actions_regrets()
-            actions_probs   = player.get_state_actions_probs()
 
-            new_actions_regret = [None for i in xrange(len(actions_regrets))]
-            for i in xrange(len(actions_probs)):
-                action                       = actions_probs[i][0]
-                new_players_probs            = [v for v in players_probs]
-                new_players_probs[turn]     *= actions_probs[i][1]
-                new_actions_regret[i]        = -1 * self.dfs(env, player, new_players_probs, action, deep + 1)
-            sum1 = 0
-            for i in xrange(len(new_actions_regret)):
-                sum1 += actions_probs[i][1] * new_actions_regret[i]
-            ##print new_actions_regret, actions_probs, sum1
-            for i in xrange(len(new_actions_regret)):
-                new_actions_regret[i] = (actions_regrets[i][0],new_actions_regret[i] - sum1)
+            counterfactual_h_a    = [0 for i in xrange(num_available_actions)]
+            counterfactual_h      = 0
 
-            player.update_state_actions_regrets(actions_regrets, new_actions_regret)
-            player.pop_info()
-            result = sum1
+            for i in xrange(num_available_actions):
+                counterfactual_h_a[i] = -1 * self.dfs(env, player, players_probs,action,deep+1)
+                counterfactual_h     += cur_strategy[i] * counterfactual_h_a[i]
+
+            new_regrets    = [0 for i in xrange(num_available_actions)]
+            new_strategies = [0 for i in xrange(num_available_actions)]
+            for i in xrange(num_available_actions):
+                new_regrets
+
+
+            player.update_regrets(state, available_actions, new_regrets)
+            player.update_strategies(state, available_actions, new_strategies)
+
+            result = counterfactual_h
 
         if deep != 0:
             env.backward()
