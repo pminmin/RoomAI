@@ -104,7 +104,7 @@ if __name__ == "__main__":
     player.is_train = True
     algo    = CRMAlgorithm()
     for i in xrange(10000):
-        algo.dfs(env = env, player=player, players_probs= [1, 1], deep = 0)
+        algo.dfs(env = env, player=player, p0 = 1, p1 = 1, deep = 0)
 
     print player.state_actions_regrets
     print player.state_actions_probs
