@@ -68,14 +68,16 @@ class CRMAlgorithm:
                     counterfactual_h_a[i] = -1 * self.dfs(env, player, p0 * cur_strategy[i], p1, available_actions[i], deep+1)
                 else:
                     counterfactual_h_a[i] = -1 * self.dfs(env, player, p0, p1 * cur_strategy[i], available_actions[i], deep+1)
+
                 counterfactual_h     += cur_strategy[i] * counterfactual_h_a[i]
+
 
             new_regrets    = [0 for i in xrange(num_available_actions)]
             new_strategies = [0 for i in xrange(num_available_actions)]
             for i in xrange(num_available_actions):
                 new_regrets[i]    = regrets[i]    + opp_p * (counterfactual_h_a[i] - counterfactual_h)
-                ##new_strategies[i] = strategies[i] + cur_p * cur_strategy[i]
-                new_strategies[i] =   cur_strategy[i]
+                new_strategies[i] = strategies[i] + cur_p * cur_strategy[i]
+                #new_strategies[i] =   cur_strategy[i]
                 '''if state == "2_checkbet" and i == 1:
                     print player.strategies
                     print player.get_strategies(state,available_actions)
