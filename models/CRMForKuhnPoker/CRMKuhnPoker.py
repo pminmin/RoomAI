@@ -76,7 +76,7 @@ if __name__ == "__main__":
     player  = KuhnPokerCRMPlayer()
     player.is_train = True
     algo    = CRMAlgorithm()
-    for i in xrange(100000):
+    for i in xrange(10000):
         algo.dfs(env = env, player=player, p0 = 1, p1 = 1, deep = 0)
 
     print player.regrets
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     player_random = KuhnPokerRandomPlayer()
     sum_scores = [0.0,0.0]
     num        = 0
-    for i in xrange(100000):
+    for i in xrange(10000):
         scores = KuhnPokerEnv.compete(env,[player, player_random])
         sum_scores[0] += scores[0]
         sum_scores[1] += scores[1]
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     player_alwaysbet = KuhnPokerAlwaysBetPlayer()
     sum_scores = [0.0,0.0]
     num        = 0
-    for i in xrange(100000):
+    for i in xrange(10000):
         scores = KuhnPokerEnv.compete(env,[player, player_alwaysbet])
         sum_scores[0] += scores[0]
         sum_scores[1] += scores[1]
@@ -110,7 +110,7 @@ if __name__ == "__main__":
 
     sum_scores = [0.0, 0.0]
     num = 0
-    for i in xrange(100000):
+    for i in xrange(10000):
         scores = KuhnPokerEnv.compete(env, [player_random, player_alwaysbet])
         sum_scores[0] += scores[0]
         sum_scores[1] += scores[1]

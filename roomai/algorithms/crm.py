@@ -74,7 +74,8 @@ class CRMAlgorithm:
             new_strategies = [0 for i in xrange(num_available_actions)]
             for i in xrange(num_available_actions):
                 new_regrets[i]    = regrets[i]    + opp_p * (counterfactual_h_a[i] - counterfactual_h)
-                new_strategies[i] = strategies[i] + cur_p * cur_strategy[i]
+                ##new_strategies[i] = strategies[i] + cur_p * cur_strategy[i]
+                new_strategies[i] =   cur_strategy[i]
                 '''if state == "2_checkbet" and i == 1:
                     print player.strategies
                     print player.get_strategies(state,available_actions)
@@ -95,11 +96,12 @@ class CRMAlgorithm:
 class FastCRMAlgorithm:
 
 
-    def dfs(self, env, players, players_prob, action = None, deep = 0):
+    def dfs(self, env, player, p0,  p1, action = None, deep = 0):
         infos         = None
         public_state  = None
         person_states = None
         private_state = None
+
 
         if deep == 0:
             infos, public_state, person_states, private_state = env.init()
@@ -112,30 +114,56 @@ class FastCRMAlgorithm:
             result = scores[turn]
 
         else:
-            for i in xrange(len(infos)):
-                players.receive_info(infos[i])
 
-            turn           = public_state.turn
-            actions_regret = players[turn].get_state_actions_regrets()
-            actions_prob   = players[turn].get_state_actions_probs()
+            turn                  = public_state.turn
+            state                 = player.gen_state(infos[turn])
+            available_actions     = infos[turn].person_state.available_actions.values()
+            num_available_actions = len(available_actions)
+            regrets               = player.get_regrets(state, available_actions)
+            strategies            = player.get_strategies(state, available_actions)
 
-            new_actions_regret           = [r for r in actions_prob]
-            action                       = players[turn].take_action()
-            new_players_prob             = [v for v in players_prob]
-            new_players_prob[turn]      *= actions_prob[i][1]
-            new_actions_regret[i]        = -1 * self.dfs(env, players, new_players_prob, action, deep + 1)
+            cur_p                 = p0
+            if turn == 1:   cur_p = p1
+            opp_p                 = p1
+            if turn == 1:   opp_p = p0
 
+            cur_strategy          = [0 for i in xrange(num_available_actions)]
+            sum1                  = 0
+            for i in xrange(num_available_actions):
+                sum1 += max(0, regrets[i])
+            for i in xrange(num_available_actions):
+                if sum1 > 0:
+                    cur_strategy[i] = max(0, regrets[i]) / sum1
+                else:
+                    cur_strategy[i] = 1.0 / num_available_actions
+
+            counterfactual_h_a    = [0 for i in xrange(num_available_actions)]
+            counterfactual_h      = 0
+
+
+            r = random.random()
             sum1 = 0
-            for i in xrange(len(new_actions_regret)):
-                sum1 += actions_prob[i][1] * actions_regret[i][1]
-            for i in xrange(len(new_actions_regret)):
-                new_actions_regret -= sum1
-            players[turn].update_state_actions_regrets(actions_regret, new_actions_regret)
+            for i in xrange(num_available_actions):
+                sum1 += cur_strategy[i]
+                if turn == 0:
+                    counterfactual_h_a[i] = -1 * self.dfs(env, player, p0 * cur_strategy[i], p1, available_actions[i], deep+1)
+                else:
+                    counterfactual_h_a[i] = -1 * self.dfs(env, player, p0, p1 * cur_strategy[i], available_actions[i], deep+1)
+                counterfactual_h     += cur_strategy[i] * counterfactual_h_a[i]
+
+            new_regrets    = [0 for i in xrange(num_available_actions)]
+            new_strategies = [0 for i in xrange(num_available_actions)]
+            for i in xrange(num_available_actions):
+                new_regrets[i]    = regrets[i]    + opp_p * (counterfactual_h_a[i] - counterfactual_h)
+                new_strategies[i] = strategies[i] + cur_p * cur_strategy[i]
+
+            player.update_regrets(state, available_actions, new_regrets)
+            player.update_strategies(state, available_actions, new_strategies)
+            result = counterfactual_h
 
         if deep != 0:
             env.backward()
         return result
-
 
 
 
