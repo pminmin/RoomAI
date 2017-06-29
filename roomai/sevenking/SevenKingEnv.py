@@ -1,16 +1,16 @@
 #!/bin/python
 import roomai.common
-from roomai.sevenking import SevenKingFiveTwoThreePublicState
-from roomai.sevenking import SevenKingFiveTwoThreePrivateState
-from roomai.sevenking import SevenKingFiveTwoThreePersonState
+from roomai.sevenking import SevenKingPublicState
+from roomai.sevenking import SevenKingPrivateState
+from roomai.sevenking import SevenKingPersonState
 
-class SevenKingFiveTwoThreeEnv(roomai.common.AbstractEnv):
+class SevenKingEnv(roomai.common.AbstractEnv):
     num_players = 2
 
     def init(self):
-        self.public_state  = SevenKingFiveTwoThreePublicState()
-        self.private_state = SevenKingFiveTwoThreePrivateState()
-        self.person_states = [SevenKingFiveTwoThreePersonState() for i in range(self.num_players)]
+        self.public_state  = SevenKingPublicState()
+        self.private_state = SevenKingPrivateState()
+        self.person_states = [SevenKingPersonState() for i in range(self.num_players)]
 
         self.public_state_history  = []
         self.private_state_history = []
