@@ -71,7 +71,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             self.person_states[i].first_hand_card  = self.private_state.all_hand_cards[i]
             self.person_states[i].second_hand_card = self.private_state.all_hand_cards[self.num_players+i]
         turn = self.public_state.turn
-        self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
+        self.person_states[turn].available_actions = FiveCardStudEnv.gen_available_actions(self.public_state, self.person_states[turn])
 
         self.gen_history()
         infos = self.gen_infos()
@@ -166,12 +166,12 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             pu.num_raise            = 0
 
             pe[pu.previous_id].available_actions = None
-            pe[pu.turn].available_actions        = self.available_actions(pu)
+            pe[pu.turn].available_actions        = FiveCardStudEnv.gen_available_actions(pu,pe[pu.turn])
 
         else:
             pu.turn                              = self.next_player(pu)
             pe[pu.previous_id].available_actions = None
-            pe[pu.turn].available_actions        = self.available_actions(pu)
+            pe[pu.turn].available_actions        = FiveCardStudEnv.gen_available_actions(pu, pe[pu.turn])
 
 
         self.gen_history()
@@ -391,7 +391,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         return True
 
     @classmethod
-    def available_actions(cls, public_state):
+    def gen_available_actions(cls, public_state, person_state):
         pu             = public_state
         round          = pu.round
         turn           = pu.turn

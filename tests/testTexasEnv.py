@@ -25,7 +25,7 @@ class TexasEnvTester(unittest.TestCase):
         env.private_state.keep_cards    = [roomai.common.PokerCard(3,0),  roomai.common.PokerCard(4,0),roomai.common.PokerCard(5,0),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,0)]
 
         self.assertEqual(env.public_state.turn, 0)
-        self.assertNotEqual(len(infos[0].person_state.available_actions),0 )
+        self.assertNotEqual(len(infos[0].person_state.available_actions), 0)
         self.assertTrue("Allin_100" in infos[0].person_state.available_actions.keys())
         # dealer_id = 0
         # turn = 0
@@ -37,7 +37,7 @@ class TexasEnvTester(unittest.TestCase):
         action = TexasHoldemAction("Allin_100")
         infos,public_state, person_states, private_state  = env.forward(action)
         self.assertEqual(env.public_state.turn, 1)
-        self.assertNotEqual(len(infos[1].person_state.available_actions),0 )
+        self.assertNotEqual(len(infos[1].person_state.available_actions), 0)
         self.assertTrue("Allin_90" in infos[1].person_state.available_actions.keys())
         self.assertEqual(env.public_state.turn, 1)
         self.assertEqual(env.chips[0],0)
@@ -95,7 +95,7 @@ class TexasEnvTester(unittest.TestCase):
         env.private_state.hand_cards[2] = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]
         env.private_state.keep_cards    = [roomai.common.PokerCard(3,1),roomai.common.PokerCard(4,2),roomai.common.PokerCard(5,3),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,3)]
         self.assertEqual(env.public_state.turn, 0)
-        self.assertNotEqual(len(infos[0].person_state.available_actions),0 )
+        self.assertNotEqual(len(infos[0].person_state.available_actions), 0)
         self.assertTrue("Raise_60" in infos[0].person_state.available_actions.keys())
         self.assertEqual(env.public_state.raise_account, 20)
         # dealer_id = 0

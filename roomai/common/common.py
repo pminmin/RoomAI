@@ -2,45 +2,79 @@
 #coding=utf8
 
 ######################################################################### Basic Concepts #####################################################
-class AbstractPublicState:
-    turn            = 0
-    previous_id     = 0
-    previous_action = []
+class AbstractPublicState(object):
+    def __init__(self):
+        self.turn            = 0
+        self.previous_id     = 0
+        self.previous_action = None
 
-    is_terminal     = False
-    scores          = []
+        self.is_terminal     = False
+        self.scores          = []
 
-class AbstractPrivateState:
-    pass
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is  None:
+            newinstance = AbstractPublicState()
+        newinstance.turn             = self.turn
+        newinstance.previous_id      = self.previous_id
+        if self.previous_action is not None:
+            newinstance.previous_action  = self.previous_action.__deepcopy__()
+        else:
+            newinstance.previous_action  = None
+        newinstance.is_terminal      = self.is_terminal
+        newinstance.scores           = [score for score in self.scores]
+        return newinstance
 
-class AbsractPersonState:
-    id                = 0
-    available_actions = dict()
 
-class Info:
-    public_state       = AbstractPublicState()
-    person_state       = AbsractPersonState()
-    def __deepcopy__(self, memodict={}):
-        info = Info()
-        info.public_state = self.public_state.__deepcopy__()
-        info.public_state = self.person_state.__deepcopy__()
-        return info
+class AbstractPrivateState(object):
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is  None:
+            return AbstractPrivateState()
+        else:
+            return newinstance
 
-class AbstractAction:
+
+class AbsractPersonState(object):
+    def __init__(self):
+        self.id                = 0
+        self.available_actions = dict()
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is  None:
+            newinstance = AbsractPersonState()
+        newinstance.id                = self.id
+        newinstance.available_actions = dict()
+        for k in self.available_actions:
+            newinstance.available_actions[k] = self.available_actions[k].__deepcopy__()
+        return newinstance
+
+class Info(object):
+    def __init__(self):
+        self.public_state       = AbstractPublicState()
+        self.person_state       = AbsractPersonState()
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is None:
+            newinstance = Info()
+        newinstance.public_state = self.public_state.__deepcopy__()
+        newinstance.public_state = self.person_state.__deepcopy__()
+        return newinstance
+
+class AbstractAction(object):
     def __init__(self, key):
-        raise NotImplementedError("The __init__ function hasn't been implemented")
-
+        self.key = key
     def get_key(self):
         '''
         :return:
-            key: action's key 
+            key: action's key , All Actions in RoomAI have a key
         :raises:
             NotImplementedError: An error occurred when we doesn't implement this function
         '''
         raise NotImplementedError("The get_key function hasn't been implemented")
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is None:
+            newinstance = AbstractAction()
+        newinstance.key = self.key
+        return newinstance
 
-class AbstractPlayer:
-
+class AbstractPlayer(object):
     def receive_info(self, info):
         '''
         :param:
@@ -62,7 +96,7 @@ class AbstractPlayer:
 
 
 
-class AbstractEnv:
+class AbstractEnv(object):
     public_state          = AbstractPublicState()
     private_state         = AbstractPrivateState()
     person_states         = [AbstractPrivateState()]
@@ -116,6 +150,7 @@ class AbstractEnv:
         infos  = self.gen_infos()
         return infos, self.public_state, self.person_states, self.private_state
 
+
     @classmethod
     def compete(cls, env, players):
         '''
@@ -133,7 +168,7 @@ suit_str_to_rank   = {'Spade':0, 'Heart':1, 'Diamond':2, 'Club':3,  'ForKing':4}
 suit_rank_to_str   = {0:'Spade', 1: 'Heart', 2: 'Diamond', 3:'Club', 4:'ForKing'}
 
 
-class PokerCard:
+class PokerCard(object):
     def __init__(self, point, suit = None):
         point1 = 0
         suit1  = 0
@@ -172,6 +207,10 @@ class PokerCard:
         else:
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
 
-    def __deepcopy__(self, memodict={}):
-        copyinstance = PokerCard(self.point_str, self.suit_str)
-        return copyinstance
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is None:
+            newinstance = PokerCard(self.get_key())
+        newinstance.point_str = self.point_str
+        newinstance.suit_str  = self.suit_str
+        newinstance.String    = self.String
+        return newinstance

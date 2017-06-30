@@ -19,20 +19,26 @@ class FiveCardStudAction(roomai.common.AbstractAction):
     Showhand    = "Showhand"
 
     def __init__(self,key):
+        super(FiveCardStudAction,self).__init__(key)
+
         opt_price = key.strip().split("_")
         if  opt_price[0] != self.Fold    and opt_price[0] != self.Call  and \
             opt_price[0] != self.Check   and opt_price[0] != self.Raise and \
             opt_price[0] != self.Bet     and opt_price[0] != self.Showhand:
             raise  ValueError("%s is an invalid key. The Option must be in [Fold,Check,Call,Raise,Bet,Showhand]"%key)
-
         self.option = opt_price[0]
         self.price  = int(opt_price[1])
-        self.String = "%s_%d"%(self.option, self.price)
+
 
     def get_key(self):
-        return self.String
+        return self.key
 
 
-    def __deepcopy__(self, memodict={}):
-        copyinstnce = FiveCardStudAction(self.String)
-        return copyinstnce
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is None:
+            newinstance = FiveCardStudAction(self.key)
+
+        newinstance        = super(FiveCardStudAction,self).__deepcopy__(newinstance = newinstance)
+        newinstance.price  = self.price
+        newinstance.option = self.option
+        return newinstance

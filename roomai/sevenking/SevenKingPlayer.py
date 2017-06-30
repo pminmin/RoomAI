@@ -5,7 +5,7 @@ import random
 class SevenKingRandomPlayer(roomai.common.AbstractPlayer):
     #@override
     def receive_info(self, info):
-        self.available_actions = info.person_state.available_actions
+        self.available_actions = info.person_state.gen_available_actions
 
     #@override
     def take_action(self):
