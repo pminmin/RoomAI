@@ -73,8 +73,8 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         turn = self.public_state.turn
         self.person_states[turn].available_actions = FiveCardStudEnv.gen_available_actions(self.public_state, self.person_states[turn])
 
-        self.gen_history()
-        infos = self.gen_infos()
+        self.__gen_history__()
+        infos = self.__gen_infos__()
 
         return infos, self.public_state, self.person_states, self.private_state
 
@@ -86,7 +86,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         :except: throw ValueError when the action is invalid at this time 
         '''
         turn = self.public_state.turn
-        if not FiveCardStudEnv.is_action_valid(self.public_state, self.person_states[turn], action):
+        if not FiveCardStudEnv.is_action_valid(action,self.public_state, self.person_states[turn]):
             self.logger.critical("action=%s is invalid" % (action.get_key()))
             raise ValueError("action=%s is invalid" % (action.get_key()))
 
@@ -174,8 +174,8 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             pe[pu.turn].available_actions        = FiveCardStudEnv.gen_available_actions(pu, pe[pu.turn])
 
 
-        self.gen_history()
-        infos  = self.gen_infos()
+        self.__gen_history__()
+        infos  = self.__gen_infos__()
 
 
         return infos, self.public_state, self.person_states, self.private_state
@@ -385,7 +385,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         return p
 
     @classmethod
-    def is_action_valid(cls, public_state, person_state, action):
+    def is_action_valid(cls, action, public_state, person_state):
         if action.get_key() not in person_state.available_actions:
             return False
         return True

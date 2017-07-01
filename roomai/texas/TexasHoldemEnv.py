@@ -107,10 +107,10 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         for i in xrange(self.num_players):
             self.person_states[i].id = i
             self.person_states[i].hand_cards = [hand_cards[i][j].__deepcopy__() for j in xrange(len(hand_cards[i]))]
-        self.person_states[self.public_state.turn].available_actions = self.available_actions(self.public_state)
+        self.person_states[self.public_state.turn].available_actions = self.available_actions(self.public_state, self.person_states[self.public_state.turn])
 
-        self.gen_history()
-        infos = self.gen_infos()
+        self.__gen_history__()
+        infos = self.__gen_infos__()
 
         if self.logger.level <= logging.DEBUG:
             self.logger.debug("TexasHoldemEnv.init: num_players = %d, dealer_id = %d, chip = %d, big_blind_bet = %d"%(\
@@ -129,15 +129,14 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         :param action: 
         :except: throw ValueError when the action is invalid at this time 
         '''
-
-        if not self.is_action_valid(self.public_state, action):
-            self.logger.critical("action=%s is invalid" % (action.get_key()))
-            raise ValueError("action=%s is invalid" % (action.get_key()))
-
-
         pu         = self.public_state
         pe         = self.person_states
         pr         = self.private_state
+
+        if not self.is_action_valid(action, pu, pe[pu.turn]):
+            self.logger.critical("action=%s is invalid" % (action.get_key()))
+            raise ValueError("action=%s is invalid" % (action.get_key()))
+
 
         if action.option == TexasHoldemAction.Fold:
             self.action_fold(action)
@@ -185,14 +184,14 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
             pu.turn                                             = pu.dealer_id
             pu.turn                                             = self.next_player(pu)
-            pe[self.public_state.previous_id].available_actions = None
-            pe[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
+            pe[self.public_state.previous_id].available_actions = dict()
+            pe[self.public_state.turn].available_actions        = self.available_actions(self.public_state, self.person_states[self.public_state.turn])
 
         ##normal
         else:
             pu.turn                                                             = self.next_player(pu)
-            self.person_states[self.public_state.previous_id].available_actions = None
-            self.person_states[self.public_state.turn].available_actions        = self.available_actions(self.public_state)
+            self.person_states[self.public_state.previous_id].available_actions = dict()
+            self.person_states[self.public_state.turn].available_actions        = self.available_actions(self.public_state, self.person_states[self.public_state.turn])
 
 
         if self.logger.level <= logging.DEBUG:
@@ -204,8 +203,8 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 self.public_state.stage\
             ))
 
-        self.gen_history()
-        infos = self.gen_infos()
+        self.__gen_history__()
+        infos = self.__gen_infos__()
         return infos, self.public_state, self.person_states, self.private_state
 
     #override
@@ -264,16 +263,6 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             total_scores[i] /= 1.0 * total_count
 
         return total_scores
-
-
-    def gen_infos(self):
-        infos = [Info() for i in xrange(self.public_state.num_players)]
-        for i in xrange(len(infos)):
-            infos[i].person_state = self.person_states[i].__deepcopy__()
-        for i in xrange(len(infos)):
-            infos[i].public_state = self.public_state.__deepcopy__()
-        return infos
-
 
 
     def compute_scores(self):
@@ -635,26 +624,26 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             return 0
 
     @classmethod
-    def available_actions(cls, public_state):
+    def available_actions(cls, public_state, person_state):
         pu = public_state
         turn = pu.turn
         key_actions = dict()
 
         ## for fold
         action = TexasHoldemAction(TexasHoldemAction.Fold + "_0")
-        if cls.is_action_valid(public_state, action):
+        if cls.is_action_valid(action,public_state, person_state):
             key_actions[action.get_key()] = action
 
         ## for check
         if pu.bets[turn] == pu.max_bet_sofar:
             action = TexasHoldemAction(TexasHoldemAction.Check + "_0")
-            if cls.is_action_valid(public_state, action):
+            if cls.is_action_valid(action, public_state, person_state):
                 key_actions[action.get_key()] = action
 
         ## for call
         if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn]:
             action = TexasHoldemAction(TexasHoldemAction.Call + "_%d" % (pu.max_bet_sofar - pu.bets[turn]))
-            if cls.is_action_valid(public_state, action):
+            if cls.is_action_valid(action, public_state, person_state):
                 key_actions[action.get_key()] = action
 
         ## for raise
@@ -664,18 +653,18 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 price = pu.max_bet_sofar - pu.bets[turn] + pu.raise_account * i
                 if price == pu.chips[pu.turn]:  continue
                 action = TexasHoldemAction(TexasHoldemAction.Raise + "_%d" % (price))
-                if cls.is_action_valid(public_state, action):
+                if cls.is_action_valid(action, public_state, person_state):
                     key_actions[action.get_key()] = action
 
         ## for all in
         action = TexasHoldemAction(TexasHoldemAction.AllIn + "_%d" % (pu.chips[turn]))
-        if cls.is_action_valid(public_state, action):
+        if cls.is_action_valid(action, public_state, person_state):
             key_actions[action.get_key()] = action
 
         return key_actions
 
     @classmethod
-    def is_action_valid(cls, public_state, action):
+    def is_action_valid(cls, action, public_state, person_state):
         pu = public_state
 
         if (not isinstance(public_state, TexasHoldemPublicState)) or (not isinstance(action, TexasHoldemAction)):

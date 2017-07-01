@@ -40,8 +40,8 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
 
         self.person_states[self.public_state.turn].available_actions = self.available_action
 
-        self.gen_history()
-        infos = self.gen_infos()
+        self.__gen_history__()
+        infos = self.__gen_infos__()
 
         
         return  infos, self.public_state, self.person_states, self.private_state
@@ -58,8 +58,8 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
             self.public_state.scores      = []
             self.person_states[self.public_state.turn].available_actions = self.available_action
 
-            self.gen_history()
-            infos = self.gen_infos()
+            self.__gen_history__()
+            infos = self.__gen_infos__()
             return infos, self.public_state, self.person_states, self.private_state
 
         elif self.public_state.epoch == 2:
@@ -68,24 +68,24 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
                 self.public_state.is_terminal = True
                 self.public_state.scores      = scores
 
-                self.gen_history()
-                infos = self.gen_infos()
+                self.__gen_history__()
+                infos = self.__gen_infos__()
                 return infos,self.public_state, self.person_states, self.private_state
             else:
                 self.public_state.is_terminal = False
                 self.public_state.scores      = []
                 self.person_states[self.public_state.turn].available_actions = self.available_action
 
-                self.gen_history()
-                infos                         = self.gen_infos()
+                self.__gen_history__()
+                infos                         = self.__gen_infos__()
                 return infos,self.public_state, self.person_states, self.private_state
 
         elif self.public_state.epoch == 3:
             self.public_state.is_terminal = True
             self.public_state.scores      = self.evaluteThree()
 
-            self.gen_history()
-            infos                         = self.gen_infos()
+            self.__gen_history__()
+            infos                         = self.__gen_infos__()
             return infos,self.public_state, self.person_states, self.private_state
 
         else:

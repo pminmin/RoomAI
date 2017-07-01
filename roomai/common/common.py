@@ -105,7 +105,7 @@ class AbstractEnv(object):
     private_state_history = []
     person_states_history = []
 
-    def gen_infos(self):
+    def __gen_infos__(self):
         num_players = len(self.person_states)
         infos = [Info() for i in xrange(num_players)]
         for i in xrange(num_players):
@@ -114,7 +114,7 @@ class AbstractEnv(object):
 
         return infos
 
-    def gen_history(self):
+    def __gen_history__(self):
         self.public_state_history.append(self.public_state.__deepcopy__())
         self.private_state_history.append(self.private_state.__deepcopy__())
         self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
@@ -147,10 +147,10 @@ class AbstractEnv(object):
         self.private_state = self.private_state_history[p].__deepcopy__()
         self.person_states = [person_state.__deepcopy__() for person_state in self.person_states_history[p]]
 
-        infos  = self.gen_infos()
+        infos  = self.__gen_infos__()
         return infos, self.public_state, self.person_states, self.private_state
 
-
+    ### provide some util functions
     @classmethod
     def compete(cls, env, players):
         '''
@@ -159,6 +159,23 @@ class AbstractEnv(object):
         :return: [score_for_player0, score_for_player1,...]
         '''
         raise NotImplementedError("The round function hasn't been implemented")
+
+    @classmethod
+    def is_action_valid(cls, action, public_state, person_state):
+        '''
+        :param public_state: 
+        :param person_state: 
+        :return: is  the action valid
+        '''
+        raise  NotImplementedError("The is_action_valid function hasn't been implemented")
+
+    def available_actions(self, public_state, person_state):
+        '''
+        :param public_state: 
+        :param person_state: 
+        :return: all available_actions
+        '''
+        raise NotImplementedError("The available_actions function hasn't been implemented")
 
 ############################################################### Some Utils ############################################################################
 
