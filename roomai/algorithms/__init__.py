@@ -1,4 +1,3 @@
 #!/bin/python
-from crm import CRMPlayer
-from crm import CRMAlgorithm
-from crm import FastCRMAlgorithm
+from roomai.algorithms.crm import CRMPlayer
+from roomai.algorithms.crm import CRMAlgorithm
