@@ -1,11 +1,11 @@
 #!/bin/python
 #coding:utf-8
 import random
-import roomai.abstract
+import roomai.common
 from roomai.kuhn import *
 import sys
 
-class TexasHoldemRandomPlayer(roomai.abstract.AbstractPlayer):
+class TexasHoldemRandomPlayer(roomai.common.AbstractPlayer):
     def __init__(self):
         self.available_actions = None
         self.info              = None

@@ -2,10 +2,10 @@
 import random
 import math
 import copy
-import roomai.abstract
+import roomai.common
 import roomai.kuhn.KuhnPokerUtils
 
-class KuhnPokerEnv(roomai.abstract.AbstractEnv):
+class KuhnPokerEnv(roomai.common.AbstractEnv):
 
     #@override
     def init(self):
@@ -16,6 +16,10 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.private_state = roomai.kuhn.KuhnPokerUtils.KuhnPokerPrivateState()
         self.public_state  = roomai.kuhn.KuhnPokerUtils.KuhnPokerPublicState()
         self.person_states = [roomai.kuhn.KuhnPokerUtils.KuhnPokerPersonState() for i in xrange(2)]
+
+        self.public_state_history  = []
+        self.private_state_history = []
+        self.person_states_history = []
 
         card0 = math.floor(random.random() * 3)
         card1 = math.floor(random.random() * 3)
@@ -34,45 +38,59 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         self.person_states[1].id        = 1
         self.person_states[1].card      = card1
 
+        self.person_states[self.public_state.turn].available_actions = self.available_action
 
-        infos = self.gen_infos()
+        self.__gen_history__()
+        infos = self.__gen_infos__()
+
         
         return  infos, self.public_state, self.person_states, self.private_state
 
     #@override
     def forward(self, action):
-        self.person_states[self.public_state.turn].available_actions = None
+        self.person_states[self.public_state.turn].available_actions = dict()
         self.public_state.epoch                                     += 1
         self.public_state.turn                                       = (self.public_state.turn+1)%2
         self.public_state.action_list.append(action.get_key())
 
         if self.public_state.epoch == 1:
             self.public_state.is_terminal = False
-            self.public_state.scores      = None
-            infos = self.gen_infos()
+            self.public_state.scores      = []
+            self.person_states[self.public_state.turn].available_actions = self.available_action
+
+            self.__gen_history__()
+            infos = self.__gen_infos__()
             return infos, self.public_state, self.person_states, self.private_state
 
         elif self.public_state.epoch == 2:
             scores = self.evaluteTwo()
-            if scores[0] != -1:
+            if scores is not None:
                 self.public_state.is_terminal = True
                 self.public_state.scores      = scores
-                infos = self.gen_infos()
+
+                self.__gen_history__()
+                infos = self.__gen_infos__()
                 return infos,self.public_state, self.person_states, self.private_state
             else:
                 self.public_state.is_terminal = False
-                self.public_state.scores      = None
-                infos                         = self.gen_infos()
+                self.public_state.scores      = []
+                self.person_states[self.public_state.turn].available_actions = self.available_action
+
+                self.__gen_history__()
+                infos                         = self.__gen_infos__()
                 return infos,self.public_state, self.person_states, self.private_state
 
         elif self.public_state.epoch == 3:
             self.public_state.is_terminal = True
             self.public_state.scores      = self.evaluteThree()
-            infos                         = self.gen_infos()
+
+            self.__gen_history__()
+            infos                         = self.__gen_infos__()
             return infos,self.public_state, self.person_states, self.private_state
 
         else:
             raise Exception("KuhnPoker has 3 turns at most")
+
 
     #@Overide
     @classmethod
@@ -85,7 +103,6 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         while public_state.is_terminal == False:
             turn = infos[-1].public_state.turn
             action = players[turn].take_action()
-
             infos,public_state, person_state, private_state = env.forward(action)
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
@@ -93,16 +110,6 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
         return public_state.scores
 
 
-    def gen_infos(self):
-        infos = [ roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo(),  roomai.kuhn.KuhnPokerUtils.KuhnPokerInfo()]
-        for i in xrange(len(infos)):
-            infos[i].person_state = copy.deepcopy(self.person_states[i])
-            infos[i].public_state = copy.deepcopy(self.public_state)
-
-        turn = self.public_state.turn
-        infos[turn].person_state.available_actions = self.available_action
-
-        return infos
 
     def WhoHasHigherCard(self):
         hand_cards = self.private_state.hand_cards
@@ -119,21 +126,24 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
         if actions[0] == "check" and \
            actions[1] == "bet":
-            return [-1,-1]
+            return None
         
         if actions[0] == actions[1] and \
            actions[0] == "check":
-            scores[win] = 1;
+            scores[win]   = 1;
+            scores[1-win] = -1
             return scores;
 
         if actions[0] == "bet" and \
            actions[1] == "check":
-            scores[first] = 1;
+            scores[first]   = 1;
+            scores[1-first] = -1
             return scores;
 
         if actions[0] == actions[1] and \
            actions[0] == "bet":
-            scores[win] = 2
+            scores[win]   = 2
+            scores[1-win] = -2
             return scores;
 
 
@@ -144,7 +154,9 @@ class KuhnPokerEnv(roomai.abstract.AbstractEnv):
 
         if self.public_state.action_list[2] == "check":
             scores[1 - first] = 1;
+            scores[first]     = -1
         else:
-            scores[win] = 2;
+            scores[win]   = 2;
+            scores[1-win] = -2
         return scores;
        

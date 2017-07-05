@@ -1,6 +1,6 @@
 #!/bin/python
 #coding:utf-8
-import roomai.abstract
+import roomai.common
 import copy
 import logging
 import random
@@ -10,23 +10,15 @@ from FiveCardStudUtils  import FiveCardStudPokerCard
 from FiveCardStudInfo   import FiveCardStudPublicState
 from FiveCardStudInfo   import FiveCardStudPersonState
 from FiveCardStudInfo   import FiveCardStudPrivateState
-from FiveCardStudInfo   import FiveCardStudInfo
 from FiveCardStudAction import FiveCardStudAction
 
-class FiveCardStudEnv(roomai.abstract.AbstractEnv):
+class FiveCardStudEnv(roomai.common.AbstractEnv):
     def __init__(self):
         self.logger         = roomai.get_logger()
         self.num_players    = 3
         self.chips          = [500 for i in xrange(self.num_players)]
         self.floor_bet      = 10
 
-    def gen_infos(self):
-        infos = [FiveCardStudInfo() for i in xrange(self.public_state.num_players)]
-        for i in xrange(self.public_state.num_players):
-            infos[i].person_state = self.person_states[i].__deepcopy__()
-            infos[i].public_state = self.public_state.__deepcopy__()
-
-        return infos
 
     #@override
     def init(self):
@@ -37,6 +29,9 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         self.private_state  = FiveCardStudPrivateState()
         self.person_states  = [FiveCardStudPersonState() for i in xrange(self.num_players)]
 
+        self.public_state_history  = []
+        self.private_state_history = []
+        self.person_states_history = []
 
         ## initialize the cards
         allcards = []
@@ -76,9 +71,12 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             self.person_states[i].first_hand_card  = self.private_state.all_hand_cards[i]
             self.person_states[i].second_hand_card = self.private_state.all_hand_cards[self.num_players+i]
         turn = self.public_state.turn
-        self.person_states[turn].available_actions = FiveCardStudEnv.available_actions(self.public_state)
+        self.person_states[turn].available_actions = FiveCardStudEnv.gen_available_actions(self.public_state, self.person_states[turn])
 
-        return self.gen_infos(), self.public_state, self.person_states, self.private_state
+        self.__gen_history__()
+        infos = self.__gen_infos__()
+
+        return infos, self.public_state, self.person_states, self.private_state
 
 
     #@override
@@ -88,7 +86,7 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         :except: throw ValueError when the action is invalid at this time 
         '''
         turn = self.public_state.turn
-        if not FiveCardStudEnv.is_action_valid(self.public_state, self.person_states[turn], action):
+        if not FiveCardStudEnv.is_action_valid(action,self.public_state, self.person_states[turn]):
             self.logger.critical("action=%s is invalid" % (action.get_key()))
             raise ValueError("action=%s is invalid" % (action.get_key()))
 
@@ -117,12 +115,14 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         # computing_score
         if FiveCardStudEnv.is_compute_scores(self.public_state):
             num_players          = pu.num_players
+            pu.hand_cards        = []
             pu.first_hand_cards  = pr.all_hand_cards[0:                1 * num_players]
             pu.second_hand_cards = pr.all_hand_cards[1 * num_players:  2 * num_players]
             pu.third_hand_cards  = pr.all_hand_cards[2 * num_players:  3 * num_players]
             pu.fourth_hand_cards = pr.all_hand_cards[3 * num_players:  4 * num_players]
             pu.fifth_hand_cards  = pr.all_hand_cards[4 * num_players:  5 * num_players]
             pu.round             = 4
+
 
             pu.is_terminal = True
             pu.scores      = self.compute_scores(pu)
@@ -166,23 +166,25 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
             pu.num_raise            = 0
 
             pe[pu.previous_id].available_actions = None
-            pe[pu.turn].available_actions        = self.available_actions(pu)
+            pe[pu.turn].available_actions        = FiveCardStudEnv.gen_available_actions(pu,pe[pu.turn])
 
         else:
             pu.turn                              = self.next_player(pu)
             pe[pu.previous_id].available_actions = None
-            pe[pu.turn].available_actions        = self.available_actions(pu)
+            pe[pu.turn].available_actions        = FiveCardStudEnv.gen_available_actions(pu, pe[pu.turn])
 
 
-        infos                                = self.gen_infos()
+        self.__gen_history__()
+        infos  = self.__gen_infos__()
 
 
         return infos, self.public_state, self.person_states, self.private_state
 
+
     #@override
     @classmethod
     def compete(cls, env, players):
-        total_scores = [0 for i in xrange(len(players))]
+        total_scores   = [0 for i in xrange(len(players))]
         total_count    = 1000
 
         for count in xrange(total_count):
@@ -383,13 +385,13 @@ class FiveCardStudEnv(roomai.abstract.AbstractEnv):
         return p
 
     @classmethod
-    def is_action_valid(cls, public_state, person_state, action):
+    def is_action_valid(cls, action, public_state, person_state):
         if action.get_key() not in person_state.available_actions:
             return False
         return True
 
     @classmethod
-    def available_actions(cls, public_state):
+    def gen_available_actions(cls, public_state, person_state):
         pu             = public_state
         round          = pu.round
         turn           = pu.turn

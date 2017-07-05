@@ -1,7 +1,7 @@
 #!/bin/python
 #coding:utf-8
 
-import roomai.abstract
+import roomai.common
 import copy
 
 class StageSpace:
@@ -11,7 +11,7 @@ class StageSpace:
     fourthStage = 4
 
 
-class TexasHoldemAction(roomai.abstract.AbstractAction):
+class TexasHoldemAction(roomai.common.AbstractAction):
     # 弃牌
     Fold        = "Fold"
     # 过牌
@@ -33,7 +33,7 @@ class TexasHoldemAction(roomai.abstract.AbstractAction):
     def __deepcopy__(self, memodict={}):
         return TexasHoldemAction(self.String)
 
-class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
+class TexasHoldemPublicState(roomai.common.AbstractPublicState):
     def __init__(self):
         self.stage              = None
         self.num_players        = None
@@ -133,15 +133,29 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
             return copyinstance
 
 
-class TexasHoldemPrivateState(roomai.abstract.AbstractPrivateState):
-    keep_cards = None
-    hand_cards = None
+class TexasHoldemPrivateState(roomai.common.AbstractPrivateState):
+    keep_cards = []
+    hand_cards = []
+
+    def __deepcopy__(self, memodict={}):
+        copy = TexasHoldemPrivateState()
+        if self.keep_cards is None:
+            copy.keep_cards = None
+        else:
+            copy.keep_cards = [self.keep_cards[i].__deepcopy__() for i in xrange(len(self.keep_cards))]
+
+        if self.hand_cards is None:
+            copy.hand_cards = None
+        else:
+            copy.hand_cards = [[] for i in xrange(len(self.hand_cards))]
+            for i in xrange(len(self.hand_cards)):
+                copy.hand_cards[i] = [self.hand_cards[i][j].__deepcopy__() for j in xrange(len(self.hand_cards[i]))]
 
 
-class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
-    id                =    None
-    hand_cards        =    None
-    available_actions =    None
+class TexasHoldemPersonState(roomai.common.AbsractPersonState):
+    id                =    0
+    hand_cards        =    []
+    available_actions =    dict()
 
     def __deepcopy__(self, memodict={}):
         copyinstance    = TexasHoldemPersonState()
@@ -158,16 +172,6 @@ class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
         else:
             copyinstance.available_actions = None
         return copyinstance
-
-class TexasHoldemInfo(roomai.abstract.AbstractInfo):
-    public_state            = None
-    person_state            = None
-
-    def __deepcopy__(self, memodict={}):
-        info = TexasHoldemInfo()
-        info.public_state = self.public_state.__deepcopy__()
-        info.public_state = self.person_state.__deepcopy__()
-        return info
 
 
 AllCardsPattern = dict()

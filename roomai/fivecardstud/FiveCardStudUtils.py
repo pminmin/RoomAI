@@ -1,5 +1,5 @@
 #!/bin/python
-import roomai.abstract
+import roomai.common
 
                                                     #0     1           2       3           4                                    5
                                                     #name, isStraight, isSameSuit, isNumRelated, [SizeOfPair1, SizeOfPair2,..](desc), rank
@@ -15,7 +15,7 @@ FiveCardStudAllCardsPattern["2_1_1_1"]           = ["2_1_1_1", False, False, Tru
 FiveCardStudAllCardsPattern["1_1_1_1_1"]         = ["1_1_1_1_1", False, False, True, [1, 1, 1, 1, 1], 91]
 
 
-class FiveCardStudPokerCard(roomai.abstract.PokerCard):
+class FiveCardStudPokerCard(roomai.common.PokerCard):
 
     def get_suit_rank(self):
         suit_str_to_rank = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0}
