@@ -10,15 +10,12 @@ from roomai.sevenking import AllSevenKingPokerCards
 
 AllPatterns = dict()
 ###
-###numCards, requireSamePoint, requireStraight
-AllPatterns["p_0_0_0"] = ("p_0_0_0",0,0,0) ## check
-AllPatterns["p_1_1_0"] = ("p_1_1_0",1,1,0)
-AllPatterns["p_2_1_0"] = ("p_1_1_0",2,1,0)
-AllPatterns["p_3_1_0"] = ("p_3_1_0",3,1,0)
-AllPatterns["p_4_1_0"] = ("p_4_1_0",4,1,0)
-AllPatterns["p_3_0_1"] = ("p_3_0_1",3,0,1)
-AllPatterns["p_4_0_1"] = ("p_4_0_1",4,0,1)
-AllPatterns["p_5_0_1"] = ("p_3_0_1",5,0,1)
+###numCards
+AllPatterns["p_0"] = ("p_0",0) ## check
+AllPatterns["p_1"] = ("p_1",1)
+AllPatterns["p_2"] = ("p_2",2)
+AllPatterns["p_3"] = ("p_3",3)
+AllPatterns["p_4"] = ("p_4",4)
 
 class SevenKingEnv(roomai.common.AbstractEnv):
     num_players = 2
@@ -65,63 +62,68 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         return infos, self.public_state, self.person_states, self.private_state
 
     def forward(self, action):
-        turn = self.public_state.turn
-        if SevenKingEnv.is_action_valid(action, self.public_state) == False:
+        pu   = self.public_state
+        pr   = self.private_state
+        pes  = self.person_states
+        turn = pu.turn
+
+        if SevenKingEnv.is_action_valid(action, pu, pes[turn]) == False:
             raise  ValueError("The %s is an invalid action "%(action.get_key()))
 
         ## the action plays its role
-        if action.pattern[0] == "p_0_0_0":
-            self.public_state.is_check[turn] = True
-            self.public_state.num_check     -= 1
-            self.person_states[turn].available_actions = dict()
+        if action.pattern[0] == "p_0":
+            pu.is_check[turn]           = True
+            pu.num_check               -= 1
+            pes[turn].available_actions = dict()
         else:
             action_key_tmp  = dict([(c.get_key(),None) for c in action.cards])
-            cards_tmp       = self.private_state.hand_cards[turn]
+            cards_tmp       = pr.hand_cards[turn]
 
-            self.private_state.hand_cards[turn] = []
+            pr.hand_cards[turn] = []
             for c in cards_tmp:
                 if c.get_key() not in action_key_tmp:
-                    self.private_state.hand_cards[turn].append(c)
-            for i in range(5 - len(self.private_state.hand_cards[turn])):
-                c = self.private_state.keep_cards[-1]
-                self.private_state.keep_cards = self.private_state.keep_cards.pop()
-                self.private_state.hand_cards[turn].append(c)
+                    pr.hand_cards[turn].append(c)
 
-            self.person_states[turn].hand_card         = [c.__deepcopy__() for c in self.private_state.hand_cards[turn]]
-            self.person_states[turn].available_actions = dict()
+            if pu.stage == 0:
+                for i in range(5 - len(pr.hand_cards[turn])):
+                    c = pr.keep_cards[-1]
+                    pr.keep_cards = pr.keep_cards.pop()
+                    pr.hand_cards[turn].append(c)
 
-        self.public_state.previous_id     = turn
-        self.public_state.previous_action = action.__deepcopy__()
+            pes[turn].hand_card         = [c.__deepcopy__() for c in pr.hand_cards[turn]]
+            pes[turn].available_actions = dict()
+
+        pu.previous_id     = turn
+        pu.previous_action = action.__deepcopy__()
 
 
         ## termminal
         if self.public_state.stage == 1 and len(self.private_state.hand_cards[turn]) == 0:
-            self.public_state.is_terminal = True
-            self.public_state.scores      = self.compute_scores()
-            new_turn                      = None
-            self.public_state.turn        = new_turn
+            pu.is_terminal = True
+            pu.scores      = self.compute_scores()
+            new_turn       = None
+            pu.turn        = new_turn
 
         ## stage 0 to 1
         elif len(self.private_state.keep_cards) < 5:
-            new_turn                                       = turn
-            self.public_state.turn                         = new_turn
-            self.public_state.num_check                    = 0
-            self.public_state.is_check                     = [False for i in range(self.public_state.num_players)]
-            self.person_states[new_turn].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[new_turn])
-            self.public_state.stage                        = 1
+            new_turn                        = self.choose_player_with_lowest_card()
+            pu.turn                         = new_turn
+            pu.num_check                    = 0
+            pu.is_check                     = [False for i in range(pu.num_players)]
+            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
+            pu.stage                        = 1
 
         ## round next
-        elif self.public_state.num_check + 1 == self.public_state.num_players:
-            new_turn                                       = self.choose_player_with_lowest_card()
-            self.public_state.turn                         = new_turn
-            self.public_state.num_check                    = 0
-            self.public_state.is_check                     = [False for i in range(self.public_state.num_players)]
-            self.person_states[new_turn].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[new_turn])
+        elif self.public_state.num_check + 1 == pu.num_players:
+            new_turn                        = self.choose_player_with_lowest_card()
+            pu.turn                         = new_turn
+            pu.num_check                    = 0
+            pu.is_check                     = [False for i in range(pu.num_players)]
+            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
 
         else:
-
-            new_turn                                       = (turn + 1) % self.public_state.num_players
-            self.person_states[new_turn].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[new_turn])
+            new_turn                        = (turn + 1) % pu.num_players
+            pes[new_turn].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[new_turn])
 
 
         self.__gen_history__()
@@ -162,22 +164,10 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def action2pattern(cls, action):
-        ###numCards, isSamePoint, isStraight
-        num_cards               = len(action.cards)
-        if num_cards == 0:
-            return AllPatterns["p_0_0_0"]
-        else:
-            isSamePoint = 1
-            isStraight  = 1
-            point  = action.cards[0].get_point_rank()
-            for i in range(1,len(action.cards)):
-                card = action.cards[i]
-                if point != card.get_point_rank():
-                    isSamePoint = 0
-                if point != card.get_point_rank() - 1:
-                    isStraight  = 0
-                point = card.get_point_rank()
-            return AllPatterns["p_%d_%d_%d"%(num_cards,isSamePoint,isStraight)]
+        ###numCards
+        num_cards  = len(action.cards)
+        return AllPatterns["p_%d"%(num_cards)]
+
 
     @classmethod
     def is_action_valid(self, action, public_state, person_state):
@@ -201,11 +191,11 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         previous_action = public_state.previous_action
         if previous_action is None:
             previous_action = SevenKingAction("")
-        if previous_action.pattern[0] != "p_0_0_0" and previous_action.pattern[0] != action.pattern[0]:
+        if previous_action.pattern[0] != "p_0" and previous_action.pattern[0] != action.pattern[0]:
             return False
 
         ## large
-        if previous_action.pattern[0] != "p_0_0_0":
+        if previous_action.pattern[0] != "p_0":
             max_action_card = action.cards[0]
             for c in action.cards:
                 if SevenKingPokerCard.compare(max_action_card,c) < 0:
@@ -222,42 +212,34 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
 
     ########################### about gen_available_actions ########################
-    '''
-    ###
-###numCards, requireSamePoint, requireStraight
-AllPatterns["p_0_0_0"] = ("p_0_0_0",0,0,0) ## check
-AllPatterns["p_1_1_0"] = ("p_1_1_0",1,1,0)
-AllPatterns["p_2_1_0"] = ("p_1_1_0",2,1,0)
-AllPatterns["p_3_1_0"] = ("p_3_1_0",3,1,0)
-AllPatterns["p_4_1_0"] = ("p_4_1_0",4,1,0)
-AllPatterns["p_3_0_1"] = ("p_3_0_1",3,0,1)
-AllPatterns["p_4_0_1"] = ("p_4_0_1",4,0,1)
-AllPatterns["p_5_0_1"] = ("p_3_0_1",5,0,1)
-
-    '''
     @classmethod
     def __gen_available_actions_with_pattern(cls, hand_cards, pattern):
         res = dict()
 
         if len(hand_cards) < pattern[1]:
             return res
-        if pattern[0] == "p_0_0_0":
+        if pattern[0] == "p_0":
             return res
 
-        if pattern[0] == "p_1_1_0":
+        point2cards = dict()
+        for c in hand_cards:
+            point = c.get_point_rank()
+            if point not in point2cards:
+                point2cards[point] = []
+            point2cards[point].append(c.__deepcopy__())
+
+        if pattern[0] == "p_1":
             pass
-        elif pattern[0] == "p_2_1_0":
+        elif pattern[0] == "p_2":
             pass
-        elif pattern[0] == "p_3_1_0":
+        elif pattern[0] == "p_3":
             pass
-        elif pattern[0] == "p_4_1_0":
+        elif pattern[0] == "p_4":
             pass
-        elif pattern[0] == "p_3_0_1":
-            pass
-        elif pattern[0] == "p_3_0_1":
-            pass
-        elif pattern[0] == "p_4_0_1":
-            pass
+        else:
+            raise ValueError("The %s pattern is invalid"%(pattern[0]))
+
+        return res
 
     @classmethod
     def available_actions(cls, public_state, person_state):
