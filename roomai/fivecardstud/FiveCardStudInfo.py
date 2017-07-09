@@ -145,7 +145,7 @@ class FiveCardStudPersonState(roomai.common.AbsractPersonState):
     fifth_hand_card   = None
 
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None):
         copyinstance    = FiveCardStudPersonState()
         copyinstance.id = self.id
 

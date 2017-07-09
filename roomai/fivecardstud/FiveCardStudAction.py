@@ -26,19 +26,39 @@ class FiveCardStudAction(roomai.common.AbstractAction):
             opt_price[0] != self.Check   and opt_price[0] != self.Raise and \
             opt_price[0] != self.Bet     and opt_price[0] != self.Showhand:
             raise  ValueError("%s is an invalid key. The Option must be in [Fold,Check,Call,Raise,Bet,Showhand]"%key)
-        self.option = opt_price[0]
-        self.price  = int(opt_price[1])
 
+        if opt_price[0] not in  [self.Fold,self.Check, self.Call] and int(opt_price[1]) <= 0:
+            raise  ValueError("%s is an invalid key.]"%key)
+
+        if int(opt_price[1]) < 0:
+            raise  ValueError("%s is an invalid key.]"%key)
+
+        self.__option = opt_price[0]
+        self.__price  = int(opt_price[1])
+
+
+    @property
+    def option(self):
+        return self.__option
+    @property
+    def price(self):
+        return self.__price
 
     def get_key(self):
-        return self.key
+        return super(FiveCardStudAction,self).get_key()
 
 
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None,):
         if newinstance is None:
-            newinstance = FiveCardStudAction(self.key)
-
-        newinstance        = super(FiveCardStudAction,self).__deepcopy__(newinstance = newinstance)
-        newinstance.price  = self.price
-        newinstance.option = self.option
+            newinstance        = AllFiveCardStudActions[self.get_key()]
         return newinstance
+
+
+AllFiveCardStudActions = dict()
+options = ["Fold", "Check","Call","Raise","Bet","Showhand"]
+for option in options:
+    if option != "Fold":
+        for p in range(100000):
+            AllFiveCardStudActions["%s_%d"%(option,p)] = FiveCardStudAction("%s_%d"%(option,p))
+    else:
+        AllFiveCardStudActions["Fold_0"] = FiveCardStudAction("Fold_0")
