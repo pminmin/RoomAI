@@ -6,15 +6,17 @@ import roomai.sevenking
 class SevenKingAction(roomai.common.AbstractAction):
 
     def __init__(self, key):
-        super(self).__init__()
         if not isinstance(key,str):
             raise TypeError("The key for SevenKingAction is an str, not %s"%(type(str)))
 
-        self.key         = key
+        super(SevenKingAction,self).__init__(key)
+        self.key         = key.strip()
         self.cards       = []
-        for c in self.key.split(","):
-            self.cards.append(roomai.sevenking.SevenKingPokerCard(c))
-        self.cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
+        print ("SevenKingAction:key=%s"%(key))
+        if len(key) > 0:
+            for c in self.key.split(","):
+                self.cards.append(roomai.sevenking.SevenKingPokerCard(c))
+            self.cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
         self.pattern = roomai.sevenking.SevenKingEnv.action2pattern(self)
 
     def get_key(self):
