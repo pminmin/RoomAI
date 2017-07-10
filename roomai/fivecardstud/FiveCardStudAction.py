@@ -19,11 +19,7 @@ class FiveCardStudAction(roomai.common.AbstractAction):
     Showhand    = "Showhand"
 
     def __init__(self,key):
-
-        if is_init_action == True:
-
             super(FiveCardStudAction,self).__init__(key)
-
             opt_price = key.strip().split("_")
             if  opt_price[0] != self.Fold    and opt_price[0] != self.Call  and \
                 opt_price[0] != self.Check   and opt_price[0] != self.Raise and \
@@ -39,26 +35,25 @@ class FiveCardStudAction(roomai.common.AbstractAction):
             if int(opt_price[1]) < 0:
                 raise  ValueError("%s is an invalid key.]"%key)
 
-            self.__option = opt_price[0]
-            self.__price  = int(opt_price[1])
-        else:
-            self = AllFiveCardStudActions[key]
+            self._roomai_option = opt_price[0]
+            self._roomai_price  = int(opt_price[1])
+
 
 
     @property
     def option(self):
-        return self.__option
+        return self._roomai_option
     @property
     def price(self):
-        return self.__price
+        return self._roomai_price
 
-    def get_key(self):
-        return super(FiveCardStudAction,self).get_key()
+    @classmethod
+    def lookup(cls,key):
+        return AllFiveCardStudActions[key]
 
-
-    def __deepcopy__(self, memodict={}, newinstance = None,):
+    def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
-            newinstance        = AllFiveCardStudActions[self.get_key()]
+            newinstance        = AllFiveCardStudActions[self.key]
         return newinstance
 
 is_init_action = True

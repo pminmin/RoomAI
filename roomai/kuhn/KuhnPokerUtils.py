@@ -13,14 +13,14 @@ class KuhnPokerAction(roomai.common.AbstractAction):
         else:
             raise KeyError("%s is invalid key for Kuhn Action"%(key))
 
-    def get_key(self):
+    def key(self):
         if self.action == KuhnPokerAction.bet:
             return "bet"
         else:
             return "check"
 
     def __deepcopy__(self, memodict={}):
-        copy = KuhnPokerAction(self.get_key())
+        copy = KuhnPokerAction(self.key())
         return copy
 
 

@@ -20,4 +20,4 @@ class FiveCardStudUtils(unittest.TestCase):
                                      roomai.fivecardstud.FiveCardStudPokerCard("r_Spade")]]
         public_cards.sort(roomai.fivecardstud.FiveCardStudPokerCard.compare)
         for i in xrange(len(public_cards[0])):
-            print public_cards[0][i].get_key()
+            print public_cards[0][i].key()

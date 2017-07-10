@@ -49,7 +49,7 @@ class FiveCardStudTester(unittest.TestCase):
         assert(max(pu.scores) == 2000/pu.floor_bet)
         assert(min(pu.scores) == -1000/pu.floor_bet)
         print infos[0].public_state.round
-        print infos[0].person_state.fifth_hand_card.get_key()
+        print infos[0].person_state.fifth_hand_card.key()
 
     def testRandomPlayer(self):
 

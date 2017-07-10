@@ -21,7 +21,7 @@ class TexasHoldemRandomPlayer(roomai.common.AbstractPlayer):
         if self.info.public_state.previous_id is not None:
             print "previous_id", self.info.public_state.previous_id
         if self.info.public_state.previous_action is not None:
-            print "previous_action", self.info.public_state.previous_action.get_key()
+            print "previous_action", self.info.public_state.previous_action.key()
         print "stage", self.info.public_state.stage
         print "is_quit", self.info.public_state.is_quit, self.info.public_state.num_quit
         print "is_allin", self.info.public_state.is_allin, self.info.public_state.num_allin

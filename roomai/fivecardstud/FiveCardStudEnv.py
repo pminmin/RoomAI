@@ -88,8 +88,8 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         '''
         turn = self.public_state.turn
         if not FiveCardStudEnv.is_action_valid(action,self.public_state, self.person_states[turn]):
-            self.logger.critical("action=%s is invalid" % (action.get_key()))
-            raise ValueError("action=%s is invalid" % (action.get_key()))
+            self.logger.critical("action=%s is invalid" % (action.key()))
+            raise ValueError("action=%s is invalid" % (action.key()))
 
         pu = self.public_state
         pe = self.person_states
@@ -393,7 +393,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_valid(cls, action, public_state, person_state):
-        if action.get_key() not in person_state.available_actions:
+        if action.key not in person_state.available_actions:
             return False
         return True
 
@@ -408,7 +408,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
         print ""
         if pu.previous_action is not None:
-            print ("previous_action", pu.previous_action.get_key())
+            print ("previous_action", pu.previous_action.key)
         print (turn, pu.round,"pu.bets[turn]",pu.bets[turn], "pu.bets", pu.bets,"pu.upper_bet",pu.upper_bet,"pu.max_bet_sofar",pu.max_bet_sofar)
         print ("is_quit",pu.is_quit)
 
@@ -417,50 +417,50 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             if pu.previous_round is None or pu.previous_round == round -1:
                 ## bet
                 for i in xrange(int(pu.bets[turn]+1), int(pu.upper_bet-pu.bets[turn])):
-                    actions["Bet_%d"%i]                 = FiveCardStudAction("Bet_%d"%i)
+                    actions["Bet_%d"%i]                 = FiveCardStudAction.lookup("Bet_%d"%i)
                 ## fold
-                actions["Fold_0"]                       = FiveCardStudAction("Fold_0")
+                actions["Fold_0"]                       = FiveCardStudAction.lookup("Fold_0")
                 ## showhand
-                actions["Showhand_%d"%(Showhand_count)] = FiveCardStudAction("Showhand_%d"%Showhand_count)
+                actions["Showhand_%d"%(Showhand_count)] = FiveCardStudAction.lookup("Showhand_%d"%Showhand_count)
                 ## Check_
-                actions["Check_0"]                      = FiveCardStudAction("Check_0")
+                actions["Check_0"]                      = FiveCardStudAction.lookup("Check_0")
             else:
                 ## fold
-                actions["Fold_0"]                       = FiveCardStudAction("Fold_0")
+                actions["Fold_0"]                       = FiveCardStudAction.lookup("Fold_0")
                 ## showhand
-                actions["Showhand_%d"%Showhand_count]   = FiveCardStudAction("Showhand_%d"%(Showhand_count))
+                actions["Showhand_%d"%Showhand_count]   = FiveCardStudAction.lookup("Showhand_%d"%(Showhand_count))
                 ## Call
                 if Call_count  < Showhand_count:
                     if Call_count == 0:
-                        actions["Check_0"]                 = FiveCardStudAction("Check_0")
+                        actions["Check_0"]                 = FiveCardStudAction.lookup("Check_0")
                     else:
-                        actions["Call_%d"%(Call_count )]   = FiveCardStudAction("Call_%d"%(Call_count))
+                        actions["Call_%d"%(Call_count )]   = FiveCardStudAction.lookup("Call_%d"%(Call_count))
                 ## "raise"
                 if pu.is_raise[turn] == False:
                     for i in xrange(int(Call_count + 1),int(Showhand_count)):
-                        actions["Raise_%d"%(i)] = FiveCardStudAction("Raise_%d"%i)
+                        actions["Raise_%d"%(i)] = FiveCardStudAction.lookup("Raise_%d"%i)
 
 
         elif round == 4:
             if pu.previous_round == round - 1:
                 ## showhand
-                actions["Showhand_%d"%(Showhand_count)] = FiveCardStudAction("Showhand_%d"%(Showhand_count))
+                actions["Showhand_%d"%(Showhand_count)] = FiveCardStudAction.lookup("Showhand_%d"%(Showhand_count))
                 ## bet
                 for i in xrange(1, int(pu.upper_bet) - int(pu.bets[turn])):
-                    actions["Bet_%d"%i] = FiveCardStudAction("Bet_%d"%i)
+                    actions["Bet_%d"%i] = FiveCardStudAction.lookup("Bet_%d"%i)
                 ## fold
-                actions["Fold_0"]     = FiveCardStudAction("Fold_0")
+                actions["Fold_0"]     = FiveCardStudAction.lookup("Fold_0")
 
             else:
                 ## fold
                 actions["Fold_0"]     = FiveCardStudAction("Fold_0")
                 ## Call
                 if Call_count  == Showhand_count:
-                    actions["Showhand_%d"%(Call_count)]       = FiveCardStudAction("Showhand_%d"%(Call_count))
+                    actions["Showhand_%d"%(Call_count)]       = FiveCardStudAction.lookup("Showhand_%d"%(Call_count))
                 elif Call_count == 0:
-                    actions["Check_0"]                        = FiveCardStudAction("Check_0")
+                    actions["Check_0"]                        = FiveCardStudAction.lookup("Check_0")
                 else:
-                    actions["Call_%d"%(Call_count )]          = FiveCardStudAction("Call_%d"%(Call_count))
+                    actions["Call_%d"%(Call_count )]          = FiveCardStudAction.lookup("Call_%d"%(Call_count))
 
         else:
             raise ValueError("pulic_state.round(%d) not in [1,2,3,4]" % (public_state.turn))

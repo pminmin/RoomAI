@@ -134,8 +134,8 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         pr         = self.private_state
 
         if not self.is_action_valid(action, pu, pe[pu.turn]):
-            self.logger.critical("action=%s is invalid" % (action.get_key()))
-            raise ValueError("action=%s is invalid" % (action.get_key()))
+            self.logger.critical("action=%s is invalid" % (action.key()))
+            raise ValueError("action=%s is invalid" % (action.key()))
 
 
         if action.option == TexasHoldemAction.Fold:
@@ -199,7 +199,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 self.public_state.num_quit,\
                 self.public_state.num_allin,\
                 self.public_state.num_quit + self.public_state.num_allin,\
-                action.get_key(),\
+                action.key(),\
                 self.public_state.stage\
             ))
 
@@ -228,7 +228,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             while public.is_terminal == False:
                 turn = public.turn
                 action = players[turn].take_action()
-                #print len(infos[turn].person_state.available_actions),action.get_key(),turn
+                #print len(infos[turn].person_state.available_actions),action.key(),turn
                 infos, public, persons, private = env.forward(action)
                 for i in xrange(len(players)):
                     players[i].receive_info(infos[i])
@@ -242,11 +242,11 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 print count,public.dealer_id,public.scores,public.stage
                 for i in xrange(public.num_players):
                     for j in xrange(len(private.hand_cards[i])):
-                        print private.hand_cards[i][j].get_key(),
+                        print private.hand_cards[i][j].key(),
                     print ""
                 print len(public.public_cards)
                 for j in xrange(len(public.public_cards)):
-                    print public.public_cards[j].get_key(),
+                    print public.public_cards[j].key(),
                 print ""
                 for i in xrange(public.num_players):
                     x = cls.cards2pattern(private.hand_cards[i], public.public_cards)
@@ -632,19 +632,19 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         ## for fold
         action = TexasHoldemAction(TexasHoldemAction.Fold + "_0")
         if cls.is_action_valid(action,public_state, person_state):
-            key_actions[action.get_key()] = action
+            key_actions[action.key()] = action
 
         ## for check
         if pu.bets[turn] == pu.max_bet_sofar:
             action = TexasHoldemAction(TexasHoldemAction.Check + "_0")
             if cls.is_action_valid(action, public_state, person_state):
-                key_actions[action.get_key()] = action
+                key_actions[action.key()] = action
 
         ## for call
         if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn]:
             action = TexasHoldemAction(TexasHoldemAction.Call + "_%d" % (pu.max_bet_sofar - pu.bets[turn]))
             if cls.is_action_valid(action, public_state, person_state):
-                key_actions[action.get_key()] = action
+                key_actions[action.key()] = action
 
         ## for raise
         if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn] + pu.raise_account:
@@ -654,12 +654,12 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 if price == pu.chips[pu.turn]:  continue
                 action = TexasHoldemAction(TexasHoldemAction.Raise + "_%d" % (price))
                 if cls.is_action_valid(action, public_state, person_state):
-                    key_actions[action.get_key()] = action
+                    key_actions[action.key()] = action
 
         ## for all in
         action = TexasHoldemAction(TexasHoldemAction.AllIn + "_%d" % (pu.chips[turn]))
         if cls.is_action_valid(action, public_state, person_state):
-            key_actions[action.get_key()] = action
+            key_actions[action.key()] = action
 
         return key_actions
 

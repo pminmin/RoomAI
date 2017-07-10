@@ -10,8 +10,8 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
     #@override
     def init(self):
         self.available_action = dict()
-        self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check").get_key()] = roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check")
-        self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet").get_key()]   = roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet")
+        self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check").key()] = roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check")
+        self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet").key()]   = roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet")
 
         self.private_state = roomai.kuhn.KuhnPokerUtils.KuhnPokerPrivateState()
         self.public_state  = roomai.kuhn.KuhnPokerUtils.KuhnPokerPublicState()
@@ -51,7 +51,7 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
         self.person_states[self.public_state.turn].available_actions = dict()
         self.public_state.epoch                                     += 1
         self.public_state.turn                                       = (self.public_state.turn+1)%2
-        self.public_state.action_list.append(action.get_key())
+        self.public_state.action_list.append(action.key())
 
         if self.public_state.epoch == 1:
             self.public_state.is_terminal = False

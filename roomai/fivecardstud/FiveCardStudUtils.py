@@ -33,7 +33,7 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
 
     def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
-            newinstance = FiveCardStudAllPokerCards[self.get_key()]
+            newinstance = FiveCardStudAllPokerCards[self.key]
         return newinstance
 
 

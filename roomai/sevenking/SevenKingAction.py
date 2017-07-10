@@ -19,7 +19,7 @@ class SevenKingAction(roomai.common.AbstractAction):
             self.cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
         self.pattern = roomai.sevenking.SevenKingEnv.action2pattern(self)
 
-    def get_key(self):
+    def key(self):
         return self.key
 
     def __deepcopy__(self, newinstance = None, memodict={}):

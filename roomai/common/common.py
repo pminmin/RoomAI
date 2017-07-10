@@ -58,15 +58,18 @@ class Info(object):
         return newinstance
 
 class AbstractAction(object):
+    _roomai_key = None
     def __init__(self, key):
-        self._key = key
-    def get_key(self):
-        return self._key
+        self.__key = key
+
+    @property
+    def key(self):
+        return self.__key
 
     def __deepcopy__(self, newinstance = None, memodict={}):
         if newinstance is None:
             newinstance = AbstractAction()
-        newinstance.key = self.key
+        newinstance._roomai_key = self.__roomai_key
         return newinstance
 
 class AbstractPlayer(object):
@@ -208,8 +211,13 @@ class PokerCard(object):
     def suit_str(self):
         return self.__suit_str
 
-    def get_key(self):
+    @property
+    def key(self):
         return self.__String
+
+    @classmethod
+    def lookup(cls, key):
+        return AllPokerCards[key]
 
     def get_point_rank(self):
         return point_str_to_rank[self.point_str]
@@ -229,7 +237,7 @@ class PokerCard(object):
 
     def __deepcopy__(self,  memodict={}, newinstance = None):
         if newinstance is None:
-            newinstance = AllPokerCards[self.get_key()]
+            newinstance = AllPokerCards[self.key()]
         return newinstance
 
 AllPokerCards = dict()

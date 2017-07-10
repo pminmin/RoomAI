@@ -7,7 +7,7 @@ class testSevenKing(unittest.TestCase):
     def show_hand_card(self,hand_card):
         str = ""
         for c in hand_card:
-            str += "," + c.get_key()
+            str += "," + c.key()
         print (str)
     def testEnv(self):
         env = SevenKingEnv()
@@ -22,7 +22,7 @@ class testSevenKing(unittest.TestCase):
         print ("available_actions_v=",person_states[turn].available_actions.values())
 
 
-        action = SevenKingAction("%s,%s"%(person_states[turn].hand_card[0].get_key(), person_states[turn].hand_card[1].get_key()))
+        action = SevenKingAction("%s,%s" % (person_states[turn].hand_card[0].key(), person_states[turn].hand_card[1].key()))
 
 
 

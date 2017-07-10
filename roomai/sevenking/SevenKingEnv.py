@@ -72,7 +72,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         turn = pu.turn
 
         if SevenKingEnv.is_action_valid(action, pu, pes[turn]) == False:
-            raise  ValueError("The %s is an invalid action "%(action.get_key()))
+            raise  ValueError("The %s is an invalid action " % (action.key()))
 
         ## the action plays its role
         if action.pattern[0] == "p_0":
@@ -80,12 +80,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             pu.num_check               -= 1
             pes[turn].available_actions = dict()
         else:
-            action_key_tmp  = dict([(c.get_key(),None) for c in action.cards])
+            action_key_tmp  = dict([(c.key(), None) for c in action.cards])
             cards_tmp       = pr.hand_cards[turn]
 
             pr.hand_cards[turn] = []
             for c in cards_tmp:
-                if c.get_key() not in action_key_tmp:
+                if c.key() not in action_key_tmp:
                     pr.hand_cards[turn].append(c)
 
             if pu.stage == 0:
@@ -178,12 +178,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         ### is action from hand_cards
         hand_keys = dict()
         for c in person_state.hand_card:
-            key = c.get_key()
+            key = c.key()
             if c not in hand_keys:  hand_keys[key] = 1
             else:  hand_keys[c] += 1
         action_keys = dict()
         for c in action.cards:
-            key = c.get_key()
+            key = c.key()
             if c not in action_keys: action_keys[key] = 1
             else:action_keys[key] +=1
 
@@ -234,7 +234,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
         if pattern[0] == "p_1":
             for c in hand_card:
-                res.append(SevenKingAction(c.get_key()))
+                res.append(SevenKingAction(c.key()))
         elif pattern[0] == "p_2":
             for p in point2cards:
                 if len(point2cards[p]) >= 2:
@@ -248,10 +248,10 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 if len(point2cards[p]) >= 4:
                     point2cards[p].sort(cmp = SevenKingPokerCard.compare())
                     str = "%s,%s,%s,%s"%(
-                        point2cards[p][0].get_key(),
-                        point2cards[p][1].get_key(),
-                        point2cards[p][2].get_key(),
-                        point2cards[p][3].get_key()
+                        point2cards[p][0].key(),
+                        point2cards[p][1].key(),
+                        point2cards[p][2].key(),
+                        point2cards[p][3].key()
                     )
                     res.append(SevenKingAction(str))
 
@@ -275,12 +275,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 actions = cls.__gen_available_actions_with_pattern(hand_cards, pattern)
                 for action in actions:
                     if cls.is_action_valid(action, public_state, person_state) == True:
-                        available_actions[action.get_key()] = action
+                        available_actions[action.key()] = action
         else:
             actions = cls.__gen_available_actions_with_pattern(hand_cards, AllPatterns["p_0_0_0"])
             for action in actions:
                 if cls.is_action_valid(action, public_state, person_state) == True:
-                    available_actions[action.get_key()] = action
+                    available_actions[action.key()] = action
 
 
         return available_actions

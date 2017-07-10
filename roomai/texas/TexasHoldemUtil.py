@@ -27,7 +27,7 @@ class TexasHoldemAction(roomai.common.AbstractAction):
         self.option = opt_price[0]
         self.price  = int(opt_price[1])
         self.String = "%s_%d"%(self.option, self.price)
-    def get_key(self):
+    def key(self):
         return self.String
 
     def __deepcopy__(self, memodict={}):
