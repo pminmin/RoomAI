@@ -49,7 +49,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
 
     def receive_info(self, info):
         self.state             = self.gen_state(info)
-        self.available_actions = info.person_state.gen_available_actions.values()
+        self.available_actions = info.person_state.available_actions.values()
 
     def take_action(self):
         probs = self.get_strategies(self.state, self.available_actions)

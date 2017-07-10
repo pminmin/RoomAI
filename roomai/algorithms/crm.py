@@ -39,7 +39,7 @@ class CRMAlgorithm(object):
 
             turn                  = public_state.turn
             state                 = player.gen_state(infos[turn])
-            available_actions     = infos[turn].person_state.gen_available_actions.values()
+            available_actions     = infos[turn].person_state.available_actions.values()
             num_available_actions = len(available_actions)
             regrets               = player.get_regrets(state, available_actions)
             strategies            = player.get_strategies(state, available_actions)

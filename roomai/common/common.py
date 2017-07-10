@@ -59,9 +59,9 @@ class Info(object):
 
 class AbstractAction(object):
     def __init__(self, key):
-        self.__key = key
+        self._key = key
     def get_key(self):
-        return self.__key
+        return self._key
 
     def __deepcopy__(self, newinstance = None, memodict={}):
         if newinstance is None:

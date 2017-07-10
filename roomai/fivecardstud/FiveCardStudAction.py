@@ -19,22 +19,30 @@ class FiveCardStudAction(roomai.common.AbstractAction):
     Showhand    = "Showhand"
 
     def __init__(self,key):
-        super(FiveCardStudAction,self).__init__(key)
 
-        opt_price = key.strip().split("_")
-        if  opt_price[0] != self.Fold    and opt_price[0] != self.Call  and \
-            opt_price[0] != self.Check   and opt_price[0] != self.Raise and \
-            opt_price[0] != self.Bet     and opt_price[0] != self.Showhand:
-            raise  ValueError("%s is an invalid key. The Option must be in [Fold,Check,Call,Raise,Bet,Showhand]"%key)
+        if is_init_action == True:
 
-        if opt_price[0] not in  [self.Fold,self.Check, self.Call] and int(opt_price[1]) <= 0:
-            raise  ValueError("%s is an invalid key.]"%key)
+            super(FiveCardStudAction,self).__init__(key)
 
-        if int(opt_price[1]) < 0:
-            raise  ValueError("%s is an invalid key.]"%key)
+            opt_price = key.strip().split("_")
+            if  opt_price[0] != self.Fold    and opt_price[0] != self.Call  and \
+                opt_price[0] != self.Check   and opt_price[0] != self.Raise and \
+                opt_price[0] != self.Bet     and opt_price[0] != self.Showhand:
+                raise  ValueError("%s is an invalid key. The Option must be in [Fold,Check,Call,Raise,Bet,Showhand]"%key)
 
-        self.__option = opt_price[0]
-        self.__price  = int(opt_price[1])
+            if opt_price[0] not in  [self.Fold,self.Check, self.Call] and int(opt_price[1]) <= 0:
+                raise  ValueError("%s is an invalid key.]"%key)
+
+            if opt_price[0] == self.Fold and int(opt_price[1]) > 0:
+                raise  ValueError("%s is an invalid key"%(key))
+
+            if int(opt_price[1]) < 0:
+                raise  ValueError("%s is an invalid key.]"%key)
+
+            self.__option = opt_price[0]
+            self.__price  = int(opt_price[1])
+        else:
+            self = AllFiveCardStudActions[key]
 
 
     @property
@@ -53,12 +61,16 @@ class FiveCardStudAction(roomai.common.AbstractAction):
             newinstance        = AllFiveCardStudActions[self.get_key()]
         return newinstance
 
-
+is_init_action = True
 AllFiveCardStudActions = dict()
 options = ["Fold", "Check","Call","Raise","Bet","Showhand"]
 for option in options:
-    if option != "Fold":
+    if option in ["Check","Call"]:
         for p in range(100000):
+            AllFiveCardStudActions["%s_%d"%(option,p)] = FiveCardStudAction("%s_%d"%(option,p))
+    elif option in ["Raise","Bet","Showhand"]:
+        for p in range(1,100000):
             AllFiveCardStudActions["%s_%d"%(option,p)] = FiveCardStudAction("%s_%d"%(option,p))
     else:
         AllFiveCardStudActions["Fold_0"] = FiveCardStudAction("Fold_0")
+is_init_action = False
