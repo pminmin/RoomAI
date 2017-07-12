@@ -178,12 +178,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         ### is action from hand_cards
         hand_keys = dict()
         for c in person_state.hand_card:
-            key = c.key()
+            key = c.key
             if c not in hand_keys:  hand_keys[key] = 1
             else:  hand_keys[c] += 1
         action_keys = dict()
         for c in action.cards:
-            key = c.key()
+            key = c.key
             if c not in action_keys: action_keys[key] = 1
             else:action_keys[key] +=1
 
@@ -234,7 +234,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
         if pattern[0] == "p_1":
             for c in hand_card:
-                res.append(SevenKingAction(c.key()))
+                res.append(SevenKingAction(c.key))
         elif pattern[0] == "p_2":
             for p in point2cards:
                 if len(point2cards[p]) >= 2:
@@ -275,12 +275,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 actions = cls.__gen_available_actions_with_pattern(hand_cards, pattern)
                 for action in actions:
                     if cls.is_action_valid(action, public_state, person_state) == True:
-                        available_actions[action.key()] = action
+                        available_actions[action.key] = action
         else:
             actions = cls.__gen_available_actions_with_pattern(hand_cards, AllPatterns["p_0_0_0"])
             for action in actions:
                 if cls.is_action_valid(action, public_state, person_state) == True:
-                    available_actions[action.key()] = action
+                    available_actions[action.key] = action
 
 
         return available_actions

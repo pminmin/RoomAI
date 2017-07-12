@@ -56,7 +56,6 @@ class FiveCardStudAction(roomai.common.AbstractAction):
             newinstance        = AllFiveCardStudActions[self.key]
         return newinstance
 
-is_init_action = True
 AllFiveCardStudActions = dict()
 options = ["Fold", "Check","Call","Raise","Bet","Showhand"]
 for option in options:

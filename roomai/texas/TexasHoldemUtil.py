@@ -24,14 +24,22 @@ class TexasHoldemAction(roomai.common.AbstractAction):
     AllIn       = "Allin"
     def __init__(self, key):
         opt_price = key.strip().split("_")
-        self.option = opt_price[0]
-        self.price  = int(opt_price[1])
-        self.String = "%s_%d"%(self.option, self.price)
-    def key(self):
-        return self.String
+        self.__option = opt_price[0]
+        self.__price  = int(opt_price[1])
+        self.__key    = "%s_%d"%(self.option, self.price)
 
-    def __deepcopy__(self, memodict={}):
-        return TexasHoldemAction(self.String)
+    @property
+    def key(self):
+        return self.__key
+    @property
+    def option(self):
+        return self.__option
+    @property
+    def price(self):
+        return self.__price
+
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        return TexasHoldemAction(self.key)
 
 class TexasHoldemPublicState(roomai.common.AbstractPublicState):
     def __init__(self):

@@ -58,7 +58,6 @@ class Info(object):
         return newinstance
 
 class AbstractAction(object):
-    _roomai_key = None
     def __init__(self, key):
         self.__key = key
 
@@ -69,7 +68,7 @@ class AbstractAction(object):
     def __deepcopy__(self, newinstance = None, memodict={}):
         if newinstance is None:
             newinstance = AbstractAction()
-        newinstance._roomai_key = self.__roomai_key
+        newinstance.__key = self.__key
         return newinstance
 
 class AbstractPlayer(object):
@@ -237,7 +236,7 @@ class PokerCard(object):
 
     def __deepcopy__(self,  memodict={}, newinstance = None):
         if newinstance is None:
-            newinstance = AllPokerCards[self.key()]
+            newinstance = AllPokerCards[self.key]
         return newinstance
 
 AllPokerCards = dict()

@@ -10,6 +10,7 @@ class FiveCardStudUtils(unittest.TestCase):
         public_state.second_hand_cards= [roomai.fivecardstud.FiveCardStudPokerCard("2_Spade"), \
                                          roomai.fivecardstud.FiveCardStudPokerCard("3_Spade"), \
                                          roomai.fivecardstud.FiveCardStudPokerCard("r_Spade")]
+        public_state.is_quit          = [False for i in range(public_state.num_players)]
         turn = roomai.fivecardstud.FiveCardStudEnv.choose_player_at_begining_of_round(public_state)
         print turn
         assert(turn == 2)
@@ -20,4 +21,4 @@ class FiveCardStudUtils(unittest.TestCase):
                                      roomai.fivecardstud.FiveCardStudPokerCard("r_Spade")]]
         public_cards.sort(roomai.fivecardstud.FiveCardStudPokerCard.compare)
         for i in xrange(len(public_cards[0])):
-            print public_cards[0][i].key()
+            print public_cards[0][i].key
