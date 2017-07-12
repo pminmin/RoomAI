@@ -200,7 +200,7 @@ class PokerCard(object):
 
         self.__point_str = point_rank_to_str[point1]
         self.__suit_str  = suit_rank_to_str[suit1]
-        self.__String = "%s_%s"%(self.point_str, self.suit_str)
+        self.__key = "%s_%s" % (self.point_str, self.suit_str)
 
     @property
     def point_str(self):
@@ -212,7 +212,7 @@ class PokerCard(object):
 
     @property
     def key(self):
-        return self.__String
+        return self.__key
 
     @classmethod
     def lookup(cls, key):

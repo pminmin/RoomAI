@@ -10,19 +10,35 @@ class SevenKingAction(roomai.common.AbstractAction):
             raise TypeError("The key for SevenKingAction is an str, not %s"%(type(str)))
 
         super(SevenKingAction,self).__init__(key)
-        self.key         = key.strip()
-        self.cards       = []
-        print ("SevenKingAction:key=%s"%(key))
+        self.__key         = key.strip()
+        self.__cards       = []
         if len(key) > 0:
             for c in self.key.split(","):
-                self.cards.append(roomai.sevenking.SevenKingPokerCard(c))
-            self.cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
-        self.pattern = roomai.sevenking.SevenKingEnv.action2pattern(self)
+                self.__cards.append(roomai.sevenking.SevenKingPokerCard(c))
+            self.__cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
+        self.__pattern = roomai.sevenking.SevenKingEnv.action2pattern(self)
 
+    @property
     def key(self):
-        return self.key
+        return self.__key
 
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    @property
+    def cards(self):
+        return self.__cards
+
+    @property
+    def pattern(self):
+        return self.__pattern
+
+    @classmethod
+    def lookup(cls, key):
+        if key in AllSevenKingActions:
+            return AllSevenKingActions[key]
+        else:
+            AllSevenKingActions[key] = SevenKingAction(key)
+            return AllSevenKingActions[key]
+
+    def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
             newinstance = SevenKingAction(self.key)
         newinstance         = super(self).__deepcopy__(newinstance = newinstance)
@@ -30,3 +46,5 @@ class SevenKingAction(roomai.common.AbstractAction):
         newinstance.cards   = [card.__deepcopy__() for card in self.cards]
         newinstance.pattern = self.pattern
         return newinstance
+
+AllSevenKingActions = dict()

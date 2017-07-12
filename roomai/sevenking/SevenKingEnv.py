@@ -231,29 +231,68 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             if point not in point2cards:
                 point2cards[point] = []
             point2cards[point].append(c.__deepcopy__())
+        for p in point2cards:
+            point2cards[p].sort(cmp = SevenKingPokerCard.compare)
 
         if pattern[0] == "p_1":
             for c in hand_card:
-                res.append(SevenKingAction(c.key))
+                res.append(SevenKingAction.lookup(c.key))
+
         elif pattern[0] == "p_2":
             for p in point2cards:
-                if len(point2cards[p]) >= 2:
-                    pass
+                len1 = len(point2cards[p])
+                if len1 == 2:
+                    str = "%s,%s"%(point2cards[p][0].key,point2cards[p][1].key)
+                    res.append(SevenKingAction.lookup(str))
+                if len1 == 3:
+                    str = "%s,%s"%(point2cards[p][0].key,point2cards[p][1].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s"%(point2cards[p][0].key,point2cards[p][2].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s"%(point2cards[p][1].key,point2cards[p][2].key)
+                    res.append(SevenKingAction.lookup(str))
+                if len1 == 4:
+                    str = "%s,%s" % (point2cards[p][0].key, point2cards[p][1].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s" % (point2cards[p][0].key, point2cards[p][2].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s" % (point2cards[p][0].key, point2cards[p][3].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s" % (point2cards[p][1].key, point2cards[p][2].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s" % (point2cards[p][1].key, point2cards[p][3].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s" % (point2cards[p][2].key, point2cards[p][3].key)
+                    res.append(SevenKingAction.lookup(str))
+
+
         elif pattern[0] == "p_3":
             for p in point2cards:
-                if len(point2cards[p]) >= 3:
-                    pass
+                len1 = len(point2cards[p])
+                if len1 == 3:
+                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1], point2cards[p][2].key)
+                    res.append(SevenKingAction.lookup(str))
+                if len1 == 4:
+                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1], point2cards[p][2].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1], point2cards[p][3].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][2], point2cards[p][3].key)
+                    res.append(SevenKingAction.lookup(str))
+                    str = "%s,%s,%s" % (point2cards[p][1].key, point2cards[p][2], point2cards[p][3].key)
+                    res.append(SevenKingAction.lookup(str))
+
         elif pattern[0] == "p_4":
             for p in point2cards:
                 if len(point2cards[p]) >= 4:
                     point2cards[p].sort(cmp = SevenKingPokerCard.compare())
                     str = "%s,%s,%s,%s"%(
-                        point2cards[p][0].key(),
-                        point2cards[p][1].key(),
-                        point2cards[p][2].key(),
-                        point2cards[p][3].key()
+                        point2cards[p][0].key,
+                        point2cards[p][1].key,
+                        point2cards[p][2].key,
+                        point2cards[p][3].key
                     )
-                    res.append(SevenKingAction(str))
+                    res.append(SevenKingAction.lookup(str))
 
         else:
             raise ValueError("The %s pattern is invalid"%(pattern[0]))
@@ -277,7 +316,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                     if cls.is_action_valid(action, public_state, person_state) == True:
                         available_actions[action.key] = action
         else:
-            actions = cls.__gen_available_actions_with_pattern(hand_cards, AllPatterns["p_0_0_0"])
+            actions = cls.__gen_available_actions_with_pattern(hand_cards, AllPatterns["p_0"])
             for action in actions:
                 if cls.is_action_valid(action, public_state, person_state) == True:
                     available_actions[action.key] = action
