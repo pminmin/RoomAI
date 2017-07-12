@@ -59,19 +59,16 @@ class Info(object):
 
 class AbstractAction(object):
     def __init__(self, key):
-        self.key = key
-    def get_key(self):
-        '''
-        :return:
-            key: action's key , All Actions in RoomAI have a key
-        :raises:
-            NotImplementedError: An error occurred when we doesn't implement this function
-        '''
-        raise NotImplementedError("The get_key function hasn't been implemented")
+        self.__key = key
+
+    @property
+    def key(self):
+        return self.__key
+
     def __deepcopy__(self, newinstance = None, memodict={}):
         if newinstance is None:
             newinstance = AbstractAction()
-        newinstance.key = self.key
+        newinstance.__key = self.__key
         return newinstance
 
 class AbstractPlayer(object):
@@ -201,12 +198,25 @@ class PokerCard(object):
             if isinstance(suit, str):
                 suit1 = suit_str_to_rank[suit]
 
-        self.point_str = point_rank_to_str[point1]
-        self.suit_str  = suit_rank_to_str[suit1]
-        self.String = "%s_%s"%(self.point_str, self.suit_str)
+        self.__point_str = point_rank_to_str[point1]
+        self.__suit_str  = suit_rank_to_str[suit1]
+        self.__String = "%s_%s"%(self.point_str, self.suit_str)
 
-    def get_key(self):
-        return self.String
+    @property
+    def point_str(self):
+        return self.__point_str
+
+    @property
+    def suit_str(self):
+        return self.__suit_str
+
+    @property
+    def key(self):
+        return self.__String
+
+    @classmethod
+    def lookup(cls, key):
+        return AllPokerCards[key]
 
     def get_point_rank(self):
         return point_str_to_rank[self.point_str]
@@ -224,10 +234,16 @@ class PokerCard(object):
         else:
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
 
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self,  memodict={}, newinstance = None):
         if newinstance is None:
-            newinstance = PokerCard(self.get_key())
-        newinstance.point_str = self.point_str
-        newinstance.suit_str  = self.suit_str
-        newinstance.String    = self.String
+            newinstance = AllPokerCards[self.key]
         return newinstance
+
+AllPokerCards = dict()
+for point_str in point_str_to_rank:
+    if point_str != 'r' and point_str != "R":
+        for suit_str in suit_str_to_rank:
+            if suit_str != "ForKing":
+                AllPokerCards["%s_%s"%(point_str,suit_str)] = PokerCard("%s_%s"%(point_str,suit_str))
+AllPokerCards["r_ForKing"] = (PokerCard("r_ForKing"))
+AllPokerCards["R_ForKing"] = (PokerCard("R_ForKing"))

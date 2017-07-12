@@ -7,22 +7,28 @@ class KuhnPokerAction(roomai.common.AbstractAction):
     bet   = 0;
     check = 1;
     def __init__(self, key):
-        self.action = ""
-        if key == "bet": self.action = KuhnPokerAction.bet
-        elif key == "check":self.action = KuhnPokerAction.check
+        self.__key = ""
+        if key == "bet": self.__key = KuhnPokerAction.bet
+        elif key == "check":self.__key = KuhnPokerAction.check
         else:
             raise KeyError("%s is invalid key for Kuhn Action"%(key))
 
-    def get_key(self):
-        if self.action == KuhnPokerAction.bet:
+    @property
+    def key(self):
+        if self.__key == KuhnPokerAction.bet:
             return "bet"
         else:
             return "check"
 
+    @classmethod
+    def lookup(cls, key):
+        return AllKuhnActions[key]
+
     def __deepcopy__(self, memodict={}):
-        copy = KuhnPokerAction(self.get_key())
+        copy = KuhnPokerAction(self.key)
         return copy
 
+AllKuhnActions = {"bet":KuhnPokerAction("bet"),"check":KuhnPokerAction("check")}
 
 class KuhnPokerPublicState(roomai.common.AbstractPublicState):
     def __init__(self):

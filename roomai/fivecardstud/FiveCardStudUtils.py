@@ -31,9 +31,17 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
 
 
-    def __deepcopy__(self, memodict={}):
-        copyinstance = FiveCardStudPokerCard(self.point_str, self.suit_str)
-        return copyinstance
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        if newinstance is None:
+            newinstance = FiveCardStudAllPokerCards[self.key]
+        return newinstance
 
 
-
+FiveCardStudAllPokerCards = dict()
+for point_str in roomai.common.common.point_str_to_rank:
+    if point_str != 'r' and point_str != "R":
+        for suit_str in roomai.common.common.suit_str_to_rank:
+            if suit_str != "ForKing":
+                FiveCardStudAllPokerCards["%s_%s"%(point_str,suit_str)] = FiveCardStudPokerCard("%s_%s"%(point_str,suit_str))
+FiveCardStudAllPokerCards["r_ForKing"] = (FiveCardStudPokerCard("r_ForKing"))
+FiveCardStudAllPokerCards["R_ForKing"] = (FiveCardStudPokerCard("R_ForKing"))

@@ -76,11 +76,11 @@ Player takes a action, and Env forwards with this action.
 class AbstractAction:
     def __init__(self,key):
         raise NotImplementedError("The __init__ function hasn't been implemented"
-    def get_key(self):
-        raise NotImplementedError("The get_key function hasn't been implemented")
+    def key(self):
+        raise NotImplementedError("The key function hasn't been implemented")
 </pre>
 
-The get_key function returns the action's key. 
+The key function returns the action's key.
 
 #### 3. Player
 
@@ -206,7 +206,7 @@ and Showhand. The prices for Fold must be zero. The basic usage is as follows:
 "Fold"
 >> action.price
 0
->> action.get_key()
+>> action.key()
 "Fold_0"
 </pre>
 
@@ -219,7 +219,7 @@ The basic usage is as follows:
 'A'
 >>> poker_card.suit_str
 "Spade"
->>> poker_card.get_key()
+>>> poker_card.key()
 "A_Spade"
 >>>
 </pre>
@@ -321,7 +321,7 @@ The option has five types: Fold,Check,Call,Raise and Allin. The prices for Fold 
 "Fold"
 >> action.price
 0
->> action.get_key()
+>> action.key()
 "Fold_0"
 </pre>
 
@@ -334,7 +334,7 @@ The basic usage is as follows:
 'A'
 >>> poker_card.suit_str
 "Spade"
->>> poker_card.get_key()
+>>> poker_card.key()
 "A_Spade"
 >>>
 </pre>

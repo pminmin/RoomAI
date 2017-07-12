@@ -106,7 +106,7 @@ class TexasUtilsTester(unittest.TestCase):
 
         print TexasHoldemAction.AllIn
         action = TexasHoldemAction("Allin_1000")
-        print action.get_key()
+        print action.key
         self.assertTrue(env.is_action_valid(action, env.public_state, env.person_states[env.public_state.turn]))
 
 

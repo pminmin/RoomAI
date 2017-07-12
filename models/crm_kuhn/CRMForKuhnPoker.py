@@ -14,13 +14,13 @@ class KuhnPokerCRMPlayer(CRMPlayer):
 
     def update_strategies(self, state, actions, targets):
         for i in xrange(len(actions)):
-            state_action = "%s_%s"%(state, actions[i].get_key())
+            state_action = "%s_%s"%(state, actions[i].key())
             self.strategies[state_action] = targets[i]
 
     def get_strategies(self, state, actions):
         probs = [1.0 for i in xrange(len(actions))]
         for  i in xrange(len(actions)):
-            state_action = "%s_%s" % (state, actions[i].get_key())
+            state_action = "%s_%s" % (state, actions[i].key())
             if state_action not in self.strategies:
                 probs[i] = 1.0 / len(actions)
             else:
@@ -29,13 +29,13 @@ class KuhnPokerCRMPlayer(CRMPlayer):
 
     def update_regrets(self, state, actions, targets):
         for i in xrange(len(actions)):
-            state_action = "%s_%s"%(state, actions[i].get_key())
+            state_action = "%s_%s"%(state, actions[i].key())
             self.regrets[state_action] = targets[i]
 
     def get_regrets(self, state, actions):
         regrets = [0 for i in xrange(len(actions))]
         for i in xrange(len(actions)):
-            state_action = "%s_%s" % (state, actions[i].get_key())
+            state_action = "%s_%s" % (state, actions[i].key())
             if state_action not in self.regrets:
                 regrets[i] = 0
             else:
@@ -49,7 +49,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
 
     def receive_info(self, info):
         self.state             = self.gen_state(info)
-        self.available_actions = info.person_state.gen_available_actions.values()
+        self.available_actions = info.person_state.available_actions.values()
 
     def take_action(self):
         probs = self.get_strategies(self.state, self.available_actions)
