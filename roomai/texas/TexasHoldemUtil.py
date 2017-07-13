@@ -160,7 +160,7 @@ class TexasHoldemPrivateState(roomai.common.AbstractPrivateState):
                 copy.hand_cards[i] = [self.hand_cards[i][j].__deepcopy__() for j in xrange(len(self.hand_cards[i]))]
 
 
-class TexasHoldemPersonState(roomai.common.AbsractPersonState):
+class TexasHoldemPersonState(roomai.common.AbstractPersonState):
     id                =    0
     hand_cards        =    []
     available_actions =    dict()

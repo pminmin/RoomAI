@@ -10,8 +10,8 @@ class SevenKingPublicState(roomai.common.AbstractPublicState):
         self.num_showed_cards = 0
         self.num_keep_cards   = 0
         self.num_hand_cards   = []
-        self.is_check         = []
-        self.num_check        = 0
+        self.is_fold          = []
+        self.num_fold         = 0
 
 
     def __deepcopy__(self, newinstance = None, memodict={}):
@@ -36,14 +36,16 @@ class SevenKingPrivateState(roomai.common.AbstractPrivateState):
         return newinstance
 
 
-class SevenKingPersonState(roomai.common.AbsractPersonState):
+class SevenKingPersonState(roomai.common.AbstractPersonState):
     def __init__(self):
         super(SevenKingPersonState,self).__init__()
         self.hand_card   = []
 
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
             newinstance = SevenKingPersonState()
+        newinstance           = super(SevenKingPersonState, self).__deepcopy__(newinstance= newinstance)
         newinstance.hand_card = [card.__deepcopy__() for card in self.hand_card]
+        #print newinstance.available_actions
         return newinstance
 

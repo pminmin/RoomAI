@@ -33,23 +33,25 @@ class AbstractPrivateState(object):
             return newinstance
 
 
-class AbsractPersonState(object):
+class AbstractPersonState(object):
     def __init__(self):
         self.id                = 0
         self.available_actions = dict()
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        #print "enter AbstractPersonState __deepcopy__"
         if newinstance is  None:
-            newinstance = AbsractPersonState()
+            newinstance = AbstractPersonState()
         newinstance.id                = self.id
         newinstance.available_actions = dict()
         for k in self.available_actions:
+            #print "fuck"
             newinstance.available_actions[k] = self.available_actions[k].__deepcopy__()
         return newinstance
 
 class Info(object):
     def __init__(self):
         self.public_state       = AbstractPublicState()
-        self.person_state       = AbsractPersonState()
+        self.person_state       = AbstractPersonState()
     def __deepcopy__(self, newinstance = None, memodict={}):
         if newinstance is None:
             newinstance = Info()
@@ -108,6 +110,8 @@ class AbstractEnv(object):
         for i in xrange(num_players):
             infos[i].person_state = self.person_states[i].__deepcopy__()
             infos[i].public_state = self.public_state.__deepcopy__()
+
+            print "_gen_infos_:" ,len(infos[i].person_state.available_actions), "i=",i," turn = ", self.public_state.turn
 
         return infos
 

@@ -174,7 +174,7 @@ class KuhnPokerPublicState(roomai.abstract.AbstractPublicState):
         ## float0 is the score gained by player[0]
         ## float1 is the score gained by player[1]
 
-class KuhnPokerPersonState(roomai.abstract.AbsractPersonState):
+class KuhnPokerPersonState(roomai.abstract.AbstractPersonState):
         available_actions          = None
         ## the available actions for the player, who receives this person state.
         ## for example, available_actions = {}
@@ -287,7 +287,7 @@ class FiveCardStudPublicState(roomai.abstract.AbstractPublicState):
     ## when is_terminal = false, scores = None
 
 
-class FiveCardStudPersonState(roomai.abstract.AbsractPersonState):
+class FiveCardStudPersonState(roomai.abstract.AbstractPersonState):
     available_actions          = None
     ## the available actions for the player, who receives this person state.
     ## for example, available_actions = {}
@@ -404,7 +404,7 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
 
 
 
-class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
+class TexasHoldemPersonState(roomai.abstract.AbstractPersonState):
     available_actions          = None
     ## the available actions for the player, who receives this person state.
     ## for example, available_actions = {}

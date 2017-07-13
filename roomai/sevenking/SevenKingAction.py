@@ -41,10 +41,10 @@ class SevenKingAction(roomai.common.AbstractAction):
     def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
             newinstance = SevenKingAction(self.key)
-        newinstance         = super(self).__deepcopy__(newinstance = newinstance)
-        newinstance.key     = self.key
-        newinstance.cards   = [card.__deepcopy__() for card in self.cards]
-        newinstance.pattern = self.pattern
+        newinstance         = super(SevenKingAction,self).__deepcopy__(newinstance = newinstance)
+        newinstance.__key     = self.key
+        newinstance.__cards   = [card.__deepcopy__() for card in self.cards]
+        newinstance.__pattern = self.pattern
         return newinstance
 
 AllSevenKingActions = dict()

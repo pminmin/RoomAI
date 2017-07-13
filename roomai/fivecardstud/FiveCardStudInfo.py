@@ -134,7 +134,7 @@ class FiveCardStudPublicState(roomai.common.AbstractPublicState):
         return copyinstance
 
 
-class FiveCardStudPersonState(roomai.common.AbsractPersonState):
+class FiveCardStudPersonState(roomai.common.AbstractPersonState):
     id                = None
     available_actions = None
 

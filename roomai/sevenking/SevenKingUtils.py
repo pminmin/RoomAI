@@ -13,17 +13,18 @@ class SevenKingPokerCard(roomai.common.PokerCard):
         return point_str_to_rank[self.point_str]
     def get_suit_rank(self):
         return suit_str_to_rank[self.suit_str]
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self,  memodict={}, newinstance = None):
         if newinstance is None:
-            newinstance = SevenKingPokerCard(self.point_str, self.suit_str)
-        newinstance = super(SevenKingPokerCard, self).__deepcopy__(newinstance = newinstance)
+            newinstance = AllSevenKingPokerCards[self.key]
+        else:
+            newinstance = super(SevenKingPokerCard, self).__deepcopy__(newinstance = newinstance)
         return newinstance
 
-AllSevenKingPokerCards = []
+AllSevenKingPokerCards = dict()
 for point in point_str_to_rank:
     if point != "r" and point != "R":
         for suit in suit_str_to_rank:
             if suit != "ForKing":
-                AllSevenKingPokerCards.append(SevenKingPokerCard("%s_%s" % (point, suit)))
-AllSevenKingPokerCards.append(SevenKingPokerCard("R_ForKing"))
-AllSevenKingPokerCards.append(SevenKingPokerCard("r_ForKing"))
+                AllSevenKingPokerCards["%s_%s" % (point, suit)] = SevenKingPokerCard("%s_%s" % (point, suit))
+AllSevenKingPokerCards["R_ForKing"] = SevenKingPokerCard("R_ForKing")
+AllSevenKingPokerCards["r_ForKing"] = SevenKingPokerCard("r_ForKing")

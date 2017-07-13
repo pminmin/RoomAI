@@ -56,7 +56,7 @@ class KuhnPokerPrivateState(roomai.common.AbstractPrivateState):
         copy.hand_cards = [card for card in self.hand_cards]
         return copy
 
-class KuhnPokerPersonState(roomai.common.AbsractPersonState):
+class KuhnPokerPersonState(roomai.common.AbstractPersonState):
     def __init__(self):
         self.available_actions  = dict()
         self.id                 = 1
