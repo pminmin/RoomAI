@@ -111,8 +111,6 @@ class AbstractEnv(object):
             infos[i].person_state = self.person_states[i].__deepcopy__()
             infos[i].public_state = self.public_state.__deepcopy__()
 
-            print "_gen_infos_:" ,len(infos[i].person_state.available_actions), "i=",i," turn = ", self.public_state.turn
-
         return infos
 
     def __gen_history__(self):

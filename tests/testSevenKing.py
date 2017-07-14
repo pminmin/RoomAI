@@ -32,7 +32,8 @@ class testSevenKing(unittest.TestCase):
 
         players = [SevenKingRandomPlayer() for i in xrange(2)]
 
-        SevenKingEnv.compete(env, players)
+        for i in range(10):
+            SevenKingEnv.compete(env, players)
 
 
 
