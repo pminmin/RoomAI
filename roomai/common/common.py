@@ -114,6 +114,7 @@ class AbstractEnv(object):
         return infos
 
     def __gen_history__(self):
+
         self.public_state_history.append(self.public_state.__deepcopy__())
         self.private_state_history.append(self.private_state.__deepcopy__())
         self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
