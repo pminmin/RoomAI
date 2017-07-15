@@ -30,6 +30,9 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
         else:
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
 
+    @classmethod
+    def lookup(cls, key):
+        return FiveCardStudAllPokerCards[key]
 
     def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
