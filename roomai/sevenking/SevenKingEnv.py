@@ -293,7 +293,6 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         elif pattern[0] == "p_4":
             for p in point2cards:
                 if len(point2cards[p]) >= 4:
-                    point2cards[p].sort(cmp = SevenKingPokerCard.compare())
                     str = "%s,%s,%s,%s"%(
                         point2cards[p][0].key,
                         point2cards[p][1].key,
