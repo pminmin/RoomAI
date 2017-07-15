@@ -36,7 +36,8 @@ class testSevenKing(unittest.TestCase):
             SevenKingEnv.compete(env, players)
 
 
-
+    def testRule(self):
+        
 
 
 
