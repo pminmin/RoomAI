@@ -67,11 +67,14 @@ class AbstractAction(object):
     def key(self):
         return self.__key
 
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
             newinstance = AbstractAction()
         newinstance.__key = self.__key
         return newinstance
+
+
+
 
 class AbstractPlayer(object):
     def receive_info(self, info):
@@ -118,15 +121,20 @@ class AbstractEnv(object):
         self.private_state_history.append(self.private_state.__deepcopy__())
         self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
 
-    def init(self):
+    def init(self, chance_action = None, is_gen_chances = None):
+        '''
+        :param chance_action: 
+        :return: infos, public_state, person_states, private_state, other_chance_actions
+        '''
         raise ("The init function hasn't been implemented")
 
-    def forward(self, action):
+    def forward(self, action, chance_action = None, is_gen_chances = None):
         '''
-        :param action: 
-        :return: infos, public_state, person_states, private_state
+        :param action, chance_action
+        :return: infos, public_state, person_states, private_state, other_chance_actions
         '''
         raise NotImplementedError("The forward hasn't been implemented")
+
 
     def backward(self):
         '''

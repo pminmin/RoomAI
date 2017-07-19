@@ -149,7 +149,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         min_playerid = 0
         for playerid in range(self.num_players):
             for c in self.private_state.hand_cards[playerid]:
-                if SevenKingPokerCard.compare(min_card, c) < 0:
+                if SevenKingPokerCard.compare(min_card, c) > 0:
                     min_card     = c
                     min_playerid = playerid
         return min_playerid
