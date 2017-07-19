@@ -2,7 +2,32 @@
 from roomai.sevenking import SevenKingEnv
 from roomai.sevenking import SevenKingAction
 from roomai.sevenking import SevenKingRandomPlayer
+import roomai.common
 import unittest
+
+class AlwaysFoldPlayer(roomai.common.AbstractPlayer):
+    def take_action(self):
+        return SevenKingAction("")
+    def receive_info(self,info):
+        pass
+    def reset(self):
+        pass
+
+class AlwaysNotFoldPlayer(roomai.common.AbstractPlayer):
+    def take_action(self):
+        for a in self.available_actions.values():
+            if a.key != "":
+                print "take a action=",a.key
+                return a
+        print "len=",len(self.available_actions)
+
+    def receive_info(self, info):
+        self.available_actions = info.person_state.available_actions
+
+    def reset(self):
+        pass
+
+
 
 class testSevenKing(unittest.TestCase):
     def show_hand_card(self,hand_card):
@@ -38,5 +63,12 @@ class testSevenKing(unittest.TestCase):
 
 
 
+    def testScores(self):
+        env = SevenKingEnv()
+        env.num_players = 3
 
+        players = [AlwaysFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
+        scores  = env.compete(env, players)
+        print scores
+        0/0
 
