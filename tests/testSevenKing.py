@@ -30,6 +30,7 @@ class AlwaysNotFoldPlayer(roomai.common.AbstractPlayer):
 
 
 class testSevenKing(unittest.TestCase):
+    '''
     def show_hand_card(self,hand_card):
         str = ""
         for c in hand_card:
@@ -50,14 +51,13 @@ class testSevenKing(unittest.TestCase):
 
         action = SevenKingAction("%s,%s" % (person_states[turn].hand_card[0].key, person_states[turn].hand_card[1].key))
         infos, public_state, person_states, private_state = env.forward(action)
-
+    '''
     def testRandom(self):
         env = SevenKingEnv()
         env.num_players = 2
-
         players = [SevenKingRandomPlayer() for i in xrange(2)]
 
-        for i in range(1000):
+        for i in range(1):
             SevenKingEnv.compete(env, players)
 
 
@@ -70,5 +70,4 @@ class testSevenKing(unittest.TestCase):
         players = [AlwaysFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
         scores  = env.compete(env, players)
         print scores
-        0/0
 

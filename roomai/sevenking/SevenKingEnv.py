@@ -24,6 +24,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
     num_players = 2
 
     def init(self):
+        print ("enter init of SevenKingEnv")
         self.public_state  = SevenKingPublicState()
         self.private_state = SevenKingPrivateState()
         self.person_states = [SevenKingPersonState() for i in range(self.num_players)]
@@ -48,6 +49,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         self.public_state.scores          = []
         self.public_state.previous_id     = None
         self.public_state.previous_action = None
+        self.public_state.license_action  = SevenKingAction.lookup("")
         self.public_state.stage           = 0
 
         self.public_state.num_players     = self.num_players
@@ -63,8 +65,10 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             if i == self.public_state.turn:
                 self.person_states[i].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[i])
 
+        print ("before gen_history and gen_infos")
         self.__gen_history__()
         infos = self.__gen_infos__()
+        print ("after gen_infos")
         return infos, self.public_state, self.person_states, self.private_state
 
     def forward(self, action):
@@ -92,8 +96,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
             if pu.stage == 0:
                 for i in range(5 - len(pr.hand_cards[turn])):
-                    c = pr.keep_cards[-1]
-                    pr.keep_cards.pop()
+                    c = pr.keep_cards.pop()
                     pr.hand_cards[turn].append(c)
             elif pu.stage == 1:
                 pu.num_hand_cards[turn] = len(pr.hand_cards[turn])
@@ -103,31 +106,37 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
         pu.previous_id     = turn
         pu.previous_action = action.__deepcopy__()
+        if action.pattern[0] != "p_0":
+            pu.license_action = action
 
 
         ## termminal
+        print (turn, "len_of_hand_card=",self.private_state.hand_cards[turn])
         if self.public_state.stage == 1 and len(self.private_state.hand_cards[turn]) == 0:
-            pu.is_terminal = True
-            pu.scores      = self.compute_scores()
-            new_turn       = None
-            pu.turn        = new_turn
+            pu.is_terminal    = True
+            pu.scores         = self.compute_scores()
+            new_turn          = None
+            pu.turn           = new_turn
+            pu.license_action = SevenKingAction.lookup("")
 
         ## stage 0 to 1
         elif len(self.private_state.keep_cards) < 5:
             new_turn                        = self.choose_player_with_lowest_card()
             pu.turn                         = new_turn
-            pu.num_fold                    = 0
-            pu.is_fold                     = [False for i in range(pu.num_players)]
+            pu.num_fold                     = 0
+            pu.is_fold                      = [False for i in range(pu.num_players)]
             pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
             pu.stage                        = 1
+            pu.license_action               = SevenKingAction.lookup("")
 
         ## round next
         elif self.public_state.num_fold + 1 == pu.num_players:
             new_turn                        = self.choose_player_with_lowest_card()
             pu.turn                         = new_turn
-            pu.num_fold                    = 0
-            pu.is_fold                     = [False for i in range(pu.num_players)]
+            pu.num_fold                     = 0
+            pu.is_fold                      = [False for i in range(pu.num_players)]
             pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
+            pu.license_action               = SevenKingAction.lookup("")
 
         else:
             new_turn                        = (turn + 1) % pu.num_players
@@ -157,11 +166,15 @@ class SevenKingEnv(roomai.common.AbstractEnv):
     ######################## Utils function ###################
     @classmethod
     def compete(cls, env, players):
+        print ("enter compete")
         env.num_players = len(players)
         infos, public_state, person_states, private_state = env.init()
+        print ("after init")
         for i in range(env.num_players):
+            print ("receive info i =%d"%(i))
             players[i].receive_info(infos[i])
 
+        print ("complete first")
 
         while public_state.is_terminal == False:
             turn   = public_state.turn
@@ -200,20 +213,20 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 return False
 
         ## pattern
-        previous_action = public_state.previous_action
-        if previous_action is None:
-            previous_action = SevenKingAction("")
-        if previous_action.pattern[0] != "p_0" and previous_action.pattern[0] != action.pattern[0]:
+        license_action = public_state.license_action
+        if license_action is None:
+            license_action = SevenKingAction.lookup("")
+        if license_action.pattern[0] != "p_0" and license_action.pattern[0] != action.pattern[0]:
             return False
 
 
-        if previous_action.pattern[0] != "p_0":
+        if license_action.pattern[0] != "p_0":
             max_action_card = action.cards[0]
             for c in action.cards:
                 if SevenKingPokerCard.compare(max_action_card,c) < 0:
                     max_action_card = c
-            max_previous_card = previous_action.cards[0]
-            for c in previous_action.cards:
+            max_previous_card = license_action.cards[0]
+            for c in license_action.cards:
                 if SevenKingPokerCard.compare(max_previous_card,c) < 0:
                     max_previous_card = c
             if SevenKingPokerCard.compare(max_action_card, max_previous_card) < 0 :
@@ -311,12 +324,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         available_actions      = dict()
         available_actions[""]  = SevenKingAction("")
 
-        previous_action = public_state.previous_action
-        if previous_action is None:
-            previous_action = SevenKingAction("")
+        license_action = public_state.license_action
+        if license_action is None:
+            license_action = SevenKingAction("")
         hand_cards = person_state.hand_card
 
-        if previous_action.pattern[0] == "p_0":
+        if license_action.pattern[0] == "p_0":
             for pattern in AllPatterns.values():
                 actions = cls.__gen_available_actions_with_pattern(hand_cards, pattern)
                 for action in actions:

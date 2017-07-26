@@ -109,6 +109,7 @@ class AbstractEnv(object):
 
     def __gen_infos__(self):
         num_players = len(self.person_states)
+        print ("num_players = %d"%(num_players))
         infos = [Info() for i in xrange(num_players)]
         for i in xrange(num_players):
             infos[i].person_state = self.person_states[i].__deepcopy__()
@@ -117,6 +118,7 @@ class AbstractEnv(object):
         return infos
 
     def __gen_history__(self):
+        print ("enter_gen_histoy")
         self.public_state_history.append(self.public_state.__deepcopy__())
         self.private_state_history.append(self.private_state.__deepcopy__())
         self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
