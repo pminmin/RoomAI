@@ -24,7 +24,6 @@ class SevenKingEnv(roomai.common.AbstractEnv):
     num_players = 2
 
     def init(self):
-        print ("enter init of SevenKingEnv")
         self.public_state  = SevenKingPublicState()
         self.private_state = SevenKingPrivateState()
         self.person_states = [SevenKingPersonState() for i in range(self.num_players)]
@@ -44,7 +43,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 self.private_state.hand_cards[i].append(c)
 
         ## public_state
-        self.public_state.turn            = self.choose_player_with_lowest_card()
+        self.public_state.turn,_          = self.choose_player_with_lowest_card()
         self.public_state.is_terminal     = False
         self.public_state.scores          = []
         self.public_state.previous_id     = None
@@ -65,10 +64,8 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             if i == self.public_state.turn:
                 self.person_states[i].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[i])
 
-        print ("before gen_history and gen_infos")
         self.__gen_history__()
         infos = self.__gen_infos__()
-        print ("after gen_infos")
         return infos, self.public_state, self.person_states, self.private_state
 
     def forward(self, action):
@@ -83,7 +80,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         ## the action plays its role
         if action.pattern[0] == "p_0":
             pu.is_fold[turn]           = True
-            pu.num_fold               -= 1
+            pu.num_fold               += 1
             pes[turn].available_actions = dict()
         else:
             action_key_tmp  = dict([(c.key, None) for c in action.cards])
@@ -110,8 +107,11 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             pu.license_action = action
 
 
+
+        #print (turn, "len_of_hand_card=",len(self.private_state.hand_cards[turn]), " len_of_keep_card=", len(self.private_state.keep_cards), " action = (%s)" %action.key,\
+       #        " handcard1=%s"%(",".join([a.key for a in self.private_state.hand_cards[0]]))," handcard2=%s"%(",".join([a.key for a in self.private_state.hand_cards[1]])),\
+         #      " num_fold =%d"%(self.public_state.num_fold),"fold=%s"%(",".join([str(s) for s in pu.is_fold])))
         ## termminal
-        print (turn, "len_of_hand_card=",self.private_state.hand_cards[turn])
         if self.public_state.stage == 1 and len(self.private_state.hand_cards[turn]) == 0:
             pu.is_terminal    = True
             pu.scores         = self.compute_scores()
@@ -120,28 +120,35 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             pu.license_action = SevenKingAction.lookup("")
 
         ## stage 0 to 1
-        elif len(self.private_state.keep_cards) < 5:
-            new_turn                        = self.choose_player_with_lowest_card()
+        elif len(self.private_state.keep_cards) < 5 and pu.stage == 0:
+            new_turn, min_card              = self.choose_player_with_lowest_card()
             pu.turn                         = new_turn
             pu.num_fold                     = 0
             pu.is_fold                      = [False for i in range(pu.num_players)]
-            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
-            pu.stage                        = 1
             pu.license_action               = SevenKingAction.lookup("")
+            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
+            keys = pes[new_turn].available_actions.keys()
+            for key in keys:
+                if min_card.key not in key:
+                    del pes[new_turn].available_actions[key]
+            pu.stage                        = 1
+
 
         ## round next
         elif self.public_state.num_fold + 1 == pu.num_players:
-            new_turn                        = self.choose_player_with_lowest_card()
+            new_turn                        = self.choose_player_with_nofold()
             pu.turn                         = new_turn
             pu.num_fold                     = 0
             pu.is_fold                      = [False for i in range(pu.num_players)]
-            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
             pu.license_action               = SevenKingAction.lookup("")
+            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
+
 
         else:
             new_turn                        = (turn + 1) % pu.num_players
             pu.turn                         = new_turn
             pes[new_turn].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[new_turn])
+
 
 
         self.__gen_history__()
@@ -153,6 +160,13 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         scores[self.public_state.turn] = self.num_players -1
         return scores
 
+    def choose_player_with_nofold(self):
+        for player_id in range(self.public_state.num_players):
+            if self.public_state.is_fold[player_id]== False:
+                return player_id
+
+
+
     def choose_player_with_lowest_card(self):
         min_card    = self.private_state.hand_cards[0][0]
         min_playerid = 0
@@ -161,20 +175,16 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 if SevenKingPokerCard.compare(min_card, c) > 0:
                     min_card     = c
                     min_playerid = playerid
-        return min_playerid
+        return min_playerid, min_card
 
     ######################## Utils function ###################
     @classmethod
     def compete(cls, env, players):
-        print ("enter compete")
+
         env.num_players = len(players)
         infos, public_state, person_states, private_state = env.init()
-        print ("after init")
         for i in range(env.num_players):
-            print ("receive info i =%d"%(i))
             players[i].receive_info(infos[i])
-
-        print ("complete first")
 
         while public_state.is_terminal == False:
             turn   = public_state.turn
@@ -321,16 +331,17 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def available_actions(cls, public_state, person_state):
-        available_actions      = dict()
-        available_actions[""]  = SevenKingAction("")
+        available_actions = dict()
 
         license_action = public_state.license_action
         if license_action is None:
             license_action = SevenKingAction("")
         hand_cards = person_state.hand_card
 
+
         if license_action.pattern[0] == "p_0":
             for pattern in AllPatterns.values():
+                if pattern[0] == "p_0":continue
                 actions = cls.__gen_available_actions_with_pattern(hand_cards, pattern)
                 for action in actions:
                     if cls.is_action_valid(action, public_state, person_state) == True:
@@ -340,6 +351,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             for action in actions:
                 if cls.is_action_valid(action, public_state, person_state) == True:
                     available_actions[action.key] = action
+            available_actions[""] = SevenKingAction.lookup("")
 
         return available_actions
 

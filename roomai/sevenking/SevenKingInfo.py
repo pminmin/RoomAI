@@ -12,7 +12,6 @@ class SevenKingPublicState(roomai.common.AbstractPublicState):
         self.num_hand_cards   = []
         self.is_fold          = []
         self.num_fold         = 0
-
         self.license_action   = None
 
     def __deepcopy__(self, newinstance = None, memodict={}):
