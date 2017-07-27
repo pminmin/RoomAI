@@ -88,7 +88,7 @@ class AbstractPlayer(object):
 
     def take_action(self):
         '''
-        :return: A Action produced by this player
+        :return: A DouDiZhuAction produced by this player
         '''
         raise NotImplementedError("The takeAction function hasn't been implemented") 
 

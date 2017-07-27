@@ -4,7 +4,7 @@
 ## Basic Concepts
 
 
-There are some basic concepts in RoomAI: Player, Env, Info and Action. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
+There are some basic concepts in RoomAI: Player, Env, Info and DouDiZhuAction. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
 
 <pre>
 def compete(env, players):
@@ -68,7 +68,7 @@ Infos sent to different players are different. They contain the same public stat
 The private_state isn't in any Info, hence no player can access it.
 
 
-#### 2. Action
+#### 2. DouDiZhuAction
 
 Player takes a action, and Env forwards with this action.
 
