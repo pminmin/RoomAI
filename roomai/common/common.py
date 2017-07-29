@@ -176,6 +176,7 @@ class AbstractEnv(object):
         '''
         raise  NotImplementedError("The is_action_valid function hasn't been implemented")
 
+    @classmethod
     def available_actions(self, public_state, person_state):
         '''
         :param public_state: 
