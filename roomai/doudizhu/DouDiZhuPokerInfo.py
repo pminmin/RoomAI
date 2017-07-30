@@ -65,10 +65,11 @@ class DouDiZhuHandCards:
             self.cards[c] -= count
             self.count2num[self.cards[c]] += 1
 
-        self.__key = self.key(is_recomputing=True)
+        self.__key = self.compute_key()
 
-    def remove_action_cards(self, action):
-        str = action.key()
+    def remove_action(self, action):
+        print type(action)
+        str = action.key
         if str == 'x' or str == 'b':
             str = ''
         self.remove_cards(DouDiZhuHandCards(str))

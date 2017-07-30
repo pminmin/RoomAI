@@ -84,7 +84,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         self.assertEqual(env.public_state.turn,2)
         self.assertEqual(env.public_state.license_playerid,2)
         action = DouDiZhuPokerAction([8], [])
-        isTerminal, scores, infos = env.forward(action)
+        infos, public_state, person_states, private_state = env.forward(action)
         # landlord 4:4, 1:4, 2:4,  3:4  12:1
         # peasant1 4:4, 5:4, 6:4,  7:4  12:1
         # peasant2 8:3, 9:4, 10:4, 11:4 12:2     
@@ -92,13 +92,13 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         ## 4 turn = 0 license_id = 2
         self.assertEqual(env.public_state.turn,0)
         action = DouDiZhuPokerAction([0], [])
-        self.assertFalse(env.isActionValid(action))
+        self.assertFalse(env.is_action_valid(action,public_state,person_states[public_state.turn]))
         action = DouDiZhuPokerAction([0], [])
-        isTerminal, scores, infos = env.forward(action)
-        self.assertEqual(infos[3].public_state.license_playerid,0)
-        self.assertEqual(infos[3].public_state.turn,1)        
+        infos, public_state, person_states, private_state = env.forward(action)
+        self.assertEqual(public_state.license_playerid,0)
+        self.assertEqual(public_state.turn,1)
         action = DouDiZhuPokerAction([8, 8, 8, 8], [9, 10])
-        self.assertFalse(env.isActionValid(action)) 
+        self.assertFalse(env.is_action_valid(action,public_state,person_states[public_state.turn]))
         # landlord 0:3, 1:4, 2:4,  3:4  12:1
         # peasant1 4:4, 5:4, 6:4,  7:4  12:1
         # peasant2 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1  
@@ -106,7 +106,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         ## 5 turn == 1 license_id =0
         self.assertEqual(env.public_state.epoch,5)
         action = DouDiZhuPokerAction([DouDiZhuActionElement.cheat], [])
-        isTerminal, scores, infos = env.forward(action)
+        infos, public_state, person_states, private_state= env.forward(action)
         # landlord 0:3, 1:4, 2:4,  3:4  12:1 
         # peasant1 4:4, 5:4, 6:4,  7:4  12:1
         # peasant2 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1
@@ -115,23 +115,23 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         self.assertEqual(env.public_state.license_playerid, 0)
         self.assertEqual(env.public_state.turn, 2)
         action = DouDiZhuPokerAction([DouDiZhuActionElement.cheat], [])
-        isTerminal, scores, infos = env.forward(action)         
+        infos,public_state,person_states,private_state= env.forward(action)
         # landlord 0:3, 1:4, 2:4,  3:4  12:1
         # peasant1 4:4, 5:4, 6:4,  7:4  12:1
         # peasant2 8:3, 9:4, 10:4, 11:4 12:2 13:1 14:1  
-        print infos[3].private_state.hand_cards
+
         
         ## 7 turn == 0 license_id = 0
         self.assertEqual(env.public_state.license_playerid, 0)
         self.assertEqual(env.public_state.turn, 0)
+        self.assertEqual(env.public_state.is_response, False)
         action = DouDiZhuPokerAction([DouDiZhuActionElement.cheat], [])
-        self.assertFalse(env.isActionValid(action))
+        self.assertFalse(env.is_action_valid(action,public_state,person_states[public_state.turn]))
         action = DouDiZhuPokerAction([0, 0, 0], [12])
-        isTerminal, scores, infos = env.forward(action)
-        print infos[3].private_state.hand_cards
-        self.assertEqual(infos[3].private_state.hand_cards[0][0], 0)
-        self.assertEqual(infos[3].private_state.hand_cards[0][1], 4)
-        self.assertEqual(infos[3].private_state.hand_cards[0][12], 0)
+        infos, public_state, person_states, private_state= env.forward(action)
+        self.assertEqual(person_states[0].hand_cards.cards[0], 0)
+        self.assertEqual(person_states[0].hand_cards.cards[1], 4)
+        self.assertEqual(person_states[0].hand_cards.cards[12], 0)
         # landlord 0:0, 1:4, 2:4,  3:4  12:0 
         # peasant1 4:3, 5:4, 6:4,  7:4  12:1
         # peasant2 8:4, 9:4, 10:4, 11:4 12:2 13:1 14:1  
@@ -162,8 +162,7 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         
         # 13 turn =0 license_id = 0
         action = DouDiZhuPokerAction([1, 1, 2, 2, 3, 3], [])
-        action.complement()
-        self.assertTrue(env.isActionValid(action))
+        self.assertTrue(env.is_action_valid(action, public_state, person_states[public_state.turn]))
         env.forward(action)
 
 
@@ -179,9 +178,12 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
 
         # 16 turn =0 license_id = 0
         action = DouDiZhuPokerAction([1, 1, 2, 2, 3, 3], [])
-        self.assertTrue(env.isActionValid(action))
-        isTerminal, scores, infos = env.forward(action)
+        self.assertTrue(env.is_action_valid(action,public_state,person_states[public_state.turn ]))
+        infos, public_state, person_states, private_state = env.forward(action)
         expected_scores = [1,1,-2]
+        scores = public_state.scores
+        print public_state.scores
+        print public_state.is_terminal
         for i in xrange(len(scores)):
             self.assertEqual(scores[i], expected_scores[i])
         
