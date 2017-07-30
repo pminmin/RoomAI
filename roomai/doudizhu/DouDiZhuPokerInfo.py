@@ -100,7 +100,8 @@ class DouDiZhuPublicState(roomai.common.AbstractPublicState):
 
 class DouDiZhuPersonState(roomai.common.AbstractPersonState):
     def __init__(self):
-        self.id         = None
-        self.hand_cards = None
+        self.id                = None
+        self.hand_cards        = None
+        self.available_actions = dict()
 
 

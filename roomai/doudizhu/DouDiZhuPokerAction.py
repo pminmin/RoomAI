@@ -38,6 +38,9 @@ class DouDiZhuActionElement:
 
 
 class DouDiZhuAction(roomai.common.AbstractAction):
+    def __init__(self):
+        pass
+
     def __init__(self, masterCards, slaveCards):
         self.__masterCards        = copy.deepcopy(masterCards)
         self.__slaveCards         = copy.deepcopy(slaveCards)
@@ -48,8 +51,11 @@ class DouDiZhuAction(roomai.common.AbstractAction):
         self.__maxMasterPoint     = None
         self.__minMasterPoint     = None
         self.__pattern            = None
-        DouDiZhuAction.action2pattern(self)
-        self.__key = DouDiZhuPokerEnv.master_slave_cards_to_key(masterCards, slaveCards)
+
+        self.action2pattern()
+        self.__key = DouDiZhuAction.master_slave_cards_to_key(masterCards, slaveCards)
+
+
 
     @property
     def key(self):  return self.__key
@@ -83,38 +89,37 @@ class DouDiZhuAction(roomai.common.AbstractAction):
         key_str.sort()
         return "".join(key_str)
 
-    @classmethod
-    def action2pattern(cls, action):
+    def action2pattern(self):
 
-        action.masterPoints2Count = dict()
-        for c in action.masterCards:
-            if c in action.masterPoints2Count:
-                action.masterPoints2Count[c] += 1
+        self.__masterPoints2Count = dict()
+        for c in self.__masterCards:
+            if c in self.__masterPoints2Count:
+                self.__masterPoints2Count[c] += 1
             else:
-                action.masterPoints2Count[c] = 1
+                self.__masterPoints2Count[c] = 1
 
-        action.slavePoints2Count = dict()
-        for c in action.slaveCards:
-            if c in action.slavePoints2Count:
-                action.slavePoints2Count[c] += 1
+        self.__slavePoints2Count = dict()
+        for c in self.__slaveCards:
+            if c in self.__slavePoints2Count:
+                self.__slavePoints2Count[c] += 1
             else:
-                action.slavePoints2Count[c] = 1
+                self.__slavePoints2Count[c] = 1
 
-        action.isMasterStraight = 0
+        self.__isMasterStraight = 0
         num = 0
-        for v in action.masterPoints2Count:
-            if (v + 1) in action.masterPoints2Count and (v + 1) < DouDiZhuActionElement.two:
+        for v in self.__masterPoints2Count:
+            if (v + 1) in self.__masterPoints2Count and (v + 1) < DouDiZhuActionElement.two:
                 num += 1
-        if num == len(action.masterPoints2Count) - 1 and len(action.masterPoints2Count) != 1:
-            action.isMasterStraight = 1
+        if num == len(self.__masterPoints2Count) - 1 and len(self.__masterPoints2Count) != 1:
+            self.__isMasterStraight = 1
 
-        action.maxMasterPoint = -1
-        action.minMasterPoint = 100
-        for c in action.masterPoints2Count:
-            if action.maxMasterPoint < c:
-                action.maxMasterPoint = c
-            if action.minMasterPoint > c:
-                action.minMasterPoint = c
+        self.__maxMasterPoint = -1
+        self.__minMasterPoint = 100
+        for c in self.__masterPoints2Count:
+            if self.__maxMasterPoint < c:
+                self.__maxMasterPoint = c
+            if self.__minMasterPoint > c:
+                self.__minMasterPoint = c
 
         ########################
         ## action 2 pattern ####
@@ -122,46 +127,47 @@ class DouDiZhuAction(roomai.common.AbstractAction):
 
 
         # is cheat?
-        if len(action.masterCards) == 1 \
-                and len(action.slaveCards) == 0 \
-                and action.masterCards[0] == DouDiZhuActionElement.cheat:
-            action.pattern = AllPatterns["i_cheat"]
+        if len(self.__masterCards) == 1 \
+                and len(self.__slaveCards) == 0 \
+                and self.__masterCards[0] == DouDiZhuActionElement.cheat:
+            self.__pattern = AllPatterns["i_cheat"]
 
         # is roblord
-        elif len(action.masterCards) == 1 \
-                and len(action.slaveCards) == 0 \
-                and action.masterCards[0] == DouDiZhuActionElement.bid:
-            action.pattern = AllPatterns["i_bid"]
+        elif len(self.__masterCards) == 1 \
+                and len(self.__slaveCards) == 0 \
+                and self.__masterCards[0] == DouDiZhuActionElement.bid:
+            self.__pattern = AllPatterns["i_bid"]
 
         # is twoKings
-        elif len(action.masterCards) == 2 \
-                and len(action.masterPoints2Count) == 2 \
-                and len(action.slaveCards) == 0 \
-                and action.masterCards[0] in [DouDiZhuActionElement.r, DouDiZhuActionElement.R] \
-                and action.masterCards[1] in [DouDiZhuActionElement.r, DouDiZhuActionElement.R]:
-            action.pattern = AllPatterns["x_rocket"]
+        elif len(self.__masterCards) == 2 \
+                and len(self.__masterPoints2Count) == 2 \
+                and len(self.__slaveCards) == 0 \
+                and self.__masterCards[0] in [DouDiZhuActionElement.r, DouDiZhuActionElement.R] \
+                and self.__masterCards[1] in [DouDiZhuActionElement.r, DouDiZhuActionElement.R]:
+            self.__pattern = AllPatterns["x_rocket"]
 
         else:
 
             ## process masterCards
-            masterPoints = action.masterPoints2Count
+            masterPoints = self.__masterPoints2Count
             if len(masterPoints) > 0:
-                count = masterPoints[action.masterCards[0]]
+                count = masterPoints[self.__masterCards[0]]
                 for c in masterPoints:
                     if masterPoints[c] != count:
-                        action.pattern = AllPatterns["i_invalid"]
+                        self.__pattern = AllPatterns["i_invalid"]
 
-            if action.pattern == None:
-                pattern = "p_%d_%d_%d_%d_%d" % (len(action.masterCards), len(masterPoints), \
-                                                action.isMasterStraight, \
-                                                len(action.slaveCards), 0)
+            if self.__pattern == None:
+                pattern = "p_%d_%d_%d_%d_%d" % (len(self.__masterCards), len(masterPoints), \
+                                                self.__isMasterStraight, \
+                                                len(self.__slaveCards), 0)
 
                 if pattern in AllPatterns:
-                    action.pattern = AllPatterns[pattern]
+                    self.__pattern = AllPatterns[pattern]
                 else:
-                    action.pattern = AllPatterns["i_invalid"]
+                    self.__pattern = AllPatterns["i_invalid"]
 
-        return action
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        self.lookup(self.key)
 
 
 

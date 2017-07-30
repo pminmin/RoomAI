@@ -8,6 +8,9 @@ import unittest
 
 class AlwaysFoldPlayer(roomai.common.AbstractPlayer):
     def take_action(self):
+
+
+
         if "" not in self.available_actions:
             min_card = None
             for a in self.available_actions.values():
@@ -24,6 +27,7 @@ class AlwaysFoldPlayer(roomai.common.AbstractPlayer):
             return SevenKingAction("")
 
     def receive_info(self,info):
+        self.public_state      = info.public_state
         self.available_actions = info.person_state.available_actions
 
     def reset(self):
@@ -84,4 +88,5 @@ class testSevenKing(unittest.TestCase):
         players = [AlwaysFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
         scores  = env.compete(env, players)
         print scores
+
 

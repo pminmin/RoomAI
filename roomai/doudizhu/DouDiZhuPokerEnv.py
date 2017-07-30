@@ -1,7 +1,6 @@
 #!/bin/python
 #coding:utf-8
 
-import roomai.abstract
 import random
 import copy
 import itertools
@@ -64,7 +63,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         
         self.public_state.firstPlayer       = int(random.random() * 3)
         self.public_state.turn              = self.public_state.firstPlayer
-        self.public_state.phase             = PhaseSpace.bid
+        self.public_state.phase             = 0
         self.public_state.epoch             = 0
         
         self.public_state.landlord_id         = -1
@@ -212,14 +211,14 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
                 continue
 
             if "i_cheat" == pattern[0]:
-                action_key = cls.master_slave_cards_to_key([DouDiZhuActionElement.cheat], [])
+                action_key = DouDiZhuAction.master_slave_cards_to_key([DouDiZhuActionElement.cheat], [])
                 action     = DouDiZhuAction.lookup(action_key)
                 if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
                     actions[action_key] = action
                 continue
 
             if "i_bid" == pattern[0]:
-                action_key = cls.master_slave_cards_to_key([DouDiZhuActionElement.bid], [])
+                action_key = DouDiZhuAction.master_slave_cards_to_key([DouDiZhuActionElement.bid], [])
                 action     = DouDiZhuAction.lookup(action_key)
                 if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
                     actions[action_key] = action
@@ -228,7 +227,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
             if pattern[0] == "x_rocket":
                 if person_state.hand_cards.cards[DouDiZhuActionElement.r] == 1 and \
                                 person_state.hand_cards.cards[DouDiZhuActionElement.R] == 1:
-                    action_key  = cls.master_slave_cards_to_key([DouDiZhuActionElement.r, DouDiZhuActionElement.R], [])
+                    action_key  = DouDiZhuAction.master_slave_cards_to_key([DouDiZhuActionElement.r, DouDiZhuActionElement.R], [])
                     action      = DouDiZhuAction.lookup(action_key)
                     if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
                         actions[action_key] = action
@@ -267,13 +266,11 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_valid(cls, hand_cards, public_state, action):
-        if cls.gen_allactions == True:
-            return True
 
         if action.pattern[0] == "i_invalid":
             return False
 
-        if Utils.is_action_from_handcards(hand_cards, action) == False:
+        if cls.is_action_from_handcards(hand_cards, action) == False:
             return False
 
         turn = public_state.turn

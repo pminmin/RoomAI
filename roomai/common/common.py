@@ -121,14 +121,14 @@ class AbstractEnv(object):
         self.private_state_history.append(self.private_state.__deepcopy__())
         self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
 
-    def init(self, chance_action = None, is_gen_chances = None):
+    def init(self, params = None):
         '''
         :param chance_action: 
         :return: infos, public_state, person_states, private_state, other_chance_actions
         '''
         raise ("The init function hasn't been implemented")
 
-    def forward(self, action, chance_action = None, is_gen_chances = None):
+    def forward(self, action, params = None):
         '''
         :param action, chance_action
         :return: infos, public_state, person_states, private_state, other_chance_actions
