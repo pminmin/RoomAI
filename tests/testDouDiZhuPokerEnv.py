@@ -41,12 +41,17 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
 
         ### init
         for i in xrange(3):
-            env.person_states[i].hand_cards.cards = [0 for m in xrange(15)]
+            env.person_states[i].hand_cards = DouDiZhuHandCards("")
             for j in xrange(4*i,4*(i+1)):
                 for count in range(4):
                     env.person_states[i].hand_cards.add_cards_str(DouDiZhuActionElement.rank_to_str[j])
             env.person_states[i].hand_cards.add_cards_str(DouDiZhuActionElement.rank_to_str[12])
+        env.private_state.keep_cards = DouDiZhuHandCards("")
         env.private_state.keep_cards.add_cards_str("".join([DouDiZhuActionElement.rank_to_str[12],DouDiZhuActionElement.rank_to_str[13], DouDiZhuActionElement.rank_to_str[14]]))
+        print env.private_state.keep_cards.key
+        print env.person_states[0].hand_cards.key
+        print env.person_states[1].hand_cards.key
+        print env.person_states[2].hand_cards.key
         env.public_state.turn = 0
         
         # landlord 0:4,1:4,2:4,3:4      12:1 
@@ -174,12 +179,18 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         env.forward(action)
         # landlord 0:0, 1:2, 2:2,  3:2  12:0 
         # peasant1 4:3, 5:4, 6:4,  7:4  12:1
-        # peasant2 8:4, 9:4, 10:4, 11:4 12:2  
+        # peasant2 8:4, 9:4, 10:4, 11:4 12:2
+        print env.private_state.keep_cards.key
+        print env.person_states[0].hand_cards.key
+        print env.person_states[1].hand_cards.key
+        print env.person_states[2].hand_cards.key
+        print env.person_states[0].hand_cards.num_cards
 
         # 16 turn =0 license_id = 0
         action = DouDiZhuPokerAction([1, 1, 2, 2, 3, 3], [])
         self.assertTrue(env.is_action_valid(action,public_state,person_states[public_state.turn ]))
         infos, public_state, person_states, private_state = env.forward(action)
+        print env.person_states[0].hand_cards.num_cards
         expected_scores = [1,1,-2]
         scores = public_state.scores
         print public_state.scores
