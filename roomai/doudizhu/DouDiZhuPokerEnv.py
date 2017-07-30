@@ -45,13 +45,16 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
 
     def update_phase_bid2play(self):
-        self.public_state.phase            = PhaseSpace.play
+        self.public_state.phase            = 1
         
-        self.public_state.landlord_id      = self.public_state.landlord_candidate_id
-        self.public_state.license_playerid = self.public_state.turn        
+        self.public_state.landlord_id         = self.public_state.landlord_candidate_id
+        self.public_state.license_playerid    = self.public_state.turn
+        self.public_state.continous_cheat_num = 0
+        self.public_state.is_response         = False
 
         landlord_id = self.public_state.landlord_id
-        self.private_state.hand_cards[landlord_id].add_cards(self.private_state.keep_cards)
+        self.public_state.keep_cards = DouDiZhuHandCards(self.private_state.keep_cards.key)
+        self.person_states[landlord_id].hand_cards.add_cards(self.private_state.keep_cards)
 
 
     #@Overide
@@ -101,7 +104,20 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
             if (self.public_state.epoch == 2 and self.public_state.landlord_candidate_id != -1)\
                 or self.public_state.epoch == 3:
                 self.update_phase_bid2play()
-                self.person_states[self.public_state.landlord_id].hand_cards.add_cards(self.private_state.keep_cards)
+
+
+                self.public_state.previous_id = turn
+                self.public_state.previous_action = action
+                self.public_state.epoch += 1
+                self.person_states[self.public_state.turn].available_actions = DouDiZhuPokerEnv.available_actions(
+                    self.public_state, self.person_states[self.public_state.turn])
+
+                self.__gen_history__()
+                infos = self.__gen_infos__()
+
+                return infos, self.public_state, self.person_states, self.private_state
+
+
 
         else: #phase == play
 
@@ -130,10 +146,8 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
             else:
                 self.public_state.continous_cheat_num += 1
 
-        if (self.public_state.epoch == 2 and self.public_state.landlord_candidate_id != -1) \
-            or self.public_state.epoch == 3:pass
-        else:
-            self.public_state.turn   = (turn+1)%3
+
+        self.public_state.turn   = (turn+1)%3
 
         if self.public_state.continous_cheat_num == 2:
             self.public_state.is_response = False
@@ -179,6 +193,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
             patterns.append(AllPatterns["i_cheat"])
             patterns.append(AllPatterns["i_bid"])
         else:
+            print ("aaaa", public_state.is_response)
             if public_state.is_response == False:
                 for p in AllPatterns:
                     if p != "i_cheat" and p != "i_invalid":
@@ -211,25 +226,25 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
                 continue
 
             if "i_cheat" == pattern[0]:
-                action_key = DouDiZhuAction.master_slave_cards_to_key([DouDiZhuActionElement.cheat], [])
-                action     = DouDiZhuAction.lookup(action_key)
-                if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
+                action_key = DouDiZhuPokerAction.master_slave_cards_to_key([DouDiZhuActionElement.cheat], [])
+                action     = DouDiZhuPokerAction.lookup(action_key)
+                if cls.is_action_valid(action,public_state, person_state) == True:
                     actions[action_key] = action
                 continue
 
             if "i_bid" == pattern[0]:
-                action_key = DouDiZhuAction.master_slave_cards_to_key([DouDiZhuActionElement.bid], [])
-                action     = DouDiZhuAction.lookup(action_key)
-                if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
+                action_key = DouDiZhuPokerAction.master_slave_cards_to_key([DouDiZhuActionElement.bid], [])
+                action     = DouDiZhuPokerAction.lookup(action_key)
+                if cls.is_action_valid(action, public_state,person_state) == True:
                     actions[action_key] = action
                 continue
 
             if pattern[0] == "x_rocket":
                 if person_state.hand_cards.cards[DouDiZhuActionElement.r] == 1 and \
                                 person_state.hand_cards.cards[DouDiZhuActionElement.R] == 1:
-                    action_key  = DouDiZhuAction.master_slave_cards_to_key([DouDiZhuActionElement.r, DouDiZhuActionElement.R], [])
-                    action      = DouDiZhuAction.lookup(action_key)
-                    if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
+                    action_key  = DouDiZhuPokerAction.master_slave_cards_to_key([DouDiZhuActionElement.r, DouDiZhuActionElement.R], [])
+                    action      = DouDiZhuPokerAction.lookup(action_key)
+                    if cls.is_action_valid(action,public_state,person_state) == True:
                         actions[action_key] = action
                 continue
 
@@ -248,35 +263,36 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
             for mCards in mCardss:
                 if numSlave == 0:
-                    action_key   = cls.master_slave_cards_to_key(mCards, [])
-                    action       = DouDiZhuAction.lookup(action_key)
-                    if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
+                    action_key   = DouDiZhuPokerAction.master_slave_cards_to_key(mCards, [])
+                    action       = DouDiZhuPokerAction.lookup(action_key)
+                    if cls.is_action_valid(action, public_state,person_state) == True:
                         actions[action_key] = action
                     continue
 
                 sCardss = DouDiZhuPokerEnv.extractSlaveCards(person_state.hand_cards, numSlave, mCards, pattern)
                 for sCards in sCardss:
-                    action_key  = cls.master_slave_cards_to_key(mCards, sCards)
-                    action      = DouDiZhuAction.lookup(action_key)
-                    if cls.is_action_valid(person_state.hand_cards, public_state, action) == True:
+                    action_key  = DouDiZhuPokerAction.master_slave_cards_to_key(mCards, sCards)
+                    print "action_key=%s"%action_key,"\n"
+                    action      = DouDiZhuPokerAction.lookup(action_key)
+                    if cls.is_action_valid(action, public_state,person_state) == True:
                         actions[action_key] = action
         return actions
 
 
 
     @classmethod
-    def is_action_valid(cls, hand_cards, public_state, action):
+    def is_action_valid(cls,action, public_state, person_state):
 
         if action.pattern[0] == "i_invalid":
             return False
 
-        if cls.is_action_from_handcards(hand_cards, action) == False:
+        if cls.is_action_from_handcards(person_state.hand_cards, action) == False:
             return False
 
-        turn = public_state.turn
-        license_id = public_state.license_playerid
+        turn        = public_state.turn
+        license_id  = public_state.license_playerid
         license_act = public_state.license_action
-        phase = public_state.phase
+        phase       = public_state.phase
 
         if phase == 0:
             if action.pattern[0] not in ["i_cheat", "i_bid"]:

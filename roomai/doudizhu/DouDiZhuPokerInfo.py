@@ -89,6 +89,7 @@ class DouDiZhuPublicState(roomai.common.AbstractPublicState):
         self.continous_cheat_num = 0
         self.is_response = False
 
+        self.keep_cards = None
         self.first_player = -1
         self.turn = -1
         self.phase = -1

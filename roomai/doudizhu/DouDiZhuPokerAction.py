@@ -37,7 +37,7 @@ class DouDiZhuActionElement:
 
 
 
-class DouDiZhuAction(roomai.common.AbstractAction):
+class DouDiZhuPokerAction(roomai.common.AbstractAction):
     def __init__(self):
         pass
 
@@ -53,7 +53,7 @@ class DouDiZhuAction(roomai.common.AbstractAction):
         self.__pattern            = None
 
         self.action2pattern()
-        self.__key = DouDiZhuAction.master_slave_cards_to_key(masterCards, slaveCards)
+        self.__key = DouDiZhuPokerAction.master_slave_cards_to_key(masterCards, slaveCards)
 
 
 
@@ -214,6 +214,6 @@ for line in action_file:
     for c in ss:
         if c != "":
             s.append(int(c))
-    action = DouDiZhuAction(m, s)
+    action = DouDiZhuPokerAction(m, s)
     AllActions[action.key] = action
 action_file.close()

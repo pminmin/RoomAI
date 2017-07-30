@@ -7,22 +7,22 @@ from roomai.doudizhu import *
 class DouDiZhuPokerUtilTester(unittest.TestCase):
     def testAction2Patterns(self):
         
-        a = DouDiZhuAction([1, 1, 1], [2]).complement()
+        a = DouDiZhuPokerAction([1, 1, 1], [2]).complement()
         self.assertEqual(a.pattern[0], "p_3_1_0_1_1")
 
-        a = DouDiZhuAction([1, 1, 1, 2, 3, 3], []).complement()
+        a = DouDiZhuPokerAction([1, 1, 1, 2, 3, 3], []).complement()
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = DouDiZhuAction([1, 1, 1, 1, 1], [2]).complement()
+        a = DouDiZhuPokerAction([1, 1, 1, 1, 1], [2]).complement()
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = DouDiZhuAction([DouDiZhuActionElement.cheat], [2]).complement()
+        a = DouDiZhuPokerAction([DouDiZhuActionElement.cheat], [2]).complement()
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = DouDiZhuAction([DouDiZhuActionElement.cheat], []).complement()
+        a = DouDiZhuPokerAction([DouDiZhuActionElement.cheat], []).complement()
         self.assertEqual(a.pattern[0], "i_cheat")
         
-        a = DouDiZhuAction([DouDiZhuActionElement.R, DouDiZhuActionElement.r], []).complement()
+        a = DouDiZhuPokerAction([DouDiZhuActionElement.R, DouDiZhuActionElement.r], []).complement()
         self.assertEqual(a.pattern[0], "x_rocket")
         
 

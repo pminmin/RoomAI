@@ -27,7 +27,7 @@ class Utils:
         key = "".join(key_str)
 
         if cls.gen_allactions == True:
-            return key, DouDiZhuAction(masterCards, slaveCards)
+            return key, DouDiZhuPokerAction(masterCards, slaveCards)
 
         if key in AllActions:
             return key, AllActions[key]
