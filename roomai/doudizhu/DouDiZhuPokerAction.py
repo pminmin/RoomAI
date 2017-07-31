@@ -197,24 +197,23 @@ for line in pattern_file:
 pattern_file.close()
 
 
+
 action_file = get_file(path + "/actions.py")
 for line in action_file:
     line = line.replace(" ", "").strip()
     lines = line.split("\t")
-
-    m = []
-    ms = lines[0].split(",")
-    for c in ms:
-        if c != "":
-            m.append(int(c))
-
+    m = [int(str1) for str1 in lines[1].split(",")]
     s = []
-    ss = []
-    if len(lines) == 2:
-        ss = lines[1].split(",")
-    for c in ss:
-        if c != "":
-            s.append(int(c))
+    if len(lines[2]) > 0:
+        s = [int(str1) for str1 in lines[2].split(",")]
     action = DouDiZhuPokerAction(m, s)
+    if action.key != lines[0] or action.pattern[0] != lines[3]:
+        print lines
+        raise ValueError("%s is wrong. The generated action has key(%s) and pattern(%s)"%(line, action.key,action.pattern[0]))
+
+
     AllActions[action.key] = action
 action_file.close()
+
+
+
