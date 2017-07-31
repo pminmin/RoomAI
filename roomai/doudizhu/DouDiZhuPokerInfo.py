@@ -39,11 +39,10 @@ class DouDiZhuHandCards:
         return self.__key
 
 
-    def add_cards_str(self, str):
-        self.add_cards(DouDiZhuHandCards(str))
-        self.__key = self.compute_key()
-
     def add_cards(self, cards):
+        if isinstance(cards, str) == True:
+            cards = DouDiZhuHandCards(cards)
+
         for c in range(len(cards.cards)):
             count = cards.cards[c]
             self.num_cards += count
@@ -53,11 +52,11 @@ class DouDiZhuHandCards:
 
         self.__key = self.compute_key()
 
-    def remove_cards_str(self, str):
-        self.remove_cards(DouDiZhuHandCards(str))
-        self.__key = self.compute_key()
 
     def remove_cards(self, cards):
+        if isinstance(cards, str) == True:
+            cards = DouDiZhuHandCards(cards)
+
         for c in range(len(cards.cards)):
             count = cards.cards[c]
             self.num_cards -= count
@@ -68,7 +67,6 @@ class DouDiZhuHandCards:
         self.__key = self.compute_key()
 
     def remove_action(self, action):
-        print type(action)
         str = action.key
         if str == 'x' or str == 'b':
             str = ''
@@ -87,7 +85,7 @@ class DouDiZhuPublicState(roomai.common.AbstractPublicState):
         self.landlord_id = -1
         self.license_playerid = -1
         self.license_action = None
-        self.continous_cheat_num = 0
+        self.continuous_cheat_num = 0
         self.is_response = False
 
         self.keep_cards = None

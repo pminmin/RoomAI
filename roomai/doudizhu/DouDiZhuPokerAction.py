@@ -196,6 +196,7 @@ for line in pattern_file:
     AllPatterns[lines[0]] = lines
 pattern_file.close()
 
+
 action_file = get_file(path + "/actions.py")
 for line in action_file:
     line = line.replace(" ", "").strip()

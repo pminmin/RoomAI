@@ -41,7 +41,6 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
             
 
     def update_cards(self, turn, action):
-        print type(action)
         self.person_states[turn].hand_cards.remove_action(action)
 
 
@@ -50,7 +49,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         
         self.public_state.landlord_id         = self.public_state.landlord_candidate_id
         self.public_state.license_playerid    = self.public_state.turn
-        self.public_state.continous_cheat_num = 0
+        self.public_state.continuous_cheat_num = 0
         self.public_state.is_response         = False
 
         landlord_id = self.public_state.landlord_id
@@ -89,6 +88,11 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
     #@Overide
     def forward(self, action):
 
+
+
+        if self.is_action_valid(action, self.public_state, self.person_states[self.public_state.turn]) is False:
+            raise  ValueError("%s action is invalid"%(action.key))
+
         turn = self.public_state.turn
         if self.public_state.phase == 0:
             if action.pattern[0] == "i_bid":
@@ -126,7 +130,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
                 
                 self.update_cards(turn,action)
                 self.update_license(turn,action)
-                self.public_state.continous_cheat_num = 0
+                self.public_state.continuous_cheat_num = 0
     
                 num = self.person_states[turn].hand_cards.num_cards
                 if num == 0:
@@ -145,14 +149,15 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
                     infos = self.__gen_infos__()
                     return infos, self.public_state, self.person_states, self.private_state
             else:
-                self.public_state.continous_cheat_num += 1
+                self.public_state.continuous_cheat_num += 1
 
 
         self.public_state.turn   = (turn+1)%3
 
-        if self.public_state.continous_cheat_num == 2:
-            self.public_state.is_response         = False
-            self.public_state.continous_cheat_num = 0
+
+        if self.public_state.continuous_cheat_num == 2:
+            self.public_state.is_response          = False
+            self.public_state.continuous_cheat_num = 0
         else:
             self.public_state.is_response = True
 
@@ -184,6 +189,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
                 players[i].receive_info(infos[i])
 
         return public_state.scores
+
 
 
 
@@ -260,7 +266,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
             ### action with cards
             mCardss = []
-            mCardss = DouDiZhuPokerEnv.extractMasterCards(person_state.hand_cards, numMasterPoint, MasterCount, pattern)
+            mCardss = DouDiZhuPokerEnv.extractMasterCards(person_state.hand_cards,  pattern)
 
             for mCards in mCardss:
                 if numSlave == 0:
@@ -270,7 +276,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
                         actions[action_key] = action
                     continue
 
-                sCardss = DouDiZhuPokerEnv.extractSlaveCards(person_state.hand_cards, numSlave, mCards, pattern)
+                sCardss = DouDiZhuPokerEnv.extractSlaveCards(person_state.hand_cards, mCards, pattern)
                 for sCards in sCardss:
                     action_key  = DouDiZhuPokerAction.master_slave_cards_to_key(mCards, sCards)
                     action      = DouDiZhuPokerAction.lookup(action_key)
@@ -282,6 +288,13 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_valid(cls,action, public_state, person_state):
+        '''
+        print "is_action_valid_______________________________________________________________"
+        print public_state.turn
+        print person_state.hand_cards.num_cards
+        print person_state.hand_cards.key
+        print action.key
+        '''
 
         if action.pattern[0] == "i_invalid":
             return False
@@ -333,13 +346,15 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
 
     @classmethod
-    def extractMasterCards(cls, hand_cards, numPoint, count, pattern):
+    def extractMasterCards(cls, hand_cards, pattern):
         is_straight = pattern[3]
         cardss = []
         ss = []
 
-        if numPoint == 0:
+        numPoint = pattern[2]
+        if numPoint <= 0:
             return cardss
+        count = pattern[1]/numPoint
 
         if is_straight == 1:
             c = 0
@@ -371,7 +386,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         return cardss
 
     @classmethod
-    def extractSlaveCards(cls, hand_cards, numCards, used_cards, pattern):
+    def extractSlaveCards(cls, hand_cards, used_cards, pattern):
         used = [0 for i in range(15)]
         for p in used_cards:
             used[p] += 1
@@ -387,18 +402,18 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         if numMaster / numMasterPoint == 3:
             if numSlave / numMasterPoint == 1:  # single
                 for c in range(len(hand_cards.cards)):
-                    if used[c] == 0 and ((hand_cards.cards[c] - used[c])) >= 1:
+                    for i in range(hand_cards.cards[c] - used[c]):
                         candidates.append(c)
-                if len(candidates) >= numCards:
-                    res1 = list(set(list(itertools.combinations(candidates, numCards))))
+                if len(candidates) >= numSlave:
+                    res1 = list(set(list(itertools.combinations(candidates, numSlave))))
                 for sCard in res1:  res.append([x for x in sCard])
 
             elif numSlave / numMasterPoint == 2:  # pair
                 for c in range(len(hand_cards.cards)):
-                    if (hand_cards.cards[c] - used[c]) >= 2 and used[c] == 0:
+                    for i in range ((hand_cards.cards[c] - used[c])/2) :
                         candidates.append(c)
-                if len(candidates) >= numCards / 2:
-                    res1 = list(set(list(itertools.combinations(candidates, int(numCards / 2)))))
+                if len(candidates) >= numSlave / 2:
+                    res1 = list(set(list(itertools.combinations(candidates, int(numSlave / 2)))))
                 for sCard in res1:
                     tmp = [x for x in sCard]
                     tmp.extend([x for x in sCard])
@@ -408,19 +423,19 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
             if numSlave / numMasterPoint == 2:  # single
                 for c in range(len(hand_cards.cards)):
-                    if used[c] == 0 and (hand_cards.cards[c] - used[c]) >= 1:
+                    for i in range(hand_cards.cards[c] - used[c]):
                         candidates.append(c)
-                if len(candidates) >= numCards:
-                    res1 = list(set(list(itertools.combinations(candidates, numCards))))
+                if len(candidates) >= numSlave:
+                    res1 = list(set(list(itertools.combinations(candidates, numSlave))))
                 for sCard in res1:  res.append([x for x in sCard])
 
 
             elif numSlave / numMasterPoint == 4:  # pair
                 for c in range(len(hand_cards.cards)):
-                    if (hand_cards.cards[c] - used[c]) >= 2 and used[c] == 0:
+                    for i in range((hand_cards.cards[c] - used[c])/2):
                         candidates.append(c)
-                if len(candidates) >= numCards / 2:
-                    res1 = list(set(list(itertools.combinations(candidates, int(numCards / 2)))))
+                if len(candidates) >= numSlave / 2:
+                    res1 = list(set(list(itertools.combinations(candidates, int(numSlave / 2)))))
                 for sCard in res1:
                     tmp = [x for x in sCard]
                     tmp.extend([x for x in sCard])
@@ -428,3 +443,107 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
         return res
 
+
+    @classmethod
+    def available_actions_generate_all(cls):
+        public_state = DouDiZhuPublicState()
+        person_state = DouDiZhuPersonState()
+        public_state.is_response    = False
+        person_state.hand_cards     = DouDiZhuHandCards("")
+        for i in range(13):
+            for j in range(4):
+                person_state.hand_cards.add_cards(DouDiZhuActionElement.rank_to_str[i])
+        person_state.hand_cards.add_cards(DouDiZhuActionElement.rank_to_str[DouDiZhuActionElement.r])
+        person_state.hand_cards.add_cards(DouDiZhuActionElement.rank_to_str[DouDiZhuActionElement.R])
+        action_candidate_patterns = dict()
+
+
+        patterns = []
+        if public_state.phase == 0:
+            patterns.append(AllPatterns["i_cheat"])
+            patterns.append(AllPatterns["i_bid"])
+        else:
+            if public_state.is_response == False:
+                for p in AllPatterns:
+                    if p != "i_cheat" and p != "i_invalid":
+                        patterns.append(AllPatterns[p])
+            else:
+                patterns.append(public_state.license_action.pattern)
+                if public_state.license_action.pattern[6] == 1:
+                    patterns.append(AllPatterns["p_4_1_0_0_0"])  # rank = 10
+                    patterns.append(AllPatterns["x_rocket"])  # rank = 100
+                if public_state.license_action.pattern[6] == 10:
+                    patterns.append(AllPatterns["x_rocket"])  # rank = 100
+                patterns.append(AllPatterns["i_cheat"])
+
+
+        actions = dict()
+
+        for pattern in patterns:
+            numMaster = pattern[1]
+            numMasterPoint = pattern[2]
+            isStraight = pattern[3]
+            numSlave = pattern[4]
+            MasterCount = -1
+            SlaveCount = -1
+
+            if numMaster > 0:
+                MasterCount = int(numMaster / numMasterPoint)
+
+            if "i_invalid" == pattern[0]:
+                continue
+
+            if "i_cheat" == pattern[0]:
+                action_key = DouDiZhuPokerAction.master_slave_cards_to_key([DouDiZhuActionElement.cheat], [])
+                if action_key not in action_candidate_patterns:
+                    action_candidate_patterns[action_key] = dict()
+                action_candidate_patterns[action_key][pattern[0]] = 1
+
+                continue
+
+            if "i_bid" == pattern[0]:
+                action_key = DouDiZhuPokerAction.master_slave_cards_to_key([DouDiZhuActionElement.bid], [])
+                if action_key not in action_candidate_patterns:
+                    action_candidate_patterns[action_key] = dict()
+                action_candidate_patterns[action_key][pattern[0]] = 1
+                continue
+
+            if pattern[0] == "x_rocket":
+                if person_state.hand_cards.cards[DouDiZhuActionElement.r] == 1 and \
+                                person_state.hand_cards.cards[DouDiZhuActionElement.R] == 1:
+                    action_key  = DouDiZhuPokerAction.master_slave_cards_to_key([DouDiZhuActionElement.r, DouDiZhuActionElement.R], [])
+                    if action_key not in action_candidate_patterns:
+                        action_candidate_patterns[action_key] = dict()
+                    action_candidate_patterns[action_key][pattern[0]] = 1
+                continue
+
+            if pattern[1] + pattern[4] > person_state.hand_cards.num_cards:
+                continue
+            sum1 = 0
+
+            for count in range(MasterCount, 5, 1):
+                sum1 += person_state.hand_cards.count2num[count]
+            if sum1 < numMasterPoint:
+                continue
+
+            ### action with cards
+            mCardss = []
+            mCardss = DouDiZhuPokerEnv.extractMasterCards(person_state.hand_cards,  pattern)
+
+            for mCards in mCardss:
+                if numSlave == 0:
+                    action_key   = DouDiZhuPokerAction.master_slave_cards_to_key(mCards, [])
+                    #print action_key,pattern[0]
+                    if action_key not in action_candidate_patterns:
+                        action_candidate_patterns[action_key] = dict()
+                    action_candidate_patterns[action_key][pattern[0]] = 1
+                    continue
+
+                sCardss = DouDiZhuPokerEnv.extractSlaveCards(person_state.hand_cards, mCards, pattern)
+                for sCards in sCardss:
+                    action_key  = DouDiZhuPokerAction.master_slave_cards_to_key(mCards, sCards)
+                    #print action_key,pattern[0]
+                    if action_key not in action_candidate_patterns:
+                        action_candidate_patterns[action_key] = dict()
+                    action_candidate_patterns[action_key][pattern[0]] = 1
+        return action_candidate_patterns
