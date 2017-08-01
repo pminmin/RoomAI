@@ -11,7 +11,7 @@ class KuhnPokerAction(roomai.common.AbstractAction):
         if key == "bet": self.__key = KuhnPokerAction.bet
         elif key == "check":self.__key = KuhnPokerAction.check
         else:
-            raise KeyError("%s is invalid key for Kuhn Action"%(key))
+            raise KeyError("%s is invalid key for Kuhn DouDiZhuPokerAction"%(key))
 
     @property
     def key(self):
