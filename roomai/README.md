@@ -1,7 +1,7 @@
 
 #  RoomAI Tutorials
 
-## Basic Concepts
+## Summary
 
 
 There are some basic concepts in RoomAI: Player, Env, Info and DouDiZhuPokerAction. The basic procedure of a competition is shown as follows. All AI-bot players receive information from env, the current player takes a action, and the env forwards with this action.
