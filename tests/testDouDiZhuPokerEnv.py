@@ -10,10 +10,6 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
     def testNormal(self):
         env = DouDiZhuPokerEnv()
 
-        p = []
-        with self.assertRaises(Exception):
-            env.init(p)
-
 
         p = [0,0,0]
         env.init()
@@ -102,6 +98,8 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
         print env.person_states[0].hand_cards.num_cards
         print env.person_states[1].hand_cards.key
         print env.person_states[2].hand_cards.key
+        print type(infos[0].person_state)
+        print infos[0].person_state.hand_cards.key
 
         ## 4 turn = 0 license_id = 2
         self.assertEqual(env.public_state.turn,0)

@@ -62,15 +62,15 @@ class KuhnPokerPersonState(roomai.common.AbstractPersonState):
         self.id                 = 1
         self.card               = 0
 
-    def __deepcopy__(self, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None):
         copy                   = KuhnPokerPersonState()
         copy.id                = self.id
         copy.card              = self.card
         copy.available_actions = dict()
 
         if self.available_actions is None:
-            self.available_actions = None
+            copy.available_actions = None
         else:
             for action_key in self.available_actions:
                 copy.available_actions[action_key] = self.available_actions[action_key].__deepcopy__()
-            return copy
+        return copy

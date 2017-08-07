@@ -78,7 +78,7 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
 
     @classmethod
     def lookup(cls, key):
-        return AllActions[key]
+        return AllActions["".join(sorted(key))]
 
     @classmethod
     def master_slave_cards_to_key(cls, masterCards, slaveCards):
@@ -167,7 +167,7 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
                     self.__pattern = AllPatterns["i_invalid"]
 
     def __deepcopy__(self, memodict={}, newinstance = None):
-        self.lookup(self.key)
+        return self.lookup(self.key)
 
 
 
