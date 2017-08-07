@@ -4,12 +4,12 @@
 ######################################################################### Basic Concepts #####################################################
 class AbstractPublicState(object):
     def __init__(self):
-        self.turn            = 0
-        self.previous_id     = 0
+        self.turn            = None
+        self.previous_id     = None
         self.previous_action = None
 
         self.is_terminal     = False
-        self.scores          = []
+        self.scores          = None
 
     def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is  None:

@@ -38,7 +38,9 @@ We define these basic concepts as classes in [roomai/common/common.py](https://g
 
 #### 1. Info
 
-Info is the information sent by env to player. Info is consisted of private_state、 public_state and person_state. 
+Info is the information sent by env to Player. Info is consisted of Public_State and Person_State.  Private_State contains information, which is hidden from all players.
+There are same Person_States, each one corresponding to a player. Person_State contains information, which is available for the corresponding player and hidden from other players. Public_State contains information, which is
+available for all players.
 
 <pre>
 
@@ -46,24 +48,38 @@ class AbstractPrivateState:
     pass
     
 class AbstractPublicState:
-    turn            = 0
-    previous_id     = 0
-    previous_action = None
+    turn            = None
+    ## players[turn] is expected to take an action
+    ## for example, turn = 0 means the player0 is expected to take an action
 
-    is_terminal     = False
-    scores          = []
+    self.previous_id        = None
+    self.previous_action    = None
+    ## players[previous_id] took the previous_action just before this action
+    ## These are history records
+    ## In the beginning of the game, previous_id and previous_action = None
+
+    self.is_terminal         = None
+    self.scores              = None
+    ## is_terminal = true means the game is over. At this time, scores is not None
+    ## when is_terminal = true,  scores = [float0, float1, ..., float_n].
+    ## when is_terminal = false, scores = None
+
+
 
 class AbstractPersonState:
-    id                = 0 
-    # if avilable_actions is non-None, it is a dict with (action_key, action) 
-    available_actions = dict() 
+    id                = None
+    ## id = 0 means the player receiving this Person_State is players[0]
+
+    available_actions = None
+    ## If the corresponding player is expected to take a action, available_actions is a dict with (action_key, action)
+    ## Otherwise, available_actions is None
 
 class Info:
     public_state       = None
     person_state       = None
 </pre>
 
-Infos sent to different players are different. They contain the same public states and different person states. Only the person_state in the Info w.r.t the player who will take a action, contains non-None available_actions dict. 
+Infos sent to different players are different. They contain the same public states and different person states. Only the person_state in the Info w.r.t the player who will take a action, contains non-None available_actions dict.
 
 The private_state isn't in any Info, hence no player can access it.
 
@@ -120,12 +136,19 @@ class AbstractEnv:
         raise NotImplementedError("The forward function hasn't been implemented")
 
 
+    #########  Some Utils Function
     @classmethod
     def compete(cls, env, players):
+        '''
+        holds a competition for the players, and computes the scores.
+        '''
         raise NotImplementedError("The round function hasn't been implemented")
 
     @classmethod
     def available_actions(cls, public_state, person_state):
+        '''
+        :return all available_actions
+        '''
         raise NotImplementedError("The available_actions function hasn't been implemented")
 
     @classmethod
@@ -135,14 +158,11 @@ class AbstractEnv:
 </pre>
 
 
+## Details of different games
 
-The compete function holds a competition for the players, and computes the scores.
-
-## List of different games
-
-If you want to develop an AI-bot for a particular game, you need to know the structure of Info and action in this game. 
+If you want to develop an AI-bot for a particular game, you need to know the details of this game.
 For example,  if you want to deveop an AI for TexasHoldem, you need to know where to find your hand cards.
-We list this thing as follows.
+We list details of different games as follows.
 
 - [KuhnPoker](https://github.com/roomai/RoomAI/blob/master/roomai/kuhn/README.md)
 - [FiveCardStud](https://github.com/roomai/RoomAI/blob/master/roomai/fivecardstud/README.md)
