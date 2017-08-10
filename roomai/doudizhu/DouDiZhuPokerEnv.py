@@ -441,7 +441,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
     def action_priority(cls,action1, action2):
         count1 = action1.pattern[1] / action1.pattern[2]
         count2 = action2.pattern[1] / action2.pattern[2]
-        if count1 != count1:
+        if count1 != count2:
             return count1 - count2
 
         numMaster1 = action1.pattern[1]

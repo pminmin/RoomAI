@@ -34,4 +34,9 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
             if "p" in p[0]:
                 self.assertEqual("p_%d_%d_%d_%d_%d"%(p[1],p[2],p[3],p[4],p[5]), p[0])
 
-         
+    def testActions(self):
+        from roomai.doudizhu.DouDiZhuPokerAction import  DouDiZhuPokerAction as Action
+        a = Action.lookup("3333")
+
+        print a.pattern
+        assert(a.pattern[0] == "p_4_1_0_0_0")
