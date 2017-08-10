@@ -71,7 +71,8 @@ class AbstractPersonState:
     ## id = 0 means the player receiving this Person_State is players[0]
 
     available_actions = None
-    ## If the corresponding player is expected to take a action, available_actions is a dict with (action_key, action)
+    ## If the corresponding player is expected to take a action,
+    ## then available_actions is a dict with (action_key, action)
     ## Otherwise, available_actions is None
 
 class Info:
@@ -79,7 +80,8 @@ class Info:
     person_state       = None
 </pre>
 
-Infos sent to different players are different. They contain the same public states and different person states. Only the person_state in the Info w.r.t the player who will take a action, contains non-None available_actions dict.
+Infos sent to different players are different. They contain the same public states and different person states. 
+Only the person_state in the Info w.r.t the player who will take a action, contains non-None available_actions dict.
 
 The private_state isn't in any Info, hence no player can access it.
 
@@ -129,6 +131,12 @@ class AbstractEnv:
         '''
         ... // The backward function has been implemented
 
+    def init(self):
+        '''
+        :return: infos, public_state, person_states, private_state
+        '''
+        raise NotImplementedError("The init function hasn't been implemented")
+        
     def forward(self, action):
         '''
         :return:infos, public_state, person_states, private_state 
