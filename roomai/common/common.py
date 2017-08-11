@@ -4,14 +4,14 @@
 ######################################################################### Basic Concepts #####################################################
 class AbstractPublicState(object):
     def __init__(self):
-        self.turn            = 0
-        self.previous_id     = 0
+        self.turn            = None
+        self.previous_id     = None
         self.previous_action = None
 
         self.is_terminal     = False
-        self.scores          = []
+        self.scores          = None
 
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is  None:
             newinstance = AbstractPublicState()
         newinstance.turn             = self.turn
@@ -52,7 +52,7 @@ class Info(object):
     def __init__(self):
         self.public_state       = AbstractPublicState()
         self.person_state       = AbstractPersonState()
-    def __deepcopy__(self, newinstance = None, memodict={}):
+    def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
             newinstance = Info()
         newinstance.public_state = self.public_state.__deepcopy__()
@@ -66,6 +66,9 @@ class AbstractAction(object):
     @property
     def key(self):
         return self.__key
+
+    def lookup(self, key):
+        raise NotImplementedError("Not implemented")
 
     def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
@@ -99,13 +102,16 @@ class AbstractPlayer(object):
 
 
 class AbstractEnv(object):
-    public_state          = AbstractPublicState()
-    private_state         = AbstractPrivateState()
-    person_states         = [AbstractPrivateState()]
-
-    public_state_history  = []
+    public_state_history = []
     private_state_history = []
     person_states_history = []
+
+    def __init__(self):
+        self.public_state = AbstractPublicState()
+        self.private_state = AbstractPrivateState()
+        self.person_states = [AbstractPrivateState()]
+
+
 
     def __gen_infos__(self):
         num_players = len(self.person_states)
@@ -171,6 +177,7 @@ class AbstractEnv(object):
     @classmethod
     def is_action_valid(cls, action, public_state, person_state):
         '''
+        :param action
         :param public_state: 
         :param person_state: 
         :return: is  the action valid
@@ -223,6 +230,13 @@ class PokerCard(object):
         return self.__suit_str
 
     @property
+    def point_rank(self):
+        return point_str_to_rank[self.__point_str]
+    @property
+    def suit_rank(self):
+        return
+
+    @property
     def key(self):
         return self.__key
 
@@ -250,6 +264,8 @@ class PokerCard(object):
         if newinstance is None:
             newinstance = AllPokerCards[self.key]
         return newinstance
+    def lookup(self, key):
+        AllPokerCards[key]
 
 AllPokerCards = dict()
 for point_str in point_str_to_rank:

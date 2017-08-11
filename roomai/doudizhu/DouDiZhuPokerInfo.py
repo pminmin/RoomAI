@@ -73,10 +73,18 @@ class DouDiZhuHandCards:
         self.remove_cards(DouDiZhuHandCards(str))
         self.__key = self.compute_key()
 
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        return DouDiZhuHandCards(self.key)
 
 class DouDiZhuPrivateState(roomai.common.AbstractPrivateState):
     def __init__(self):
         self.keep_cards = []
+
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        if newinstance is None:
+            newinstance = DouDiZhuPrivateState()
+        newinstance.keep_cards = self.keep_cards.__deepcopy__()
+        return newinstance
 
 
 class DouDiZhuPublicState(roomai.common.AbstractPublicState):
@@ -97,11 +105,59 @@ class DouDiZhuPublicState(roomai.common.AbstractPublicState):
         self.previous_id = -1
         self.previous_action = None
 
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        if newinstance is None:
+            newinstance = DouDiZhuPublicState()
+        newinstance = super(DouDiZhuPublicState, self).__deepcopy__(newinstance=newinstance)
+
+        newinstance.landlord_candidate_id = self.landlord_candidate_id
+        newinstance.landlord_id = self.landlord_id
+        newinstance.license_playerid = self.license_playerid
+        if self.license_action is None:
+            newinstance.license_action  = None
+        else:
+            newinstance.license_action = self.license_action.__deepcopy__()
+        newinstance.continuous_cheat_num = self.continuous_cheat_num
+        newinstance.is_response = self.is_response
+
+        if self.keep_cards == None:
+            newinstance.keep_cards = None
+        else:
+            newinstance.keep_cards = self.keep_cards.__deepcopy__()
+
+        newinstance.first_player = self.first_player
+        newinstance.turn  = self.turn
+        newinstance.phase = self.phase
+        newinstance.epoch = self.epoch
+
+        newinstance.previous_id = self.previous_id
+        if self.previous_action is None:
+            newinstance.previous_action = None
+        else:
+            newinstance.previous_action = self.previous_action.__deepcopy__()
+
+        return newinstance
 
 class DouDiZhuPersonState(roomai.common.AbstractPersonState):
     def __init__(self):
         self.id                = None
         self.hand_cards        = None
         self.available_actions = dict()
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        if newinstance is None:
+            newinstance = DouDiZhuPersonState()
+        newinstance.id = self.id
 
+        if self.hand_cards is None:
+            newinstance.hand_cards = None
+        else:
+            newinstance.hand_cards = self.hand_cards.__deepcopy__()
+
+        if self.available_actions is None:
+            newinstance.available_actions = None
+        else:
+            newinstance.available_actions = dict()
+            for str in self.available_actions:
+                newinstance.available_actions[str] = self.available_actions[str]
+        return newinstance
 

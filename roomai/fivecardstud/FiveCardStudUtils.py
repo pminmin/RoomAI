@@ -36,6 +36,10 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
             newinstance = FiveCardStudAllPokerCards[self.key]
         return newinstance
 
+    @classmethod
+    def lookup(cls, key):
+        return FiveCardStudAllPokerCards[key]
+
 
 FiveCardStudAllPokerCards = dict()
 for point_str in roomai.common.common.point_str_to_rank:

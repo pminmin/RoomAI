@@ -1,6 +1,7 @@
 #!/bin/python
 import roomai.common
 import roomai.sevenking
+from roomai.sevenking import AllSevenKingPatterns
 
 
 class SevenKingAction(roomai.common.AbstractAction):
@@ -16,7 +17,13 @@ class SevenKingAction(roomai.common.AbstractAction):
             for c in self.key.split(","):
                 self.__cards.append(roomai.sevenking.SevenKingPokerCard(c))
             self.__cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
-        self.__pattern = roomai.sevenking.SevenKingEnv.action2pattern(self)
+        self.__pattern = self.action2pattern(self)
+
+    @classmethod
+    def action2pattern(cls, action):
+        ###numCards
+        num_cards  = len(action.cards)
+        return AllSevenKingPatterns["p_%d"%(num_cards)]
 
     @property
     def key(self):

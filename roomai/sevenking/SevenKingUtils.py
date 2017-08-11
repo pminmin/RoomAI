@@ -1,6 +1,16 @@
 #!/bin/python
 import roomai.common
 
+AllSevenKingPatterns = dict()
+###
+###numCards
+AllSevenKingPatterns["p_0"] = ("p_0", 0) ## check
+AllSevenKingPatterns["p_1"] = ("p_1", 1)
+AllSevenKingPatterns["p_2"] = ("p_2", 2)
+AllSevenKingPatterns["p_3"] = ("p_3", 3)
+AllSevenKingPatterns["p_4"] = ("p_4", 4)
+
+
 point_str_to_rank  = {'7':14, 'R':13, 'r':12, '5':11,  '2':10,  '3':9,  'A':8,  'K':7,\
                       'Q':6,  'J':5,   'T':4,   '9':3,   '8':2,   '6':1,   '4':0}
 point_rank_to_str  = {14:'7', 13:'R', 12:'r',  11:'5', 10:'2',  9:'3',  8:'A',   7:'K',\
@@ -9,10 +19,14 @@ suit_str_to_rank   = {'Spade':3, 'Heart':2, 'Diamond':1, 'Club':0,  'ForKing':4}
 suit_rank_to_str   = {3:'Spade', 2: 'Heart', 1: 'Diamond', 0:'Club', 4:'ForKing'}
 
 class SevenKingPokerCard(roomai.common.PokerCard):
-    def get_point_rank(self):
+    @property
+    def point_rank(self):
         return point_str_to_rank[self.point_str]
-    def get_suit_rank(self):
+    @property
+    def suit_rank(self):
         return suit_str_to_rank[self.suit_str]
+    def lookup(cls, key):
+        return AllSevenKingPokerCards[key]
     def __deepcopy__(self,  memodict={}, newinstance = None):
         if newinstance is None:
             newinstance = AllSevenKingPokerCards[self.key]
