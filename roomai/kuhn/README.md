@@ -47,3 +47,24 @@ class KuhnPokerPersonState(roomai.abstract.AbstractPersonState):
         ## card = 0 or card = 1 or card = 2. (card is in [0,1,2])
 
 </pre>
+
+The initilization parameters of Kuhn Env.
+
+<pre>
+class KuhnPokerEnv(roomai.common.AbstractEnv)
+    def init(self, params=dict()):
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+        # record_history must be true, when you need call backward
+
+        if "start_turn" in params:
+            self.start_turn = params["start_turn"]
+        else:
+            self.start_turn = int(random.random() * 2)
+        # players[start_turn] is the first player to take a action
+     
+        ... ...
+</pre>

@@ -106,3 +106,32 @@ class SevenKingPublicState(roomai.common.AbstractPublicState):
         self.license_action   = None
         ### for example, self.license_action =  roomai.sevenking.SevenKingAction.lookup("A_Spade")
 </pre>
+
+The initilization parameters of SevenKing Env.
+
+<pre>
+class KuhnPokerEnv(roomai.common.AbstractEnv)
+    def init(self, params=dict()):
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+        # record_history must be true, when you need call backward
+
+
+        if "num_players" in params:
+            self.num_players = params["num_players"]
+        else:
+            self.num_players = 3
+        # how many players in this game
+
+        if "allcards" in params:
+            allcards =  [c.__deepcopy__() for c in params["allcards"]]
+        else:
+            allcards =  [c.__deepcopy__() for c in AllSevenKingPokerCards.values()]
+            random.shuffle(allcards)
+        # The poker cards used in this game is from the allcards (from tail to head)
+        
+        ... ...
+</pre>

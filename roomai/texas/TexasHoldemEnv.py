@@ -23,7 +23,6 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         return True
 
-    # Before init, you need set the num_players, dealer_id, and chips
     #@override
     def init(self, params = dict()):
         self.logger         = roomai.get_logger()

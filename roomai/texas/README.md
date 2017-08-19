@@ -4,6 +4,9 @@
 Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of the card game of poker. Two cards, known as the hole cards, are dealt face down to each player, and then five community cards are dealt face up in three stages. The stages consist of a series of three cards ("the flop"), later an additional single card ("the turn" or "fourth street") and a final card ("the river" or "fifth street"). Each player seeks the best five card poker hand from the combination of the community cards and their own hole cards. If a player's best five card poker hand consists only of the five community cards and none of the player's hole cards, it is called "playing the board". Players have betting options to check, call, raise or fold. Rounds of betting take place before the flop is dealt, and after each subsequent deal.
 You can see details of TexasHoldEm Poker in [Wikipedia](https://en.wikipedia.org/wiki/Texas_hold_%27em).
 
+
+#### Action and Action Related Concepts
+
 In TexasHoldEm Poker, the action has two parts: option (action type) and price (count of chips).
 The option has five types: Fold,Check,Call,Raise and Allin. The prices for Fold must be zero. The basic usage is as follows:
 <pre>
@@ -35,7 +38,8 @@ The basic usage is as follows:
 </pre>
 
 
-The structure of Info in TexasHoldEm.
+
+#### The structure of Info in TexasHoldEm.
 
 <pre>
 class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
@@ -116,4 +120,51 @@ class TexasHoldemPersonState(roomai.abstract.AbstractPersonState):
 
 
 
+</pre>
+
+#### initilization parameters
+
+The Env can be initilizated with parameters with env.init(params). The meanings of 
+initilization parameters are showed as follows.
+
+<pre>
+class TexasHoldemEnv(roomai.common.AbstractEnv):
+    def init(self, params = dict()):
+        self.logger         = roomai.get_logger()
+
+        if "num_players" in params:
+            self.num_players = params["num_players"]
+        else:
+            self.num_players = 3
+
+        if "dealer_id" in params:
+            self.dealer_id = params["dealer_id"]
+        else:
+            self.dealer_id = int(random.random() * self.num_players)
+
+        if "chips" in params:
+            self.chips     = params["chips"]
+        else:
+            self.chips     = [1000 for i in range(self.num_players)]
+
+        if "big_blind_bet" in params:
+            self.big_blind_bet = params["big_blind_bet"]
+        else:
+            self.big_blind_bet = 10
+
+        if "allcards" in params:
+            self.allcards = [c.__deepcopy__() for c in params["allcards"]]
+        else:
+            self.allcards = []
+            for i in xrange(13):
+                for j in xrange(4):
+                    self.allcards.append(roomai.common.PokerCard(i, j))
+            random.shuffle(self.allcards)
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+            
+        ...
 </pre>
