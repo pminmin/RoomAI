@@ -67,6 +67,7 @@ class AbstractAction(object):
     def key(self):
         return self.__key
 
+    @classmethod
     def lookup(self, key):
         raise NotImplementedError("Not implemented")
 

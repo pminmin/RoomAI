@@ -7,7 +7,7 @@ class HumanInputPlayer(roomai.sevenking.SevenKingRandomPlayer):
         available_actions = info
     def take_action(self):
         action = input("choosed_acton:")
-        #action = "A_Heart"
+        #action = ""
         return roomai.sevenking.SevenKingAction.lookup(action)
     def reset(self):
         pass
@@ -17,7 +17,7 @@ class HumanInputPlayer1(roomai.sevenking.SevenKingRandomPlayer):
         available_actions = info
     def take_action(self):
         action = input("choosed_acton:")
-        #action = "K_Heart"
+        #action = ""
         return roomai.sevenking.SevenKingAction.lookup(action)
     def reset(self):
         pass
@@ -32,7 +32,7 @@ def show(info):
 if __name__ == "__main__":
     players     = [HumanInputPlayer(), HumanInputPlayer1()]
     env         = roomai.sevenking.SevenKingEnv()
-    allcards    = roomai.sevenking.AllSevenKingPokerCards.values()
+    allcards    = roomai.sevenking.AllSevenKingPokerCards.values()[0:17]
     allcards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
 
     tmp          = allcards[-6]
@@ -55,6 +55,7 @@ if __name__ == "__main__":
 
     while public_state.is_terminal == False:
         turn = public_state.turn
+        print "turn = %d, stage = %d"%(public_state.turn,public_state.stage)
         action = players[turn].take_action()
         print "%d player take an action (%s)"%(turn,action.key)
         infos, public_state, person_states, private_state = env.forward(action)

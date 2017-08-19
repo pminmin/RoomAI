@@ -80,7 +80,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         self.public_state.big_blind_bet         = self.big_blind_bet
         self.public_state.raise_account         = self.big_blind_bet
 
-        self.public_state.is_quit               = [False for i in xrange(self.num_players)]
+        self.public_state.is_fold               = [False for i in xrange(self.num_players)]
         self.public_state.num_quit              = 0
         self.public_state.is_allin              = [False for i in xrange(self.num_players)]
         self.public_state.num_allin             = 0
@@ -185,8 +185,6 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             pu.public_cards = pr.keep_cards[0:5]
             pu.is_terminal  = True
             pu.scores       = self.compute_scores()
-            pu.turn                                             = None
-            pe[self.public_state.previous_id].available_actions = None
 
 
         # enter into the next stage
@@ -202,7 +200,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             pu.num_needed_to_action       = 0
             pu.is_needed_to_action        = [False for i in xrange(pu.num_players)]
             for i in xrange(pu.num_players):
-                if pu.is_quit[i] != True and pu.is_allin[i] != True:
+                if pu.is_fold[i] != True and pu.is_allin[i] != True:
                     pu.is_needed_to_action[i]      = True
                     pu.num_needed_to_action       += 1
 
@@ -303,7 +301,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         if pu.num_players  ==  pu.num_quit + 1:
             scores = [0 for i in xrange(pu.num_players)]
             for i in xrange(pu.num_players):
-                if pu.is_quit[i] == False:
+                if pu.is_fold[i] == False:
                     scores[i] = sum(pu.bets)
                     break
 
@@ -312,7 +310,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             scores                = [0 for i in xrange(pu.num_players)]
             playerid_pattern_bets = [] #for not_quit players
             for i in xrange(pu.num_players):
-                if pu.is_quit[i] == True: continue
+                if pu.is_fold[i] == True: continue
                 hand_pattern = self.cards2pattern(pr.hand_cards[i], pr.keep_cards)
                 playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
             playerid_pattern_bets.sort(key=lambda x:x[1], cmp=self.compare_patterns)
@@ -368,7 +366,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     def action_fold(self, action):
         pu = self.public_state
-        pu.is_quit[pu.turn]             = True
+        pu.is_fold[pu.turn]             = True
         pu.num_quit                    += 1
 
         pu.is_needed_to_action[pu.turn] = False
@@ -399,7 +397,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         pu.num_needed_to_action        -= 1
         p = (pu.turn + 1)%pu.num_players
         while p != pu.turn:
-            if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+            if pu.is_allin[p] == False and pu.is_fold[p] == False and pu.is_needed_to_action[p] == False:
                 pu.num_needed_to_action   += 1
                 pu.is_needed_to_action[p]  = True
             p = (p + 1) % pu.num_players
@@ -420,7 +418,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             pu.max_bet_sofar = pu.bets[pu.turn]
             p = (pu.turn + 1) % pu.num_players
             while p != pu.turn:
-                if pu.is_allin[p] == False and pu.is_quit[p] == False and pu.is_needed_to_action[p] == False:
+                if pu.is_allin[p] == False and pu.is_fold[p] == False and pu.is_needed_to_action[p] == False:
                     pu.num_needed_to_action  += 1
                     pu.is_needed_to_action[p] = True
                 p = (p + 1) % pu.num_players
@@ -697,7 +695,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         if (not isinstance(public_state, TexasHoldemPublicState)) or (not isinstance(action, TexasHoldemAction)):
             return False
 
-        if pu.is_allin[pu.turn] == True or pu.is_quit[pu.turn] == True:
+        if pu.is_allin[pu.turn] == True or pu.is_fold[pu.turn] == True:
             return False
         if pu.chips[pu.turn] == 0:
             return False

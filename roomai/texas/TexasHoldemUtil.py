@@ -38,8 +38,19 @@ class TexasHoldemAction(roomai.common.AbstractAction):
     def price(self):
         return self.__price
 
+    @classmethod
+    def lookup(cls, key):
+        if key not in AllTexasActions:
+            AllTexasActions[key] = TexasHoldemAction(key)
+        return AllTexasActions[key]
+
     def __deepcopy__(self, memodict={}, newinstance = None):
-        return TexasHoldemAction(self.key)
+        if self.key not in AllTexasActions:
+            AllTexasActions[self.key] = TexasHoldemAction(self.key)
+        return AllTexasActions[self.key]
+
+AllTexasActions = dict()
+
 
 class TexasHoldemPublicState(roomai.common.AbstractPublicState):
     def __init__(self):
@@ -51,7 +62,7 @@ class TexasHoldemPublicState(roomai.common.AbstractPublicState):
         self.big_blind_bet      = None
 
         #state of players
-        self.is_quit                        = None
+        self.is_fold                        = None
         self.num_quit                       = None
         self.is_allin                       = None
         self.num_allin                      = None
@@ -91,10 +102,10 @@ class TexasHoldemPublicState(roomai.common.AbstractPublicState):
 
             ######## quit, allin , needed_to_action
             copy.num_quit = self.num_quit
-            if self.is_quit is None:
-                copyinstance.is_quit = None
+            if self.is_fold is None:
+                copyinstance.is_fold = None
             else:
-                copyinstance.is_quit = [self.is_quit[i] for i in xrange(len(self.is_quit))]
+                copyinstance.is_fold = [self.is_fold[i] for i in xrange(len(self.is_fold))]
 
             copyinstance.num_allin = self.num_allin
             if self.is_allin is None:

@@ -11,7 +11,7 @@ import random
 
 import roomai.sevenking
 
-
+logger = roomai.get_logger()
 
 class SevenKingEnv(roomai.common.AbstractEnv):
 
@@ -209,7 +209,15 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_valid(self, action, public_state, person_state):
-        if action.pattern[0] == "p_0":  return True
+        license_action = public_state.license_action
+        if license_action is None:
+            license_action = SevenKingAction.lookup("")
+
+        if action.pattern[0] == "p_0":
+            if license_action.pattern[0] != "p_0":   return True
+            elif license_action.pattern[0] == "p_0":
+                logger.error("The p_0 type action is invalid in the begining of the game or after the previous player took the p_0 type action ")
+                return False
 
         ### is action from hand_cards
         hand_keys = dict()
@@ -228,10 +236,9 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 return False
 
         ## pattern
-        license_action = public_state.license_action
-        if license_action is None:
-            license_action = SevenKingAction.lookup("")
         if license_action.pattern[0] != "p_0" and license_action.pattern[0] != action.pattern[0]:
+            return False
+        if license_action.pattern[0] == "p_0" and action.pattern == "p_0":
             return False
 
 

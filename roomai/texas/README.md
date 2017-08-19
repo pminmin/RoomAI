@@ -48,9 +48,9 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.big_blind_bet      = None
 
 
-        self.is_quit                        = None
+        self.is_fold                        = None
         self.num_quit                       = None
-        #for example, is_quit = [False, True, False] (3 players)
+        #for example, is_fold = [False, True, False] (3 players)
         #for example, num_quit = 1
 
         self.is_allin                       = None

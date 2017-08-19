@@ -70,10 +70,9 @@ class TexasEnvTester(unittest.TestCase):
         # state:all,  q,  n
         print env.public_state.bets
         print env.public_state.is_allin
-        print env.public_state.is_quit
+        print env.public_state.is_fold
         print env.public_state.chips
         print env.public_state.turn
-        assert(env.public_state.turn is None)
         self.assertTrue(public_state.is_terminal)
         self.assertEqual(public_state.scores[0], 30.0/public_state.big_blind_bet)
         self.assertEqual(public_state.scores[1], -10.0/public_state.big_blind_bet)

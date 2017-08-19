@@ -83,6 +83,14 @@ class testSevenKing(unittest.TestCase):
         scores  = env.compete(env, players)
         print scores
 
+        self.assertEqual(scores[0],-1)
+        self.assertEqual(scores[1],-1)
+        self.assertEqual(scores[2],2)
+
     def testScores1(self):
-        env = SevenKingEnv
+        env = SevenKingEnv()
+        infos, public_state, person_states, private_state = env.init()
+
+        self.assertTrue("" not in infos[public_state.turn].person_state.available_actions)
+        self.assertFalse(env.is_action_valid(SevenKingAction.lookup(""),public_state, person_states[public_state.turn]))
 
