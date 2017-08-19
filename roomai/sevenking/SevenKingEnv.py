@@ -24,14 +24,16 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
         if "allcards" in params:
             allcards =  [c.__deepcopy__() for c in params["allcards"]]
-            random.shuffle(allcards)
         else:
             allcards =  [c.__deepcopy__() for c in AllSevenKingPokerCards.values()]
+            random.shuffle(allcards)
 
         if "record_history" in params:
             self.record_history = params["record_history"]
         else:
             self.record_history = False
+
+
 
 
         self.public_state  = SevenKingPublicState()
@@ -48,8 +50,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         for i in range(self.num_players):
             self.person_states[i].hand_cards = []
             for j in range(5):
-                c = self.private_state.keep_cards[-1]
-                self.private_state.keep_cards.pop()
+                c = self.private_state.keep_cards.pop()
                 self.person_states[i].hand_cards.append(c)
 
         ## public_state
@@ -155,7 +156,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         else:
             new_turn                        = (turn + 1) % pu.num_players
             pu.turn                         = new_turn
-            pes[new_turn].available_actions = SevenKingEnv.available_actions(self.public_state, self.person_states[new_turn])
+            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
 
 
 
@@ -351,7 +352,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                     if cls.is_action_valid(action, public_state, person_state) == True:
                         available_actions[action.key] = action
         else:
-            actions = cls.__gen_available_actions_with_pattern(hand_cards, AllSevenKingPatterns["p_0"])
+            actions = cls.__gen_available_actions_with_pattern(hand_cards, license_action.pattern)
             for action in actions:
                 if cls.is_action_valid(action, public_state, person_state) == True:
                     available_actions[action.key] = action

@@ -74,9 +74,6 @@ class testSevenKing(unittest.TestCase):
         for i in range(100):
             SevenKingEnv.compete(env, players)
 
-
-
-
     def testScores(self):
         env = SevenKingEnv()
         env.num_players = 3

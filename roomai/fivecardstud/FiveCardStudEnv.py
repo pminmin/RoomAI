@@ -49,6 +49,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         else:
             self.record_history = False
 
+
         FiveCardStudEnv.check_initialization_configuratioin(self)
 
         self.public_state   = FiveCardStudPublicState()

@@ -45,9 +45,10 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
 
     def __deepcopy__(self, memodict={}, newinstance = None):
         if newinstance is None:
-            newinstance = SevenKingPersonState()
-        newinstance           = super(SevenKingPersonState, self).__deepcopy__(newinstance= newinstance)
-        newinstance.hand_card = [card.__deepcopy__() for card in self.hand_cards]
-        #print newinstance.available_actions
+            newinstance        = SevenKingPersonState()
+        newinstance            = super(SevenKingPersonState, self).__deepcopy__(newinstance= newinstance)
+        newinstance.hand_cards = [card.__deepcopy__() for card in self.hand_cards]
         return newinstance
+
+
 

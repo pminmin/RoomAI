@@ -59,6 +59,10 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         else:
             self.record_history = False
 
+        if "start_turn" in params:
+            self.start_turn = params["start_turn"]
+        else:
+            self.start_turn = int(random.random() * 2)
 
         for i in range(3):
             tmp = self.cards[i*17:(i+1)*17]
@@ -68,10 +72,10 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         keep_cards = DouDiZhuHandCards([self.cards[-1], self.cards[-2], self.cards[-3]])
         self.private_state.keep_cards =  keep_cards;
         
-        self.public_state.firstPlayer       = int(random.random() * 3)
-        self.public_state.turn              = self.public_state.firstPlayer
-        self.public_state.phase             = 0
-        self.public_state.epoch             = 0
+        self.public_state.firstPlayer         = self.start_turn
+        self.public_state.turn                = self.public_state.firstPlayer
+        self.public_state.phase               = 0
+        self.public_state.epoch               = 0
         
         self.public_state.landlord_id         = -1
         self.public_state.license_playerid    = self.public_state.turn
