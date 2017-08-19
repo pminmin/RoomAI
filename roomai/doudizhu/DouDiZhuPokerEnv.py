@@ -41,24 +41,31 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
 
     #@Overide
-    def init(self, params = None):
+    def init(self, params = dict()):
 
-        ## init the info
-        
-        cards = []
-        for i in range(13):
-            for j in range(4):
-                cards.append(DouDiZhuActionElement.rank_to_str[i])
-        cards.append(DouDiZhuActionElement.rank_to_str[13])
-        cards.append(DouDiZhuActionElement.rank_to_str[14])
-        random.shuffle(cards)
+        if "allcards" in params:
+            self.allcards = [c for c in params["allcards"]]
+        else:
+            self.cards = []
+            for i in range(13):
+                for j in range(4):
+                    self.cards.append(DouDiZhuActionElement.rank_to_str[i])
+            self.cards.append(DouDiZhuActionElement.rank_to_str[13])
+            self.cards.append(DouDiZhuActionElement.rank_to_str[14])
+            random.shuffle(self.cards)
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+
 
         for i in range(3):
-            tmp = cards[i*17:(i+1)*17]
+            tmp = self.cards[i*17:(i+1)*17]
             tmp.sort()
             self.person_states[i].hand_cards = DouDiZhuHandCards("".join(tmp))
 
-        keep_cards = DouDiZhuHandCards([cards[-1], cards[-2], cards[-3]])
+        keep_cards = DouDiZhuHandCards([self.cards[-1], self.cards[-2], self.cards[-3]])
         self.private_state.keep_cards =  keep_cards;
         
         self.public_state.firstPlayer       = int(random.random() * 3)

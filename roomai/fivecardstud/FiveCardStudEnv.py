@@ -14,17 +14,42 @@ from FiveCardStudInfo   import FiveCardStudPrivateState
 from FiveCardStudAction import FiveCardStudAction
 
 class FiveCardStudEnv(roomai.common.AbstractEnv):
-    def __init__(self):
-        self.logger         = roomai.get_logger()
-        self.num_players    = 3
-        self.chips          = [500 for i in xrange(self.num_players)]
-        self.floor_bet      = 10
 
 
     #@override
-    def init(self):
-        if FiveCardStudEnv.is_valid_initialization(self) == False:
-            pass
+    def init(self, params = dict()):
+        self.logger         = roomai.get_logger()
+
+        if "num_players" in params:
+            self.num_players = params["num_players"]
+        else:
+            self.num_players = 3
+
+        if "chips" in params:
+            self.chips       = params["chips"]
+        else:
+            self.chips       = [500 for i in range(self.num_players)]
+
+        if "floor_bet" in params:
+            self.floor_bet   = params["floor_bet"]
+        else:
+            self.floor_bet   = 10
+
+        if "allcards" in params:
+            self.allcards    = params["allcards"]
+        else:
+            self.allcards = []
+            for i in xrange(13):
+                for j in xrange(4):
+                    self.allcards.append(FiveCardStudPokerCard(i, j))
+            random.shuffle(self.allcards)
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+
+        FiveCardStudEnv.check_initialization_configuratioin(self)
 
         self.public_state   = FiveCardStudPublicState()
         self.private_state  = FiveCardStudPrivateState()
@@ -34,15 +59,10 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         self.private_state_history = []
         self.person_states_history = []
 
-        ## initialize the cards
-        allcards = []
-        for i in xrange(13):
-            for j in xrange(4):
-                allcards.append(FiveCardStudPokerCard(i, j))
-        random.shuffle(allcards)
+
 
         ## private_state
-        self.private_state.all_hand_cards      = allcards[0: 5 * self.num_players]
+        self.private_state.all_hand_cards      = self.allcards[0: 5 * self.num_players]
 
         ## public_state
         self.public_state.num_players          = self.num_players
@@ -194,10 +214,10 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         total_count    = 1000
 
         for count in xrange(total_count):
-            env.chips       = [(100 +int(random.random()*500)) for i in xrange(len(players))]
-            env.num_players = len(players)
-            env.floor_bet   = 10
-            infos, public, persons, private = env.init()
+            chips       = [(100 +int(random.random()*500)) for i in xrange(len(players))]
+            num_players = len(players)
+            floor_bet   = 10
+            infos, public, persons, private = env.init({"num_players":num_players,"chips":chips, "floor_bet":10})
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
 
@@ -303,7 +323,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
 ############################################# Utils Function ######################################################
     @classmethod
-    def is_valid_initialization(cls, env):
+    def check_initialization_configuratioin(cls, env):
         if len(env.chips) != env.num_players:
             raise ValueError("len(env.chips)%d != env.num_players%d"%(len(env.chips), env.num_players))
 

@@ -14,9 +14,26 @@ import roomai.sevenking
 
 
 class SevenKingEnv(roomai.common.AbstractEnv):
-    num_players = 2
 
-    def init(self):
+    def init(self, params = dict()):
+
+        if "num_players" in params:
+            self.num_players = params["num_players"]
+        else:
+            self.num_players = 3
+
+        if "allcards" in params:
+            allcards =  [c.__deepcopy__() for c in params["allcards"]]
+            random.shuffle(allcards)
+        else:
+            allcards =  [c.__deepcopy__() for c in AllSevenKingPokerCards.values()]
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+
+
         self.public_state  = SevenKingPublicState()
         self.private_state = SevenKingPrivateState()
         self.person_states = [SevenKingPersonState() for i in range(self.num_players)]
@@ -26,8 +43,8 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         self.person_states_history = []
 
         ## private_state
-        self.private_state.keep_cards = [c.__deepcopy__() for c in AllSevenKingPokerCards.values()]
-        random.shuffle(self.private_state.keep_cards)
+        self.private_state.keep_cards = allcards
+
         for i in range(self.num_players):
             self.person_states[i].hand_cards = []
             for j in range(5):
@@ -172,8 +189,8 @@ class SevenKingEnv(roomai.common.AbstractEnv):
     @classmethod
     def compete(cls, env, players):
 
-        env.num_players = len(players)
-        infos, public_state, person_states, private_state = env.init()
+        num_players = len(players)
+        infos, public_state, person_states, private_state = env.init({"num_players":num_players})
         for i in range(env.num_players):
             players[i].receive_info(infos[i])
 

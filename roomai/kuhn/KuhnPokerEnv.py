@@ -8,7 +8,13 @@ import roomai.kuhn.KuhnPokerUtils
 class KuhnPokerEnv(roomai.common.AbstractEnv):
 
     #@override
-    def init(self):
+    def init(self, params=dict()):
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+
         self.available_action = dict()
         self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check").key] = roomai.kuhn.KuhnPokerAction.lookup("check")
         self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet").key]   = roomai.kuhn.KuhnPokerAction.lookup("bet")

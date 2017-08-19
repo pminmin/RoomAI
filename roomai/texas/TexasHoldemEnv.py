@@ -13,15 +13,8 @@ from TexasHoldemUtil import *
 
 class TexasHoldemEnv(roomai.common.AbstractEnv):
 
-    def __init__(self):
-        self.logger         = roomai.get_logger()
-        self.num_players    = 3 
-        self.dealer_id      = int(random.random() * self.num_players)
-        self.chips          = [1000 for i in xrange(self.num_players)]
-        self.big_blind_bet  = 10
-
     @classmethod
-    def is_valid_initialization(cls, env):
+    def check_initialization_configuration(cls, env):
         if len(env.chips) != env.num_players:
             raise ValueError("len(env.chips)%d != env.num_players%d" % (len(env.chips), env.num_players))
 
@@ -32,19 +25,50 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     # Before init, you need set the num_players, dealer_id, and chips
     #@override
-    def init(self):
+    def init(self, params = dict()):
+        self.logger         = roomai.get_logger()
 
-        self.is_valid_initialization(self)
+        if "num_players" in params:
+            self.num_players = params["num_players"]
+        else:
+            self.num_players = 3
 
-        allcards = []
-        for i in xrange(13):
-            for j in xrange(4):
-                allcards.append(roomai.common.PokerCard(i, j))
-        random.shuffle(allcards)
+        if "dealer_id" in params:
+            self.dealer_id = params["dealer_id"]
+        else:
+            self.dealer_id = int(random.random() * self.num_players)
+
+        if "chips" in params:
+            self.chips     = params["chips"]
+        else:
+            self.chips     = [1000 for i in range(self.num_players)]
+
+        if "big_blind_bet" in params:
+            self.big_blind_bet = params["big_blind_bet"]
+        else:
+            self.big_blind_bet = 10
+
+        if "allcards" in params:
+            self.allcards = [c.__deepcopy__() for c in params["allcards"]]
+        else:
+            self.allcards = []
+            for i in xrange(13):
+                for j in xrange(4):
+                    self.allcards.append(roomai.common.PokerCard(i, j))
+            random.shuffle(self.allcards)
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+
+
+        self.check_initialization_configuration(self)
+
         hand_cards       = []
         for i in xrange(self.num_players):
-              hand_cards.append(allcards[i*2:(i+1)*2])
-        keep_cards   = allcards[self.num_players*2:self.num_players*2+5]
+              hand_cards.append(self.allcards[i*2:(i+1)*2])
+        keep_cards   = self.allcards[self.num_players*2:self.num_players*2+5]
 
         ## public info
         small = (self.dealer_id + 1) % self.num_players
@@ -217,12 +241,15 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         for count in xrange(total_count):
 
-            env.chips          = [(1000 + int(random.random() * 200)) for i in xrange(len(players))]
-            env.num_players    = len(players)
-            env.dealer_id      = int(random.random() * len(players))
-            env.big_blind_bet  = 50
+            chips          = [(1000 + int(random.random() * 200)) for i in range(len(players))]
+            num_players    = len(players)
+            dealer_id      = int(random.random() * len(players))
+            big_blind_bet  = 50
 
-            infos, public, persons, private = env.init()
+            infos, public, persons, private = env.init({"chips":chips,
+                                                        "num_players":num_players,
+                                                        "dealer_id":dealer_id,
+                                                        "big_blind_bet":big_blind_bet})
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
             while public.is_terminal == False:

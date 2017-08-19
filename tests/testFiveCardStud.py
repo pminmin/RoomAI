@@ -24,8 +24,8 @@ class FiveCardStudTester(unittest.TestCase):
 
     def testEnv(self):
         env = FiveCardStudEnv();
-        env.chips = [1000,1000,1000]
-        infos, pu, pes, pr = env.init()
+        chips = [1000,1000,1000]
+        infos, pu, pes, pr = env.init({"chips":chips})
 
         turn = pu.turn
         assert(pes[turn].available_actions is not None)
@@ -56,10 +56,10 @@ class FiveCardStudTester(unittest.TestCase):
         for i in xrange(100):
             players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in xrange(3)]
             env     = roomai.fivecardstud.FiveCardStudEnv()
-            env.num_players = 3
-            env.chips       = [1000,1000,1000]
+            num_players = 3
+            chips       = [1000,1000,1000]
 
-            infos,public_state,_,_ = env.init()
+            infos,public_state,_,_ = env.init({"num_players":num_players,"chips":chips})
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
 
@@ -74,10 +74,10 @@ class FiveCardStudTester(unittest.TestCase):
         for i in xrange(100):
             players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in xrange(2)]
             env     = roomai.fivecardstud.FiveCardStudEnv()
-            env.num_players = 2
-            env.chips       = [1000,1000]
+            num_players = 2
+            chips       = [1000,1000]
 
-            infos,public_state,_,_ = env.init()
+            infos,public_state,_,_ = env.init({"num_players":num_players, "chips":chips})
             for i in xrange(len(players)):
                 players[i].receive_info(infos[i])
 
