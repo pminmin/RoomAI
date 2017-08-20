@@ -7,17 +7,38 @@ from roomai.kuhn       import KuhnPokerAlwaysBetPlayer
 import random
 
 class KuhnPokerCRMPlayer(CRMPlayer):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.state                     = []
         self.regrets                   = dict()
         self.strategies                = dict()
 
     def update_strategies(self, state, actions, targets):
+        """
+
+        Args:
+            state:
+            actions:
+            targets:
+        """
         for i in xrange(len(actions)):
             state_action = "%s_%s"%(state, actions[i].key())
             self.strategies[state_action] = targets[i]
 
     def get_strategies(self, state, actions):
+        """
+
+        Args:
+            state:
+            actions:
+
+        Returns:
+
+        """
         probs = [1.0 for i in xrange(len(actions))]
         for  i in xrange(len(actions)):
             state_action = "%s_%s" % (state, actions[i].key())
@@ -28,11 +49,27 @@ class KuhnPokerCRMPlayer(CRMPlayer):
         return probs
 
     def update_regrets(self, state, actions, targets):
+        """
+
+        Args:
+            state:
+            actions:
+            targets:
+        """
         for i in xrange(len(actions)):
             state_action = "%s_%s"%(state, actions[i].key())
             self.regrets[state_action] = targets[i]
 
     def get_regrets(self, state, actions):
+        """
+
+        Args:
+            state:
+            actions:
+
+        Returns:
+
+        """
         regrets = [0 for i in xrange(len(actions))]
         for i in xrange(len(actions)):
             state_action = "%s_%s" % (state, actions[i].key())
@@ -43,15 +80,33 @@ class KuhnPokerCRMPlayer(CRMPlayer):
         return regrets
 
     def gen_state(self,info):
+        """
+
+        Args:
+            info:
+
+        Returns:
+
+        """
         card = info.person_state.card
         history = info.public_state.action_list
         return "%d_%s" % (card, "".join(history))
 
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+        """
         self.state             = self.gen_state(info)
         self.available_actions = info.person_state.available_actions.values()
 
     def take_action(self):
+        """
+
+        Returns:
+
+        """
         probs = self.get_strategies(self.state, self.available_actions)
         sum1  = sum(probs)
         for i in xrange(len(self.available_actions)):
@@ -68,6 +123,9 @@ class KuhnPokerCRMPlayer(CRMPlayer):
 
 
     def reset(self):
+        """
+
+        """
         pass
 
 if __name__ == "__main__":

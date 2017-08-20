@@ -6,7 +6,12 @@ logger = roomai.get_logger()
 
 ######################################################################### Basic Concepts #####################################################
 class AbstractPublicState(object):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.turn            = None
         self.previous_id     = None
         self.previous_action = None
@@ -15,6 +20,15 @@ class AbstractPublicState(object):
         self.scores          = None
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is  None:
             newinstance = AbstractPublicState()
         newinstance.turn             = self.turn
@@ -29,7 +43,18 @@ class AbstractPublicState(object):
 
 
 class AbstractPrivateState(object):
+    """
+    """
     def __deepcopy__(self, newinstance = None, memodict={}):
+        """
+
+        Args:
+            newinstance:
+            memodict:
+
+        Returns:
+
+        """
         if newinstance is  None:
             return AbstractPrivateState()
         else:
@@ -37,10 +62,24 @@ class AbstractPrivateState(object):
 
 
 class AbstractPersonState(object):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.id                = 0
         self.available_actions = dict()
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         #print "enter AbstractPersonState __deepcopy__"
         if newinstance is  None:
             newinstance = AbstractPersonState()
@@ -52,10 +91,24 @@ class AbstractPersonState(object):
         return newinstance
 
 class Info(object):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.public_state       = AbstractPublicState()
         self.person_state       = AbstractPersonState()
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = Info()
         newinstance.public_state = self.public_state.__deepcopy__()
@@ -63,18 +116,44 @@ class Info(object):
         return newinstance
 
 class AbstractAction(object):
+    """
+    """
     def __init__(self, key):
+        """
+
+        Args:
+            key:
+        """
         self.__key = key
 
     @property
     def key(self):
+        """
+
+        Returns:
+
+        """
         return self.__key
 
     @classmethod
     def lookup(self, key):
+        """
+
+        Args:
+            key:
+        """
         raise NotImplementedError("Not implemented")
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = AbstractAction()
         newinstance.__key = self.__key
@@ -84,33 +163,47 @@ class AbstractAction(object):
 
 
 class AbstractPlayer(object):
+    """
+    """
     def receive_info(self, info):
-        '''
+        """
         :param:
-            info: the information produced by a game environments 
-        :raises:
-            NotImplementedError: An error occurred when we doesn't implement this function
-        '''
+            info: the information produced by a game environments
+
+        Raises:
+                NotImplementedError: An error occurred when we doesn't implement this function
+        """
         raise NotImplementedError("The receiveInfo function hasn't been implemented") 
 
     def take_action(self):
-        '''
-        :return: A DouDiZhuPokerAction produced by this player
-        '''
+        """
+        Returns:
+            A DouDiZhuPokerAction produced by this player
+        """
         raise NotImplementedError("The takeAction function hasn't been implemented") 
 
     def reset(self):
+        """
+
+        """
         raise NotImplementedError("The reset function hasn't been implemented")
 
 
 
 
 class AbstractEnv(object):
+    """
+    """
     public_state_history = []
     private_state_history = []
     person_states_history = []
 
     def __init__(self, params=dict()):
+        """
+
+        Args:
+            params:
+        """
         self.public_state   = AbstractPublicState()
         self.private_state  = AbstractPrivateState()
         self.person_states  = [AbstractPrivateState()]
@@ -118,6 +211,11 @@ class AbstractEnv(object):
 
 
     def __gen_infos__(self):
+        """
+
+        Returns:
+
+        """
         num_players = len(self.person_states)
         infos = [Info() for i in xrange(num_players)]
         for i in xrange(num_players):
@@ -127,6 +225,11 @@ class AbstractEnv(object):
         return infos
 
     def __gen_history__(self):
+        """
+
+        Returns:
+
+        """
         if self.record_history == False:
             return
 
@@ -134,27 +237,35 @@ class AbstractEnv(object):
         self.private_state_history.append(self.private_state.__deepcopy__())
         self.person_states_history.append([person_state.__deepcopy__() for person_state in self.person_states])
 
-    def init(self, params = None):
-        '''
-        :param chance_action: 
-        :return: infos, public_state, person_states, private_state, other_chance_actions
-        '''
+    def init(self, params =dict()):
+        """
+        Args:
+            chance_action: 
+
+        Returns:
+            infos, public_state, person_states, private_state, other_chance_actions
+        """
         raise ("The init function hasn't been implemented")
 
     def forward(self, action, params = None):
-        '''
+        """
         :param action, chance_action
-        :return: infos, public_state, person_states, private_state, other_chance_actions
-        '''
+
+        Returns:
+            infos, public_state, person_states, private_state, other_chance_actions
+        """
         raise NotImplementedError("The forward hasn't been implemented")
 
 
     def backward(self):
-        '''
+        """
         The game goes back to the previous states
-        :return: infos, public_state, person_states, private_state 
+
+        Returns:
+            infos, public_state, person_states, private_state
+
         :ValueError: if Env has reached the initializaiton state, and we call this backward function, we will get ValueError.
-        '''
+        """
 
         if self.record_history == False:
             raise ValueError("Env can't backward when record_history = False. params = {\"record_history\":true} and env.init(params) will set the record_history to be true")
@@ -176,30 +287,40 @@ class AbstractEnv(object):
     ### provide some util functions
     @classmethod
     def compete(cls, env, players):
-        '''
-        :param env: 
-        :param players: 
-        :return: [score_for_player0, score_for_player1,...]
-        '''
+        """
+        Args:
+            env: 
+            players: 
+
+        Returns:
+            [score_for_player0, score_for_player1,...]
+        """
         raise NotImplementedError("The round function hasn't been implemented")
 
     @classmethod
     def is_action_valid(cls, action, public_state, person_state):
-        '''
+        """
         :param action
-        :param public_state: 
-        :param person_state: 
-        :return: is  the action valid
-        '''
+
+        Args:
+            public_state: 
+            person_state: 
+
+        Returns:
+            is  the action valid
+        """
         raise  NotImplementedError("The is_action_valid function hasn't been implemented")
 
     @classmethod
     def available_actions(self, public_state, person_state):
-        '''
-        :param public_state: 
-        :param person_state: 
-        :return: all available_actions
-        '''
+        """
+        Args:
+            public_state: 
+            person_state: 
+
+        Returns:
+            all available_actions
+        """
         raise NotImplementedError("The available_actions function hasn't been implemented")
 
 ############################################################### Some Utils ############################################################################
@@ -211,7 +332,15 @@ suit_rank_to_str   = {0:'Spade', 1: 'Heart', 2: 'Diamond', 3:'Club', 4:'ForKing'
 
 
 class PokerCard(object):
+    """
+    """
     def __init__(self, point, suit = None):
+        """
+
+        Args:
+            point:
+            suit:
+        """
         point1 = 0
         suit1  = 0
         if suit is None:
@@ -232,35 +361,87 @@ class PokerCard(object):
 
     @property
     def point_str(self):
+        """
+
+        Returns:
+
+        """
         return self.__point_str
 
     @property
     def suit_str(self):
+        """
+
+        Returns:
+
+        """
         return self.__suit_str
 
     @property
     def point_rank(self):
+        """
+
+        Returns:
+
+        """
         return point_str_to_rank[self.__point_str]
     @property
     def suit_rank(self):
+        """
+
+        Returns:
+
+        """
         return
 
     @property
     def key(self):
+        """
+
+        Returns:
+
+        """
         return self.__key
 
     @classmethod
     def lookup(cls, key):
+        """
+
+        Args:
+            key:
+
+        Returns:
+
+        """
         return AllPokerCards[key]
 
     def get_point_rank(self):
+        """
+
+        Returns:
+
+        """
         return point_str_to_rank[self.point_str]
 
     def get_suit_rank(self):
+        """
+
+        Returns:
+
+        """
         return suit_str_to_rank[self.suit_str]
 
     @classmethod
     def compare(cls, pokercard1, pokercard2):
+        """
+
+        Args:
+            pokercard1:
+            pokercard2:
+
+        Returns:
+
+        """
         pr1 = pokercard1.get_point_rank()
         pr2 = pokercard2.get_point_rank()
 
@@ -270,10 +451,24 @@ class PokerCard(object):
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
 
     def __deepcopy__(self,  memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = AllPokerCards[self.key]
         return newinstance
     def lookup(self, key):
+        """
+
+        Args:
+            key:
+        """
         AllPokerCards[key]
 
 AllPokerCards = dict()

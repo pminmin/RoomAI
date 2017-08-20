@@ -14,8 +14,18 @@ import roomai.sevenking
 logger = roomai.get_logger()
 
 class SevenKingEnv(roomai.common.AbstractEnv):
+    """
+    """
 
     def init(self, params = dict()):
+        """
+
+        Args:
+            params:
+
+        Returns:
+
+        """
 
         if "num_players" in params:
             self.num_players = params["num_players"]
@@ -79,6 +89,14 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         return infos, self.public_state, self.person_states, self.private_state
 
     def forward(self, action):
+        """
+
+        Args:
+            action:
+
+        Returns:
+
+        """
         pu   = self.public_state
         pr   = self.private_state
         pes  = self.person_states
@@ -165,11 +183,21 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         return infos, self.public_state, self.person_states, self.private_state
 
     def compute_scores(self):
+        """
+
+        Returns:
+
+        """
         scores                         = [-1 for i in range(self.num_players)]
         scores[self.public_state.turn] = self.num_players -1
         return scores
 
     def choose_player_with_nofold(self):
+        """
+
+        Returns:
+
+        """
         for player_id in range(self.public_state.num_players):
             if self.public_state.is_fold[player_id]== False:
                 return player_id
@@ -177,6 +205,11 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
 
     def choose_player_with_lowest_card(self):
+        """
+
+        Returns:
+
+        """
         min_card    = self.person_states[0].hand_cards[0]
         min_playerid = 0
         for playerid in range(self.num_players):
@@ -189,6 +222,15 @@ class SevenKingEnv(roomai.common.AbstractEnv):
     ######################## Utils function ###################
     @classmethod
     def compete(cls, env, players):
+        """
+
+        Args:
+            env:
+            players:
+
+        Returns:
+
+        """
 
         num_players = len(players)
         infos, public_state, person_states, private_state = env.init({"num_players":num_players})
@@ -209,6 +251,16 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_valid(self, action, public_state, person_state):
+        """
+
+        Args:
+            action:
+            public_state:
+            person_state:
+
+        Returns:
+
+        """
         license_action = public_state.license_action
         if license_action is None:
             license_action = SevenKingAction.lookup("")
@@ -261,6 +313,15 @@ class SevenKingEnv(roomai.common.AbstractEnv):
     ########################### about gen_available_actions ########################
     @classmethod
     def __gen_available_actions_with_pattern(cls, hand_card, pattern):
+        """
+
+        Args:
+            hand_card:
+            pattern:
+
+        Returns:
+
+        """
         res = []
 
         if len(hand_card) < pattern[1]:
@@ -343,6 +404,15 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def available_actions(cls, public_state, person_state):
+        """
+
+        Args:
+            public_state:
+            person_state:
+
+        Returns:
+
+        """
         available_actions = dict()
 
         license_action = public_state.license_action

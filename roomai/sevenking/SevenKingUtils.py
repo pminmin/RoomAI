@@ -19,15 +19,44 @@ suit_str_to_rank   = {'Spade':3, 'Heart':2, 'Diamond':1, 'Club':0,  'ForKing':4}
 suit_rank_to_str   = {3:'Spade', 2: 'Heart', 1: 'Diamond', 0:'Club', 4:'ForKing'}
 
 class SevenKingPokerCard(roomai.common.PokerCard):
+    """
+    """
     @property
     def point_rank(self):
+        """
+
+        Returns:
+
+        """
         return point_str_to_rank[self.point_str]
     @property
     def suit_rank(self):
+        """
+
+        Returns:
+
+        """
         return suit_str_to_rank[self.suit_str]
     def lookup(cls, key):
+        """
+
+        Args:
+            key:
+
+        Returns:
+
+        """
         return AllSevenKingPokerCards[key]
     def __deepcopy__(self,  memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = AllSevenKingPokerCards[self.key]
         else:

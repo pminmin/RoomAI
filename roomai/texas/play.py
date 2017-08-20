@@ -4,17 +4,37 @@ import random
 import roomai.common
 random.seed(4)
 class Player(roomai.common.AbstractPlayer):
+    """
+    """
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+        """
         available_actions = info
     def take_action(self):
+        """
+
+        Returns:
+
+        """
         action = raw_input("choosed_acton:")
         #action = ""
         return roomai.texas.TexasHoldemAction.lookup(action)
     def reset(self):
+        """
+
+        """
         pass
 
 
 def show_public(public_state):
+    """
+
+    Args:
+        public_state:
+    """
     print ("dealer_id:%d\n"%(public_state.dealer_id) +\
            "chips:%s"%(",".join([str(i) for i in public_state.chips])) +\
            "  bets:%s"%(",".join([str(i) for i in public_state.bets])) +\
@@ -22,6 +42,11 @@ def show_public(public_state):
            "public_cards:%s"%(",".join([c.key for c in public_state.public_cards]))
            )
 def show_info(info):
+    """
+
+    Args:
+        info:
+    """
     person_state          = info.person_state
     print ("%d available_actions: %s"%(person_state.id, ",".join(sorted(person_state.available_actions.keys()))))
     print ("%d cards:%s"%(person_state.id,",".join([c.key for c in person_state.hand_cards])))

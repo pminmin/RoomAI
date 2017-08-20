@@ -9,8 +9,13 @@ from roomai.doudizhu.DouDiZhuPokerInfo   import *
 from roomai.doudizhu.DouDiZhuPokerAction import *
 
 class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
+    """
+    """
 
     def __init__(self):
+        """
+
+        """
         self.public_state  = DouDiZhuPublicState()
         self.private_state = DouDiZhuPrivateState()
         self.person_states = [DouDiZhuPersonState() for i in range(3)]
@@ -18,16 +23,31 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
 
     def update_license(self, turn, action):
+        """
+
+        Args:
+            turn:
+            action:
+        """
         if action.pattern[0] != "i_cheat":
             self.public_state.license_playerid = turn
             self.public_state.license_action   = action 
             
 
     def update_cards(self, turn, action):
+        """
+
+        Args:
+            turn:
+            action:
+        """
         self.person_states[turn].hand_cards.remove_action(action)
 
 
     def update_phase_bid2play(self):
+        """
+
+        """
         self.public_state.phase                 = 1
         
         self.public_state.landlord_id           = self.public_state.landlord_candidate_id
@@ -42,6 +62,14 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     #@Overide
     def init(self, params = dict()):
+        """
+
+        Args:
+            params:
+
+        Returns:
+
+        """
 
         if "allcards" in params:
             self.allcards = [c for c in params["allcards"]]
@@ -95,6 +123,14 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
+        """
+
+        Args:
+            action:
+
+        Returns:
+
+        """
 
         if self.is_action_valid(action, self.public_state, self.person_states[self.public_state.turn]) is False:
             raise  ValueError("%s action is invalid"%(action.key))
@@ -181,6 +217,15 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
     #@override
     @classmethod
     def compete(cls, env, players):
+        """
+
+        Args:
+            env:
+            players:
+
+        Returns:
+
+        """
         infos ,public_state, person_states, private_state= env.init()
 
         for i in range(len(players)):
@@ -199,6 +244,15 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def available_actions(cls, public_state, person_state):
+        """
+
+        Args:
+            public_state:
+            person_state:
+
+        Returns:
+
+        """
 
         patterns = []
         if public_state.phase == 0:
@@ -337,6 +391,15 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_from_handcards(cls, hand_cards, action):
+        """
+
+        Args:
+            hand_cards:
+            action:
+
+        Returns:
+
+        """
         flag = True
         if action.pattern[0] == "i_cheat":  return True
         if action.pattern[0] == "i_bid":    return True
@@ -351,6 +414,15 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def extractMasterCards(cls, hand_cards, pattern):
+        """
+
+        Args:
+            hand_cards:
+            pattern:
+
+        Returns:
+
+        """
         is_straight = pattern[3]
         cardss = []
         ss = []
@@ -391,6 +463,16 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def extractSlaveCards(cls, hand_cards, used_cards, pattern):
+        """
+
+        Args:
+            hand_cards:
+            used_cards:
+            pattern:
+
+        Returns:
+
+        """
         used = [0 for i in range(15)]
         for p in used_cards:
             used[p] += 1
@@ -450,6 +532,15 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def action_priority(cls,action1, action2):
+        """
+
+        Args:
+            action1:
+            action2:
+
+        Returns:
+
+        """
         count1 = action1.pattern[1] / action1.pattern[2]
         count2 = action2.pattern[1] / action2.pattern[2]
         if count1 != count2:
@@ -468,6 +559,11 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def available_actions_generate_all(cls):
+        """
+
+        Returns:
+
+        """
         public_state = DouDiZhuPublicState()
         person_state = DouDiZhuPersonState()
         public_state.is_response    = False

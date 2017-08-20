@@ -5,8 +5,15 @@ from roomai.sevenking import AllSevenKingPatterns
 
 
 class SevenKingAction(roomai.common.AbstractAction):
+    """
+    """
 
     def __init__(self, key):
+        """
+
+        Args:
+            key:
+        """
         if not isinstance(key,str):
             raise TypeError("The key for SevenKingAction is an str, not %s"%(type(str)))
 
@@ -21,24 +28,55 @@ class SevenKingAction(roomai.common.AbstractAction):
 
     @classmethod
     def action2pattern(cls, action):
+        """
+
+        Args:
+            action:
+
+        Returns:
+
+        """
         ###numCards
         num_cards  = len(action.cards)
         return AllSevenKingPatterns["p_%d"%(num_cards)]
 
     @property
     def key(self):
+        """
+
+        Returns:
+
+        """
         return self.__key
 
     @property
     def cards(self):
+        """
+
+        Returns:
+
+        """
         return self.__cards
 
     @property
     def pattern(self):
+        """
+
+        Returns:
+
+        """
         return self.__pattern
 
     @classmethod
     def lookup(cls, key):
+        """
+
+        Args:
+            key:
+
+        Returns:
+
+        """
         if key in AllSevenKingActions:
             return AllSevenKingActions[key]
         else:
@@ -46,6 +84,15 @@ class SevenKingAction(roomai.common.AbstractAction):
             return AllSevenKingActions[key]
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = SevenKingAction(self.key)
         newinstance         = super(SevenKingAction,self).__deepcopy__(newinstance = newinstance)

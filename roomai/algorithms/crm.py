@@ -4,21 +4,69 @@ import random
 import copy
 
 class CRMPlayer(roomai.common.AbstractPlayer):
+    """
+    """
     def gen_state(self,info):
+        """
+
+        Args:
+            info:
+        """
         raise NotImplementedError("")
     def update_strategies(self, state, actions, targets):
+        """
+
+        Args:
+            state:
+            actions:
+            targets:
+        """
         raise NotImplementedError("")
     def get_strategies(self, state, actions):
+        """
+
+        Args:
+            state:
+            actions:
+        """
         raise NotImplementedError("")
     def update_regrets(self, state, actions, targets):
+        """
+
+        Args:
+            state:
+            actions:
+            targets:
+        """
         raise NotImplementedError("")
     def get_regrets(self, state, actions):
+        """
+
+        Args:
+            state:
+            actions:
+        """
         raise NotImplementedError("")
 
 
 class CRMAlgorithm(object):
+    """
+    """
 
     def dfs(self, env, player, p0,  p1, action = None, deep = 0):
+        """
+
+        Args:
+            env:
+            player:
+            p0:
+            p1:
+            action:
+            deep:
+
+        Returns:
+
+        """
         infos         = None
         public_state  = None
         person_states = None

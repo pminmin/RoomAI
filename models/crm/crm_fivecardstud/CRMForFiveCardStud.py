@@ -8,7 +8,14 @@ import numpy as np
 
 
 class KuhnPokerCRMPlayer(roomai.algorithms.CRMPlayer):
+    """
+    """
     def __init__(self, num_players=2):
+        """
+
+        Args:
+            num_players:
+        """
 
         self.graph       = tf.Graph()
         self.num_players = num_players
@@ -80,14 +87,28 @@ class KuhnPokerCRMPlayer(roomai.algorithms.CRMPlayer):
 
     # @take a action
     def take_action(self):
+        """
+
+        """
         pass
 
 
     def reset(self):
+        """
+
+        """
         pass
 
     # @receive_info
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+
+        Returns:
+
+        """
         pu = info.public_state
         pe = info.person_state
 
@@ -105,10 +126,22 @@ class KuhnPokerCRMPlayer(roomai.algorithms.CRMPlayer):
         self.opponent_hand_cards = np.asarray(self.opponent_hand_cards).reshape([1, 13, 4, pu.num_players])
 
     def __del__(self):
+        """
+
+        """
         self.sess.close()
 
 
 def parseCards(public_state, player_id):
+    """
+
+    Args:
+        public_state:
+        player_id:
+
+    Returns:
+
+    """
     pu = public_state
     cards = np.asarray([[0 for j in xrange(4)] for i in xrange(13)])
 

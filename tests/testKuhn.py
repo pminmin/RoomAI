@@ -2,7 +2,12 @@ import unittest
 import roomai.kuhn
 
 class KuhnTester(unittest.TestCase):
+    """
+    """
     def testKuhn(self):
+        """
+
+        """
         for i in xrange(1000):
             players = [roomai.kuhn.KuhnPokerAlwaysBetPlayer() for i in xrange(2)]
             env     = roomai.kuhn.KuhnPokerEnv()
@@ -21,6 +26,9 @@ class KuhnTester(unittest.TestCase):
                     players[i].receive_info(infos[i])
 
     def testKuhnEnvBackward(self):
+        """
+
+        """
         env = roomai.kuhn.KuhnPokerEnv()
         env.init()
         infos, public_state, person_states, private_state = env.forward(roomai.kuhn.KuhnPokerAction("bet"))

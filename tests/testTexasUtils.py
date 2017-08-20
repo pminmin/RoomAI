@@ -7,8 +7,13 @@ from roomai.texas import TexasHoldemEnv
 
 
 class TexasUtilsTester(unittest.TestCase):
+    """
+    """
 
     def test_pattern(self):
+        """
+
+        """
 
         handcards1 =[roomai.common.PokerCard(0, 0), roomai.common.PokerCard(1, 1)]
         keepcards  =[roomai.common.PokerCard(2, 2), roomai.common.PokerCard(3, 3), roomai.common.PokerCard(4, 0), roomai.common.PokerCard(5, 1), roomai.common.PokerCard(6, 2)]
@@ -16,6 +21,9 @@ class TexasUtilsTester(unittest.TestCase):
 
     
     def test_cards1(self):
+        """
+
+        """
         handcards1 = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
         handcards2 = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(3, 2)]
         keepcards  = [roomai.common.PokerCard(0, 2), roomai.common.PokerCard(0, 3), roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1), roomai.common.PokerCard(3, 3)]
@@ -40,6 +48,9 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertEqual(pattern[6][4].get_suit_rank(), 1)
 
     def test_cards2(self):
+        """
+
+        """
 
         h1     = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
         keep   = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(4, 2), roomai.common.PokerCard(5, 3), roomai.common.PokerCard(6, 0), roomai.common.PokerCard(7, 2)]
@@ -48,6 +59,9 @@ class TexasUtilsTester(unittest.TestCase):
 
 
     def test_cards(self):
+        """
+
+        """
         handcards1 = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
         handcards2 = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(3, 2)]
         keepcards  = [roomai.common.PokerCard(0, 2), roomai.common.PokerCard(0, 3), roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1), roomai.common.PokerCard(3, 3)]
@@ -79,6 +93,9 @@ class TexasUtilsTester(unittest.TestCase):
 
 
     def test_available_actions(self):
+        """
+
+        """
         env = TexasHoldemEnv()
         env.init()
 
@@ -100,6 +117,9 @@ class TexasUtilsTester(unittest.TestCase):
 
 
     def test_is_action_valid(self):
+        """
+
+        """
         env = TexasHoldemEnv()
         env.init()
 
@@ -111,6 +131,9 @@ class TexasUtilsTester(unittest.TestCase):
 
 
     def test_compare(self):
+        """
+
+        """
         h1 = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
         h2 = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
         h3 = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]

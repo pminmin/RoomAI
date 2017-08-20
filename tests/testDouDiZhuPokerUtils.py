@@ -5,7 +5,12 @@ import unittest
 from roomai.doudizhu import *
 
 class DouDiZhuPokerUtilTester(unittest.TestCase):
+    """
+    """
     def testAction2Patterns(self):
+        """
+
+        """
         
         a = DouDiZhuPokerAction([1, 1, 1], [2])
         self.assertEqual(a.pattern[0], "p_3_1_0_1_0")
@@ -27,6 +32,9 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         
 
     def testAllPatterns(self):
+        """
+
+        """
         for k in AllPatterns:
             p = AllPatterns[k]
             self.assertEqual(k,p[0])
@@ -35,6 +43,9 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
                 self.assertEqual("p_%d_%d_%d_%d_%d"%(p[1],p[2],p[3],p[4],p[5]), p[0])
 
     def testActions(self):
+        """
+
+        """
         from roomai.doudizhu.DouDiZhuPokerAction import  DouDiZhuPokerAction as Action
         a = Action.lookup("3333")
 

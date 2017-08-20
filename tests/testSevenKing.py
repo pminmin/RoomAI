@@ -7,7 +7,14 @@ import roomai.common
 import unittest
 
 class AlwaysFoldPlayer(roomai.common.AbstractPlayer):
+    """
+    """
     def take_action(self):
+        """
+
+        Returns:
+
+        """
 
         if "" not in self.available_actions:
             min_card = None
@@ -25,32 +32,65 @@ class AlwaysFoldPlayer(roomai.common.AbstractPlayer):
             return SevenKingAction("")
 
     def receive_info(self,info):
+        """
+
+        Args:
+            info:
+        """
         self.public_state      = info.public_state
         self.available_actions = info.person_state.available_actions
 
     def reset(self):
+        """
+
+        """
         pass
 
 class AlwaysNotFoldPlayer(roomai.common.AbstractPlayer):
+    """
+    """
     def take_action(self):
+        """
+
+        Returns:
+
+        """
         for a in self.available_actions.values():
             if a.key != "":
                 return a
         return SevenKingAction.lookup("")
 
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+        """
         self.available_actions = info.person_state.available_actions
 
     def reset(self):
+        """
+
+        """
         pass
 
 
 
 class testSevenKing(unittest.TestCase):
+    """
+    """
 
     def show_hand_card(self,hand_card):
+        """
+
+        Args:
+            hand_card:
+        """
         print (",".join([c.key for c in hand_card]))
     def testEnv(self):
+        """
+
+        """
         env = SevenKingEnv()
 
         infos, public_state, person_states, private_state = env.init({"num_players":2})
@@ -67,6 +107,9 @@ class testSevenKing(unittest.TestCase):
 
 
     def testRandom(self):
+        """
+
+        """
         env = SevenKingEnv()
         env.num_players = 2
         players = [SevenKingRandomPlayer() for i in xrange(2)]
@@ -75,6 +118,9 @@ class testSevenKing(unittest.TestCase):
             SevenKingEnv.compete(env, players)
 
     def testScores(self):
+        """
+
+        """
         env = SevenKingEnv()
         env.num_players = 3
 
@@ -88,6 +134,9 @@ class testSevenKing(unittest.TestCase):
         self.assertEqual(scores[2],2)
 
     def testScores1(self):
+        """
+
+        """
         env = SevenKingEnv()
         infos, public_state, person_states, private_state = env.init()
 

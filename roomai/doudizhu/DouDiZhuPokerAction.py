@@ -12,6 +12,8 @@ import copy
 #
 
 class DouDiZhuActionElement:
+    """
+    """
     str_to_rank  = {'3':0, '4':1, '5':2, '6':3, '7':4, '8':5, '9':6, 'T':7, 'J':8, 'Q':9, 'K':10, 'A':11, '2':12, 'r':13, 'R':14, 'x':15, 'b':16}
     # x means check, b means bid
     rank_to_str  = {0: '3', 1: '4', 2: '5', 3: '6', 4: '7', 5: '8', 6: '9', 7: 'T', 8: 'J', 9: 'Q', 10: 'K', 11: 'A', 12: '2', 13: 'r', 14: 'R', 15: 'x', 16: 'b'}
@@ -38,10 +40,21 @@ class DouDiZhuActionElement:
 
 
 class DouDiZhuPokerAction(roomai.common.AbstractAction):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         pass
 
     def __init__(self, masterCards, slaveCards):
+        """
+
+        Args:
+            masterCards:
+            slaveCards:
+        """
         self.__masterCards        = copy.deepcopy(masterCards)
         self.__slaveCards         = copy.deepcopy(slaveCards)
 
@@ -78,10 +91,27 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
 
     @classmethod
     def lookup(cls, key):
+        """
+
+        Args:
+            key:
+
+        Returns:
+
+        """
         return AllActions["".join(sorted(key))]
 
     @classmethod
     def master_slave_cards_to_key(cls, masterCards, slaveCards):
+        """
+
+        Args:
+            masterCards:
+            slaveCards:
+
+        Returns:
+
+        """
         key_int = (masterCards + slaveCards)
         key_str = []
         for key in key_int:
@@ -90,6 +120,9 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
         return "".join(key_str)
 
     def action2pattern(self):
+        """
+
+        """
 
         self.__masterPoints2Count = dict()
         for c in self.__masterCards:
@@ -167,6 +200,15 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
                     self.__pattern = AllPatterns["i_invalid"]
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         return self.lookup(self.key)
 
 
@@ -176,6 +218,14 @@ AllPatterns = dict()
 AllActions = dict()
 import zipfile
 def get_file(path):
+    """
+
+    Args:
+        path:
+
+    Returns:
+
+    """
     if ".zip" in path:
         lines = path.split(".zip")
         zip1 = zipfile.ZipFile(lines[0] + ".zip")

@@ -14,10 +14,20 @@ from FiveCardStudInfo   import FiveCardStudPrivateState
 from FiveCardStudAction import FiveCardStudAction
 
 class FiveCardStudEnv(roomai.common.AbstractEnv):
+    """
+    """
 
 
     #@override
     def init(self, params = dict()):
+        """
+
+        Args:
+            params:
+
+        Returns:
+
+        """
         self.logger         = roomai.get_logger()
 
         if "num_players" in params:
@@ -104,10 +114,13 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     #@override
     def forward(self, action):
-        '''
-        :param action: 
-        :except: throw ValueError when the action is invalid at this time 
-        '''
+        """
+        Args:
+            action: 
+
+        Raises:
+            None: throw ValueError when the action is invalid at this time
+        """
         turn = self.public_state.turn
         if not FiveCardStudEnv.is_action_valid(action,self.public_state, self.person_states[turn]):
             self.logger.critical("action=%s is invalid" % (action.key()))
@@ -211,6 +224,15 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
     #@override
     @classmethod
     def compete(cls, env, players):
+        """
+
+        Args:
+            env:
+            players:
+
+        Returns:
+
+        """
         total_scores   = [0 for i in xrange(len(players))]
         total_count    = 1000
 
@@ -247,6 +269,11 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
 
     def action_fold(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
         pu.is_quit[pu.turn] = True
         pu.num_quit        += 1
@@ -255,11 +282,21 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         pu.num_needed_to_action        -= 1
 
     def action_check(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
 
     def action_call(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
         pu.chips[pu.turn]               -= action.price
         pu.bets[pu.turn]                += action.price
@@ -268,6 +305,11 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
 
     def action_bet(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
 
         pu.chips[pu.turn] -= action.price
@@ -284,6 +326,11 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             p = (p + 1) % pu.num_players
 
     def action_raise(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
 
         pu.chips[pu.turn] -= action.price
@@ -303,6 +350,11 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
 
     def action_showhand(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
 
         pu.bets[pu.turn]               += action.price
@@ -325,6 +377,14 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 ############################################# Utils Function ######################################################
     @classmethod
     def check_initialization_configuratioin(cls, env):
+        """
+
+        Args:
+            env:
+
+        Returns:
+
+        """
         if len(env.chips) != env.num_players:
             raise ValueError("len(env.chips)%d != env.num_players%d"%(len(env.chips), env.num_players))
 
@@ -335,6 +395,14 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_compute_scores(cls, public_state):
+        """
+
+        Args:
+            public_state:
+
+        Returns:
+
+        """
         pu = public_state
 
         if pu.num_quit == pu.num_players - 1:
@@ -349,6 +417,14 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def compute_scores(cls, public_state):
+        """
+
+        Args:
+            public_state:
+
+        Returns:
+
+        """
 
         if public_state.num_quit + 1 == public_state.num_players:
             player_id = 0
@@ -393,6 +469,14 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def choose_player_at_begining_of_round(cls, public_state):
+        """
+
+        Args:
+            public_state:
+
+        Returns:
+
+        """
 
         round = public_state.round
         if round in [1,2,3]:
@@ -431,6 +515,14 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def next_player(self, pu):
+        """
+
+        Args:
+            pu:
+
+        Returns:
+
+        """
         i = pu.turn
         if pu.num_needed_to_action == 0:
             return -1
@@ -442,12 +534,31 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_valid(cls, action, public_state, person_state):
+        """
+
+        Args:
+            action:
+            public_state:
+            person_state:
+
+        Returns:
+
+        """
         if action.key not in person_state.available_actions:
             return False
         return True
 
     @classmethod
     def available_actions(cls, public_state, person_state):
+        """
+
+        Args:
+            public_state:
+            person_state:
+
+        Returns:
+
+        """
         pu              = public_state
         round           = pu.round
         turn            = pu.turn
@@ -531,6 +642,15 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def compare_cards(cls, cards1, cards2):
+        """
+
+        Args:
+            cards1:
+            cards2:
+
+        Returns:
+
+        """
         if len(cards1) == len(cards2) and len(cards1) == 4:
             pattern1 = cls.fourcards2pattern(cards1)
             pattern2 = cls.fourcards2pattern(cards2)
@@ -556,6 +676,14 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def cards2pattern(cls, cards):
+        """
+
+        Args:
+            cards:
+
+        Returns:
+
+        """
         pointrank2cards = dict()
         for c in cards:
             if c.get_point_rank() in pointrank2cards:
@@ -650,6 +778,14 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def fourcards2pattern(cls, cards):
+        """
+
+        Args:
+            cards:
+
+        Returns:
+
+        """
         pointrank2cards = dict()
         for c in cards:
             if c.get_point_rank() in pointrank2cards:

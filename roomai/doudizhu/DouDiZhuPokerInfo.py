@@ -6,7 +6,14 @@ import copy
 
 
 class DouDiZhuHandCards:
+    """
+    """
     def __init__(self, cardstr):
+        """
+
+        Args:
+            cardstr:
+        """
         self.cards = [0 for i in range(DouDiZhuActionElement.total_normal_cards)]
         for c in cardstr:
             idx = DouDiZhuActionElement.str_to_rank[c]
@@ -27,6 +34,11 @@ class DouDiZhuHandCards:
         self.__key = "".join(strs)
 
     def compute_key(self):
+        """
+
+        Returns:
+
+        """
         strs = []
         for h in range(len(self.cards)):
             for count in range(self.cards[h]):
@@ -36,10 +48,20 @@ class DouDiZhuHandCards:
 
     @property
     def key(self):
+        """
+
+        Returns:
+
+        """
         return self.__key
 
 
     def add_cards(self, cards):
+        """
+
+        Args:
+            cards:
+        """
         if isinstance(cards, str) == True:
             cards = DouDiZhuHandCards(cards)
 
@@ -54,6 +76,11 @@ class DouDiZhuHandCards:
 
 
     def remove_cards(self, cards):
+        """
+
+        Args:
+            cards:
+        """
         if isinstance(cards, str) == True:
             cards = DouDiZhuHandCards(cards)
 
@@ -67,6 +94,11 @@ class DouDiZhuHandCards:
         self.__key = self.compute_key()
 
     def remove_action(self, action):
+        """
+
+        Args:
+            action:
+        """
         str = action.key
         if str == 'x' or str == 'b':
             str = ''
@@ -74,13 +106,36 @@ class DouDiZhuHandCards:
         self.__key = self.compute_key()
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         return DouDiZhuHandCards(self.key)
 
 class DouDiZhuPrivateState(roomai.common.AbstractPrivateState):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.keep_cards = []
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = DouDiZhuPrivateState()
         newinstance.keep_cards = self.keep_cards.__deepcopy__()
@@ -88,7 +143,12 @@ class DouDiZhuPrivateState(roomai.common.AbstractPrivateState):
 
 
 class DouDiZhuPublicState(roomai.common.AbstractPublicState):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.landlord_candidate_id = -1
         self.landlord_id = -1
         self.license_playerid = -1
@@ -106,6 +166,15 @@ class DouDiZhuPublicState(roomai.common.AbstractPublicState):
         self.previous_action = None
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = DouDiZhuPublicState()
         newinstance = super(DouDiZhuPublicState, self).__deepcopy__(newinstance=newinstance)
@@ -139,11 +208,25 @@ class DouDiZhuPublicState(roomai.common.AbstractPublicState):
         return newinstance
 
 class DouDiZhuPersonState(roomai.common.AbstractPersonState):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.id                = None
         self.hand_cards        = None
         self.available_actions = dict()
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = DouDiZhuPersonState()
         newinstance.id = self.id

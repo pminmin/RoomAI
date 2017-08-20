@@ -7,7 +7,12 @@ from roomai.doudizhu   import *
 
 
 class DouDiZhuPokerEnvTester(unittest.TestCase):
+    """
+    """
     def testNormal(self):
+        """
+
+        """
         env = DouDiZhuPokerEnv()
 
 
@@ -31,6 +36,9 @@ class DouDiZhuPokerEnvTester(unittest.TestCase):
 
 
     def testFoward(self):
+        """
+
+        """
         env = DouDiZhuPokerEnv()
         p = [0,0,0]
         env.init()

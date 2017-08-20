@@ -5,11 +5,21 @@ import roomai.common
 import sys
 
 class TexasHoldemRandomPlayer(roomai.common.AbstractPlayer):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.available_actions = None
         self.info              = None
            
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+        """
         self.info              = info
         self.available_actions = info.person_state.available_actions
 
@@ -45,4 +55,7 @@ class TexasHoldemRandomPlayer(roomai.common.AbstractPlayer):
         return self.available_actions[keys[idx]]
 
     def reset(self):
+        """
+
+        """
         pass

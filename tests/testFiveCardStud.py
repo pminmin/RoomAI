@@ -8,11 +8,19 @@ import roomai
 import roomai.fivecardstud
 
 class FiveCardStudTester(unittest.TestCase):
+    """
+    """
     def test(self):
+        """
+
+        """
         env = FiveCardStudEnv();
         env.init()
 
     def testCase(self):
+        """
+
+        """
 
         cards   =[FiveCardStudPokerCard("3_Spade"), FiveCardStudPokerCard("4_Spade"),FiveCardStudPokerCard("5_Spade"),FiveCardStudPokerCard("6_Spade")]
         pattern = FiveCardStudEnv.fourcards2pattern(cards)
@@ -23,6 +31,9 @@ class FiveCardStudTester(unittest.TestCase):
 
 
     def testEnv(self):
+        """
+
+        """
         env = FiveCardStudEnv();
         chips = [1000,1000,1000]
         infos, pu, pes, pr = env.init({"chips":chips})
@@ -52,6 +63,9 @@ class FiveCardStudTester(unittest.TestCase):
         print infos[0].person_state.fifth_hand_card.key
 
     def testRandomPlayer(self):
+        """
+
+        """
 
         for i in xrange(100):
             players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in xrange(3)]
@@ -91,6 +105,9 @@ class FiveCardStudTester(unittest.TestCase):
 
 
     def testCompete(self):
+        """
+
+        """
         env     = FiveCardStudEnv()
         players = [FiveCardStudRandomPlayer() for i in xrange(5)]
         scores  = FiveCardStudEnv.compete(env, players)

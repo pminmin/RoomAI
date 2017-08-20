@@ -7,8 +7,13 @@ import roomai
 import random
 
 class TexasEnvTester(unittest.TestCase):
+    """
+    """
 
     def testEnv3players(self):
+        """
+
+        """
         env = TexasHoldemEnv()
         num_players   = 3
         dealer_id     = 0
@@ -79,6 +84,9 @@ class TexasEnvTester(unittest.TestCase):
         self.assertEqual(public_state.scores[2], -20.0/public_state.big_blind_bet)
 
     def testEnv3Players2(self):
+        """
+
+        """
 
         env = TexasHoldemEnv()
         num_players   = 3
@@ -213,10 +221,16 @@ class TexasEnvTester(unittest.TestCase):
 
 
     def testEnv2players(self):
+        """
+
+        """
         env = TexasHoldemEnv()
         env.num_players = 2
 
     def testRandomPlayer(self):
+        """
+
+        """
 
         random.seed(0)
 
@@ -258,6 +272,9 @@ class TexasEnvTester(unittest.TestCase):
                 infos, public_state, person_states, private_state = env.forward(action)
 
     def testCompete(self):
+        """
+
+        """
         import random
         random.seed(100)
         players = [TexasHoldemRandomPlayer() for i in xrange(5)]

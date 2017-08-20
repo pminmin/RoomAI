@@ -12,9 +12,19 @@ from TexasHoldemUtil import *
 
 
 class TexasHoldemEnv(roomai.common.AbstractEnv):
+    """
+    """
 
     @classmethod
     def check_initialization_configuration(cls, env):
+        """
+
+        Args:
+            env:
+
+        Returns:
+
+        """
         if len(env.chips) != env.num_players:
             raise ValueError("len(env.chips)%d != env.num_players%d" % (len(env.chips), env.num_players))
 
@@ -25,6 +35,14 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     #@override
     def init(self, params = dict()):
+        """
+
+        Args:
+            params:
+
+        Returns:
+
+        """
         self.logger         = roomai.get_logger()
 
         if "num_players" in params:
@@ -148,10 +166,13 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
     ## we need ensure the action is valid
     #@Overide
     def forward(self, action):
-        '''
-        :param action: 
-        :except: throw ValueError when the action is invalid at this time 
-        '''
+        """
+        Args:
+            action: 
+
+        Raises:
+            None: throw ValueError when the action is invalid at this time
+        """
         pu         = self.public_state
         pe         = self.person_states
         pr         = self.private_state
@@ -231,6 +252,15 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
     #override
     @classmethod
     def compete(cls, env, players):
+        """
+
+        Args:
+            env:
+            players:
+
+        Returns:
+
+        """
 
         total_scores       = [0    for i in xrange(len(players))]
         total_count        = 1000
@@ -290,9 +320,10 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
 
     def compute_scores(self):
-        '''
-        :return: a score array
-        '''
+        """
+        Returns:
+            a score array
+        """
         pu = self.public_state
         pr = self.private_state
 
@@ -364,6 +395,11 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
 
     def action_fold(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
         pu.is_fold[pu.turn]             = True
         pu.num_quit                    += 1
@@ -372,11 +408,21 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         pu.num_needed_to_action        -= 1
 
     def action_check(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
         pu.is_needed_to_action[pu.turn] = False
         pu.num_needed_to_action        -= 1
 
     def action_call(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
         pu.chips[pu.turn] -= action.price
         pu.bets[pu.turn]  += action.price
@@ -384,6 +430,11 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         pu.num_needed_to_action        -= 1
 
     def action_raise(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
 
 
@@ -403,6 +454,11 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
 
     def action_allin(self, action):
+        """
+
+        Args:
+            action:
+        """
         pu = self.public_state
 
         pu.is_allin[pu.turn]   = True
@@ -428,6 +484,14 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def next_player(self, pu):
+        """
+
+        Args:
+            pu:
+
+        Returns:
+
+        """
         i = pu.turn
         if pu.num_needed_to_action == 0:
             return -1
@@ -467,6 +531,15 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def cards2pattern(cls, hand_cards, remaining_cards):
+        """
+
+        Args:
+            hand_cards:
+            remaining_cards:
+
+        Returns:
+
+        """
         pointrank2cards = dict()
         for c in hand_cards + remaining_cards:
             if c.get_point_rank() in pointrank2cards:
@@ -631,6 +704,16 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def compare_handcards(cls, hand_card0, hand_card1, keep_cards):
+        """
+
+        Args:
+            hand_card0:
+            hand_card1:
+            keep_cards:
+
+        Returns:
+
+        """
         pattern0 = TexasHoldemEnv.cards2pattern(hand_card0, keep_cards)
         pattern1 = TexasHoldemEnv.cards2pattern(hand_card1, keep_cards)
 
@@ -639,6 +722,15 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def compare_patterns(cls, p1, p2):
+        """
+
+        Args:
+            p1:
+            p2:
+
+        Returns:
+
+        """
         if p1[5] != p2[5]:
             return p1[5] - p2[5]
         else:
@@ -649,6 +741,15 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def available_actions(cls, public_state, person_state):
+        """
+
+        Args:
+            public_state:
+            person_state:
+
+        Returns:
+
+        """
         pu = public_state
         turn = pu.turn
         key_actions = dict()
@@ -689,6 +790,16 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def is_action_valid(cls, action, public_state, person_state):
+        """
+
+        Args:
+            action:
+            public_state:
+            person_state:
+
+        Returns:
+
+        """
         pu = public_state
 
         if (not isinstance(public_state, TexasHoldemPublicState)) or (not isinstance(action, TexasHoldemAction)):

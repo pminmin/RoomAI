@@ -3,26 +3,61 @@ import roomai.sevenking
 import random
 random.seed(4)
 class HumanInputPlayer(roomai.sevenking.SevenKingRandomPlayer):
+    """
+    """
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+        """
         available_actions = info
     def take_action(self):
+        """
+
+        Returns:
+
+        """
         action = input("choosed_acton:")
         #action = ""
         return roomai.sevenking.SevenKingAction.lookup(action)
     def reset(self):
+        """
+
+        """
         pass
 
 class HumanInputPlayer1(roomai.sevenking.SevenKingRandomPlayer):
+    """
+    """
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+        """
         available_actions = info
     def take_action(self):
+        """
+
+        Returns:
+
+        """
         action = input("choosed_acton:")
         #action = ""
         return roomai.sevenking.SevenKingAction.lookup(action)
     def reset(self):
+        """
+
+        """
         pass
 
 def show(info):
+    """
+
+    Args:
+        info:
+    """
     person_state          = info.person_state
     person_state.hand_cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
     sorted_hand_cards_str = [c.key for c in person_state.hand_cards]
