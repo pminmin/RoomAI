@@ -1,16 +1,25 @@
 #!/bin/python
 #coding:utf-8
 import random
-import roomai.abstract
-from roomai.kuhn import *
+import roomai.common
 import sys
 
-class TexasHoldemRandomPlayer(roomai.abstract.AbstractPlayer):
+class TexasHoldemRandomPlayer(roomai.common.AbstractPlayer):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.available_actions = None
         self.info              = None
            
     def receive_info(self, info):
+        """
+
+        Args:
+            info:
+        """
         self.info              = info
         self.available_actions = info.person_state.available_actions
 
@@ -21,9 +30,9 @@ class TexasHoldemRandomPlayer(roomai.abstract.AbstractPlayer):
         if self.info.public_state.previous_id is not None:
             print "previous_id", self.info.public_state.previous_id
         if self.info.public_state.previous_action is not None:
-            print "previous_action", self.info.public_state.previous_action.get_key()
+            print "previous_action", self.info.public_state.previous_action.key()
         print "stage", self.info.public_state.stage
-        print "is_quit", self.info.public_state.is_quit, self.info.public_state.num_quit
+        print "is_fold", self.info.public_state.is_fold, self.info.public_state.num_quit
         print "is_allin", self.info.public_state.is_allin, self.info.public_state.num_allin
         print "is_needed_action",self.info.public_state.is_needed_to_action, self.info.public_state.num_needed_to_action
         print "turn:",self.info.public_state.turn
@@ -46,4 +55,7 @@ class TexasHoldemRandomPlayer(roomai.abstract.AbstractPlayer):
         return self.available_actions[keys[idx]]
 
     def reset(self):
+        """
+
+        """
         pass

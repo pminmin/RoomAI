@@ -1,17 +1,21 @@
 #!/bin/python
 #coding:utf-8
 
-import roomai.abstract
+import roomai.common
 import copy
 
 class StageSpace:
+    """
+    """
     firstStage  = 1
     secondStage = 2
     thirdStage  = 3
     fourthStage = 4
 
 
-class TexasHoldemAction(roomai.abstract.AbstractAction):
+class TexasHoldemAction(roomai.common.AbstractAction):
+    """
+    """
     # 弃牌
     Fold        = "Fold"
     # 过牌
@@ -23,18 +27,79 @@ class TexasHoldemAction(roomai.abstract.AbstractAction):
     # all in
     AllIn       = "Allin"
     def __init__(self, key):
+        """
+
+        Args:
+            key:
+        """
         opt_price = key.strip().split("_")
-        self.option = opt_price[0]
-        self.price  = int(opt_price[1])
-        self.String = "%s_%d"%(self.option, self.price)
-    def get_key(self):
-        return self.String
+        self.__option = opt_price[0]
+        self.__price  = int(opt_price[1])
+        self.__key    = "%s_%d"%(self.option, self.price)
 
-    def __deepcopy__(self, memodict={}):
-        return TexasHoldemAction(self.String)
+    @property
+    def key(self):
+        """
 
-class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
+        Returns:
+
+        """
+        return self.__key
+    @property
+    def option(self):
+        """
+
+        Returns:
+
+        """
+        return self.__option
+    @property
+    def price(self):
+        """
+
+        Returns:
+
+        """
+        return self.__price
+
+    @classmethod
+    def lookup(cls, key):
+        """
+
+        Args:
+            key:
+
+        Returns:
+
+        """
+        if key not in AllTexasActions:
+            AllTexasActions[key] = TexasHoldemAction(key)
+        return AllTexasActions[key]
+
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
+        if self.key not in AllTexasActions:
+            AllTexasActions[self.key] = TexasHoldemAction(self.key)
+        return AllTexasActions[self.key]
+
+AllTexasActions = dict()
+
+
+class TexasHoldemPublicState(roomai.common.AbstractPublicState):
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.stage              = None
         self.num_players        = None
         self.dealer_id          = None
@@ -43,7 +108,7 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.big_blind_bet      = None
 
         #state of players
-        self.is_quit                        = None
+        self.is_fold                        = None
         self.num_quit                       = None
         self.is_allin                       = None
         self.num_allin                      = None
@@ -68,6 +133,14 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
         self.previous_action    = None
 
     def __deepcopy__(self, memodict={}):
+            """
+
+            Args:
+                memodict:
+
+            Returns:
+
+            """
             copyinstance = TexasHoldemPublicState()
 
             copyinstance.stage         = self.stage
@@ -83,10 +156,10 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
 
             ######## quit, allin , needed_to_action
             copy.num_quit = self.num_quit
-            if self.is_quit is None:
-                copyinstance.is_quit = None
+            if self.is_fold is None:
+                copyinstance.is_fold = None
             else:
-                copyinstance.is_quit = [self.is_quit[i] for i in xrange(len(self.is_quit))]
+                copyinstance.is_fold = [self.is_fold[i] for i in xrange(len(self.is_fold))]
 
             copyinstance.num_allin = self.num_allin
             if self.is_allin is None:
@@ -133,17 +206,48 @@ class TexasHoldemPublicState(roomai.abstract.AbstractPublicState):
             return copyinstance
 
 
-class TexasHoldemPrivateState(roomai.abstract.AbstractPrivateState):
-    keep_cards = None
-    hand_cards = None
-
-
-class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
-    id                =    None
-    hand_cards        =    None
-    available_actions =    None
+class TexasHoldemPrivateState(roomai.common.AbstractPrivateState):
+    """
+    """
+    keep_cards = []
+    hand_cards = []
 
     def __deepcopy__(self, memodict={}):
+        """
+
+        Args:
+            memodict:
+        """
+        copy = TexasHoldemPrivateState()
+        if self.keep_cards is None:
+            copy.keep_cards = None
+        else:
+            copy.keep_cards = [self.keep_cards[i].__deepcopy__() for i in xrange(len(self.keep_cards))]
+
+        if self.hand_cards is None:
+            copy.hand_cards = None
+        else:
+            copy.hand_cards = [[] for i in xrange(len(self.hand_cards))]
+            for i in xrange(len(self.hand_cards)):
+                copy.hand_cards[i] = [self.hand_cards[i][j].__deepcopy__() for j in xrange(len(self.hand_cards[i]))]
+
+
+class TexasHoldemPersonState(roomai.common.AbstractPersonState):
+    """
+    """
+    id                =    0
+    hand_cards        =    []
+    available_actions =    dict()
+
+    def __deepcopy__(self, memodict={}):
+        """
+
+        Args:
+            memodict:
+
+        Returns:
+
+        """
         copyinstance    = TexasHoldemPersonState()
         copyinstance.id = self.id
         if self.hand_cards is not None:
@@ -158,16 +262,6 @@ class TexasHoldemPersonState(roomai.abstract.AbsractPersonState):
         else:
             copyinstance.available_actions = None
         return copyinstance
-
-class TexasHoldemInfo(roomai.abstract.AbstractInfo):
-    public_state            = None
-    person_state            = None
-
-    def __deepcopy__(self, memodict={}):
-        info = TexasHoldemInfo()
-        info.public_state = self.public_state.__deepcopy__()
-        info.public_state = self.person_state.__deepcopy__()
-        return info
 
 
 AllCardsPattern = dict()
