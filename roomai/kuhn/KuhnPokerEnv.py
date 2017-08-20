@@ -8,7 +8,18 @@ import roomai.kuhn.KuhnPokerUtils
 class KuhnPokerEnv(roomai.common.AbstractEnv):
 
     #@override
-    def init(self):
+    def init(self, params=dict()):
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+
+        if "start_turn" in params:
+            self.start_turn = params["start_turn"]
+        else:
+            self.start_turn = int(random.random() * 2)
+
         self.available_action = dict()
         self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check").key] = roomai.kuhn.KuhnPokerAction.lookup("check")
         self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet").key]   = roomai.kuhn.KuhnPokerAction.lookup("bet")
@@ -27,7 +38,7 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
             card0 = math.floor(random.random() * 3)
         self.private_state.hand_cards = [card0, card1]
 
-        self.public_state.turn          = int(random.random() * 2)
+        self.public_state.turn          = self.start_turn
         self.public_state.first         = self.public_state.turn
         self.public_state.epoch         = 0
         self.public_state.action_list   = []

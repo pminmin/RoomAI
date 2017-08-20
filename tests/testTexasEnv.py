@@ -10,14 +10,15 @@ class TexasEnvTester(unittest.TestCase):
 
     def testEnv3players(self):
         env = TexasHoldemEnv()
-        env.num_players   = 3
-        env.dealer_id     = 0
-        env.chips         = [100,100,100]
-        env.big_blind_bet = 20
+        num_players   = 3
+        dealer_id     = 0
+        chips         = [100,100,100]
+        big_blind_bet = 20
+        params  = {"num_players":num_players, "dealer_id":dealer_id, "chips":chips, "big_blind_bet":big_blind_bet}
         players =  [TexasHoldemRandomPlayer() for i in xrange(3)]
 
 
-        infos,public_state, person_states, private_state  = env.init()
+        infos,public_state, person_states, private_state  = env.init(params)
         self.assertEqual(infos[0].person_state.id,0)
         env.private_state.hand_cards[0] = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
         env.private_state.hand_cards[0] = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
@@ -69,10 +70,9 @@ class TexasEnvTester(unittest.TestCase):
         # state:all,  q,  n
         print env.public_state.bets
         print env.public_state.is_allin
-        print env.public_state.is_quit
+        print env.public_state.is_fold
         print env.public_state.chips
         print env.public_state.turn
-        assert(env.public_state.turn is None)
         self.assertTrue(public_state.is_terminal)
         self.assertEqual(public_state.scores[0], 30.0/public_state.big_blind_bet)
         self.assertEqual(public_state.scores[1], -10.0/public_state.big_blind_bet)
@@ -81,14 +81,15 @@ class TexasEnvTester(unittest.TestCase):
     def testEnv3Players2(self):
 
         env = TexasHoldemEnv()
-        env.num_players   = 3
-        env.dealer_id     = 0
-        env.chips         = [100, 500,1000]
-        env.big_blind_bet = 20
+        num_players   = 3
+        dealer_id     = 0
+        chips         = [100, 500,1000]
+        big_blind_bet = 20
+        params  = {"num_players":num_players, "dealer_id":dealer_id, "chips":chips, "big_blind_bet":big_blind_bet}
         players =  [TexasHoldemRandomPlayer() for i in xrange(3)]
 
 
-        infos,public_state, person_states, private_state = env.init()
+        infos,public_state, person_states, private_state = env.init(params)
         self.assertEqual(infos[0].person_state.id,0)
         env.private_state.hand_cards[0] = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
         env.private_state.hand_cards[1] = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
@@ -223,9 +224,10 @@ class TexasEnvTester(unittest.TestCase):
             players = [TexasHoldemRandomPlayer() for i in xrange(3)]
 
             env = TexasHoldemEnv()
-            env.num_players = 3
-            env.chips = [1000 for i in xrange(env.num_players)]
-            infos, public_state, person_states, private_state = env.init()
+            num_players = 3
+            chips       = [1000 for i in xrange(num_players)]
+            params = {"num_players": num_players,  "chips": chips}
+            infos, public_state, person_states, private_state = env.init(params)
 
             while public_state.is_terminal != True:
                 for i in xrange(3):
@@ -241,10 +243,11 @@ class TexasEnvTester(unittest.TestCase):
             players = [TexasHoldemRandomPlayer() for i in xrange(2)]
 
             env = TexasHoldemEnv()
-            env.num_players = 2
-            env.chips     = [1000 for i in xrange(env.num_players)]
-            env.dealer_id = i%2
-            infos, public_state, person_states, private_state = env.init()
+            num_players = 2
+            chips     = [1000 for i in xrange(num_players)]
+            dealer_id = i%2
+            params = {"num_players": num_players, "dealer_id": dealer_id, "chips": chips}
+            infos, public_state, person_states, private_state = env.init(params)
 
             while public_state.is_terminal != True:
                 for i in xrange(2):

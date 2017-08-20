@@ -1,6 +1,9 @@
 #!/bin/python
 #coding=utf8
 
+import roomai
+logger = roomai.get_logger()
+
 ######################################################################### Basic Concepts #####################################################
 class AbstractPublicState(object):
     def __init__(self):
@@ -67,6 +70,7 @@ class AbstractAction(object):
     def key(self):
         return self.__key
 
+    @classmethod
     def lookup(self, key):
         raise NotImplementedError("Not implemented")
 
@@ -106,11 +110,11 @@ class AbstractEnv(object):
     private_state_history = []
     person_states_history = []
 
-    def __init__(self):
-        self.public_state = AbstractPublicState()
-        self.private_state = AbstractPrivateState()
-        self.person_states = [AbstractPrivateState()]
-
+    def __init__(self, params=dict()):
+        self.public_state   = AbstractPublicState()
+        self.private_state  = AbstractPrivateState()
+        self.person_states  = [AbstractPrivateState()]
+        self.record_history = False
 
 
     def __gen_infos__(self):
@@ -123,6 +127,8 @@ class AbstractEnv(object):
         return infos
 
     def __gen_history__(self):
+        if self.record_history == False:
+            return
 
         self.public_state_history.append(self.public_state.__deepcopy__())
         self.private_state_history.append(self.private_state.__deepcopy__())
@@ -149,6 +155,9 @@ class AbstractEnv(object):
         :return: infos, public_state, person_states, private_state 
         :ValueError: if Env has reached the initializaiton state, and we call this backward function, we will get ValueError.
         '''
+
+        if self.record_history == False:
+            raise ValueError("Env can't backward when record_history = False. params = {\"record_history\":true} and env.init(params) will set the record_history to be true")
 
         if len(self.public_state_history) == 1:
             raise ValueError("Env has reached the initialization state and can't go back further. ")

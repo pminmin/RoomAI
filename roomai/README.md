@@ -15,8 +15,9 @@ def compete(env, players):
    '''
    for player in players:
         players.reset()
+   params = dict()
    
-   infos, public_state, person_states, private_state = env.init()
+   infos, public_state, person_states, private_state = env.init(params)
    for i in xrange(len(players)):
        players[i].receive_info(infos[i])
 
@@ -129,13 +130,15 @@ class AbstractEnv:
         The game goes back to the previous states
         :return:infos, public_state, person_states, private_state 
         '''
-        ... // The backward function has been implemented
+        ... 
+        # The backward function has been implemented in this abstract Env
 
-    def init(self):
+    def init(self, params = dict()):
         '''
         :return: infos, public_state, person_states, private_state
         '''
         raise NotImplementedError("The init function hasn't been implemented")
+        #params is the parameter for the game
         
     def forward(self, action):
         '''
@@ -164,6 +167,8 @@ class AbstractEnv:
         raise NotImplementedError("The is_action_valid function hasn't been implemented")
 
 </pre>
+
+
 
 
 ## Details of different games

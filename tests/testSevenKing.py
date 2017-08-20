@@ -9,8 +9,6 @@ import unittest
 class AlwaysFoldPlayer(roomai.common.AbstractPlayer):
     def take_action(self):
 
-
-
         if "" not in self.available_actions:
             min_card = None
             for a in self.available_actions.values():
@@ -54,9 +52,8 @@ class testSevenKing(unittest.TestCase):
         print (",".join([c.key for c in hand_card]))
     def testEnv(self):
         env = SevenKingEnv()
-        env.num_players = 2
 
-        infos, public_state, person_states, private_state = env.init()
+        infos, public_state, person_states, private_state = env.init({"num_players":2})
         assert(len(infos) == 2)
         turn = public_state.turn
         self.show_hand_card(person_states[turn].hand_cards)
@@ -77,9 +74,6 @@ class testSevenKing(unittest.TestCase):
         for i in range(100):
             SevenKingEnv.compete(env, players)
 
-
-
-
     def testScores(self):
         env = SevenKingEnv()
         env.num_players = 3
@@ -89,4 +83,14 @@ class testSevenKing(unittest.TestCase):
         scores  = env.compete(env, players)
         print scores
 
+        self.assertEqual(scores[0],-1)
+        self.assertEqual(scores[1],-1)
+        self.assertEqual(scores[2],2)
+
+    def testScores1(self):
+        env = SevenKingEnv()
+        infos, public_state, person_states, private_state = env.init()
+
+        self.assertTrue("" not in infos[public_state.turn].person_state.available_actions)
+        self.assertFalse(env.is_action_valid(SevenKingAction.lookup(""),public_state, person_states[public_state.turn]))
 
