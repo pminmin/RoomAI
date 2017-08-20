@@ -6,9 +6,30 @@ import roomai.common
 import roomai.kuhn.KuhnPokerUtils
 
 class KuhnPokerEnv(roomai.common.AbstractEnv):
+    """
+    """
 
     #@override
-    def init(self):
+    def init(self, params=dict()):
+        """
+
+        Args:
+            params:
+
+        Returns:
+
+        """
+
+        if "record_history" in params:
+            self.record_history = params["record_history"]
+        else:
+            self.record_history = False
+
+        if "start_turn" in params:
+            self.start_turn = params["start_turn"]
+        else:
+            self.start_turn = int(random.random() * 2)
+
         self.available_action = dict()
         self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("check").key] = roomai.kuhn.KuhnPokerAction.lookup("check")
         self.available_action[roomai.kuhn.KuhnPokerUtils.KuhnPokerAction("bet").key]   = roomai.kuhn.KuhnPokerAction.lookup("bet")
@@ -27,7 +48,7 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
             card0 = math.floor(random.random() * 3)
         self.private_state.hand_cards = [card0, card1]
 
-        self.public_state.turn          = int(random.random() * 2)
+        self.public_state.turn          = self.start_turn
         self.public_state.first         = self.public_state.turn
         self.public_state.epoch         = 0
         self.public_state.action_list   = []
@@ -48,6 +69,14 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
 
     #@override
     def forward(self, action):
+        """
+
+        Args:
+            action:
+
+        Returns:
+
+        """
         self.person_states[self.public_state.turn].available_actions = dict()
         self.public_state.epoch                                     += 1
         self.public_state.turn                                       = (self.public_state.turn+1)%2
@@ -95,6 +124,15 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
     #@Overide
     @classmethod
     def compete(cls, env, players):
+        """
+
+        Args:
+            env:
+            players:
+
+        Returns:
+
+        """
 
         infos, public_state, person_state, private_state = env.init()
         for i in xrange(len(players)):
@@ -112,6 +150,11 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
 
 
     def WhoHasHigherCard(self):
+        """
+
+        Returns:
+
+        """
         hand_cards = self.private_state.hand_cards
         if hand_cards[0] > hand_cards[1]:
             return 0
@@ -119,6 +162,11 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
             return 1
 
     def evaluteTwo(self):
+        """
+
+        Returns:
+
+        """
         win    = self.WhoHasHigherCard()
         first  = self.public_state.first
         scores = [0, 0];
@@ -148,6 +196,11 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
 
 
     def evaluteThree(self):
+        """
+
+        Returns:
+
+        """
         first   = self.public_state.first 
         win     = self.WhoHasHigherCard()
         scores  = [0, 0]

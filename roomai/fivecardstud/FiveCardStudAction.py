@@ -4,6 +4,8 @@ import roomai.common
 
 
 class FiveCardStudAction(roomai.common.AbstractAction):
+    """
+    """
 
     # 弃牌
     Fold        = "Fold"
@@ -19,6 +21,11 @@ class FiveCardStudAction(roomai.common.AbstractAction):
     Showhand    = "Showhand"
 
     def __init__(self,key):
+            """
+
+            Args:
+                key:
+            """
             super(FiveCardStudAction,self).__init__(key)
             opt_price = key.strip().split("_")
             if  opt_price[0] != self.Fold    and opt_price[0] != self.Call  and \
@@ -42,16 +49,43 @@ class FiveCardStudAction(roomai.common.AbstractAction):
 
     @property
     def option(self):
+        """
+
+        Returns:
+
+        """
         return self._roomai_option
     @property
     def price(self):
+        """
+
+        Returns:
+
+        """
         return self._roomai_price
 
     @classmethod
     def lookup(cls,key):
+        """
+
+        Args:
+            key:
+
+        Returns:
+
+        """
         return AllFiveCardStudActions[key]
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance        = AllFiveCardStudActions[self.key]
         return newinstance

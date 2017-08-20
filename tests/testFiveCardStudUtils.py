@@ -3,7 +3,12 @@ import unittest
 import roomai.fivecardstud
 
 class FiveCardStudUtils(unittest.TestCase):
+    """
+    """
     def test(self):
+        """
+
+        """
         public_state = roomai.fivecardstud.FiveCardStudPublicState()
         public_state.num_players      = 3
         public_state.round            = 1
@@ -16,6 +21,9 @@ class FiveCardStudUtils(unittest.TestCase):
         assert(turn == 2)
 
     def test1(self):
+        """
+
+        """
         public_cards = [[roomai.fivecardstud.FiveCardStudPokerCard("2_Spade"),\
                                      roomai.fivecardstud.FiveCardStudPokerCard("3_Spade"), \
                                      roomai.fivecardstud.FiveCardStudPokerCard("r_Spade")]]

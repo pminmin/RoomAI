@@ -16,13 +16,29 @@ FiveCardStudAllCardsPattern["1_1_1_1_1"]         = ["1_1_1_1_1", False, False, T
 
 
 class FiveCardStudPokerCard(roomai.common.PokerCard):
+    """
+    """
 
     def get_suit_rank(self):
+        """
+
+        Returns:
+
+        """
         suit_str_to_rank = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0}
         return suit_str_to_rank[self.suit_str]
 
     @classmethod
     def compare(cls, pokercard1, pokercard2):
+        """
+
+        Args:
+            pokercard1:
+            pokercard2:
+
+        Returns:
+
+        """
         pr1 = pokercard1.get_point_rank()
         pr2 = pokercard2.get_point_rank()
         if pr1 != pr2:
@@ -32,9 +48,30 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
 
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         if newinstance is None:
             newinstance = FiveCardStudAllPokerCards[self.key]
         return newinstance
+
+    @classmethod
+    def lookup(cls, key):
+        """
+
+        Args:
+            key:
+
+        Returns:
+
+        """
+        return FiveCardStudAllPokerCards[key]
 
 
 FiveCardStudAllPokerCards = dict()

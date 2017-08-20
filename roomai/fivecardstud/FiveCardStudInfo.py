@@ -4,9 +4,19 @@ import copy
 
 
 class FiveCardStudPrivateState(roomai.common.AbstractPrivateState):
+    """
+    """
     all_hand_cards    = None
 
     def __deepcopy__(self, memodict={}):
+        """
+
+        Args:
+            memodict:
+
+        Returns:
+
+        """
         copyinstance = FiveCardStudPrivateState()
         if self.all_hand_cards is None:
             copyinstance.all_hand_cards = None
@@ -16,6 +26,8 @@ class FiveCardStudPrivateState(roomai.common.AbstractPrivateState):
 
 
 class FiveCardStudPublicState(roomai.common.AbstractPublicState):
+    """
+    """
     first_hand_cards      = None
     second_hand_cards     = None
     third_hand_cards      = None
@@ -51,6 +63,14 @@ class FiveCardStudPublicState(roomai.common.AbstractPublicState):
     scores                 = None
 
     def __deepcopy__(self,memodict={}):
+        """
+
+        Args:
+            memodict:
+
+        Returns:
+
+        """
         copyinstance = FiveCardStudPublicState()
 
         if self.first_hand_cards is None:
@@ -134,7 +154,9 @@ class FiveCardStudPublicState(roomai.common.AbstractPublicState):
         return copyinstance
 
 
-class FiveCardStudPersonState(roomai.common.AbsractPersonState):
+class FiveCardStudPersonState(roomai.common.AbstractPersonState):
+    """
+    """
     id                = None
     available_actions = None
 
@@ -146,6 +168,15 @@ class FiveCardStudPersonState(roomai.common.AbsractPersonState):
 
 
     def __deepcopy__(self, memodict={}, newinstance = None):
+        """
+
+        Args:
+            memodict:
+            newinstance:
+
+        Returns:
+
+        """
         copyinstance    = FiveCardStudPersonState()
         copyinstance.id = self.id
 
