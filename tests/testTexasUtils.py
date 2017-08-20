@@ -1,25 +1,32 @@
 #!/bin/python
 import unittest
 
-import roomai.abstract
+import roomai.common
 from roomai.texas import TexasHoldemAction
 from roomai.texas import TexasHoldemEnv
 
 
 class TexasUtilsTester(unittest.TestCase):
+    """
+    """
 
     def test_pattern(self):
+        """
 
-        handcards1 =[roomai.abstract.PokerCard(0,0),roomai.abstract.PokerCard(1,1)]
-        keepcards  =[roomai.abstract.PokerCard(2,2),roomai.abstract.PokerCard(3,3),roomai.abstract.PokerCard(4,0),roomai.abstract.PokerCard(5,1),roomai.abstract.PokerCard(6,2)]
+        """
+
+        handcards1 =[roomai.common.PokerCard(0, 0), roomai.common.PokerCard(1, 1)]
+        keepcards  =[roomai.common.PokerCard(2, 2), roomai.common.PokerCard(3, 3), roomai.common.PokerCard(4, 0), roomai.common.PokerCard(5, 1), roomai.common.PokerCard(6, 2)]
         pattern    = TexasHoldemEnv.cards2pattern(handcards1, keepcards)
-        print pattern
 
     
     def test_cards1(self):
-        handcards1 = [roomai.abstract.PokerCard(0,0),roomai.abstract.PokerCard(0,1)]
-        handcards2 = [roomai.abstract.PokerCard(3,1),roomai.abstract.PokerCard(3,2)]
-        keepcards  = [roomai.abstract.PokerCard(0,2),roomai.abstract.PokerCard(0,3),roomai.abstract.PokerCard(2,0),roomai.abstract.PokerCard(2,1),roomai.abstract.PokerCard(3,3)]
+        """
+
+        """
+        handcards1 = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
+        handcards2 = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(3, 2)]
+        keepcards  = [roomai.common.PokerCard(0, 2), roomai.common.PokerCard(0, 3), roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1), roomai.common.PokerCard(3, 3)]
         pattern = TexasHoldemEnv.cards2pattern(handcards2, keepcards)
 
         self.assertEqual(pattern[0],'3_2')
@@ -41,17 +48,23 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertEqual(pattern[6][4].get_suit_rank(), 1)
 
     def test_cards2(self):
+        """
 
-        h1     = [roomai.abstract.PokerCard(7, 0), roomai.abstract.PokerCard(7, 1)]
-        keep   = [roomai.abstract.PokerCard(3,1),roomai.abstract.PokerCard(4,2),roomai.abstract.PokerCard(5,3),roomai.abstract.PokerCard(6,0),roomai.abstract.PokerCard(7,2)]
+        """
+
+        h1     = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
+        keep   = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(4, 2), roomai.common.PokerCard(5, 3), roomai.common.PokerCard(6, 0), roomai.common.PokerCard(7, 2)]
         pattern = TexasHoldemEnv.cards2pattern(h1, keep)
         self.assertEqual(pattern[0],"3_1_1")
 
 
     def test_cards(self):
-        handcards1 = [roomai.abstract.PokerCard(0,0),roomai.abstract.PokerCard(0,1)]
-        handcards2 = [roomai.abstract.PokerCard(3,1),roomai.abstract.PokerCard(3,2)]
-        keepcards  = [roomai.abstract.PokerCard(0,2),roomai.abstract.PokerCard(0,3),roomai.abstract.PokerCard(2,0),roomai.abstract.PokerCard(2,1),roomai.abstract.PokerCard(3,3)]
+        """
+
+        """
+        handcards1 = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
+        handcards2 = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(3, 2)]
+        keepcards  = [roomai.common.PokerCard(0, 2), roomai.common.PokerCard(0, 3), roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1), roomai.common.PokerCard(3, 3)]
         pattern = TexasHoldemEnv.cards2pattern(handcards1, keepcards)
         self.assertEqual(pattern[0],'4_1')
         self.assertEqual(pattern[1],False)
@@ -80,47 +93,52 @@ class TexasUtilsTester(unittest.TestCase):
 
 
     def test_available_actions(self):
+        """
+
+        """
         env = TexasHoldemEnv()
         env.init()
 
-        actions = TexasHoldemEnv.available_actions(env.public_state)
-        self.assertTrue("allin_1000" in actions)
+        actions = TexasHoldemEnv.available_actions(env.public_state, env.person_states[env.public_state.turn])
+        self.assertTrue("Allin_1000" in actions)
 
         env.public_state.raise_account = 200
-        actions = TexasHoldemEnv.available_actions(env.public_state)
-        self.assertTrue("call_10" in actions)
-        self.assertTrue("raise_210" in actions)
-        self.assertTrue("raise_410" in actions)
-        self.assertTrue("raise_410" in actions)
-        self.assertTrue("raise_810" in actions)
-        self.assertTrue("allin_1000" in actions)
+        actions = TexasHoldemEnv.available_actions(env.public_state, env.person_states[env.public_state.turn])
+        self.assertTrue("Call_10" in actions)
+        self.assertTrue("Raise_210" in actions)
+        self.assertTrue("Raise_410" in actions)
+        self.assertTrue("Raise_410" in actions)
+        self.assertTrue("Raise_810" in actions)
+        self.assertTrue("Allin_1000" in actions)
         for key in actions:
             act = actions[key]
-            print act.get_key()
-            self.assertTrue(TexasHoldemEnv.is_action_valid(env.public_state, act))
+            self.assertTrue(TexasHoldemEnv.is_action_valid(act,env.public_state, env.person_states[env.public_state.turn]))
 
 
 
     def test_is_action_valid(self):
+        """
+
+        """
         env = TexasHoldemEnv()
         env.init()
 
 
         print TexasHoldemAction.AllIn
-        action = TexasHoldemAction("allin_1000")
-        print action.get_key()
-        self.assertTrue(env.is_action_valid(env.public_state,action))
+        action = TexasHoldemAction("Allin_1000")
+        print action.key
+        self.assertTrue(env.is_action_valid(action, env.public_state, env.person_states[env.public_state.turn]))
 
 
     def test_compare(self):
-        h1 = [roomai.abstract.PokerCard(7, 0), roomai.abstract.PokerCard(7, 1)]
-        h2 = [roomai.abstract.PokerCard(2, 0), roomai.abstract.PokerCard(2, 1)]
-        h3 = [roomai.abstract.PokerCard(2, 2), roomai.abstract.PokerCard(2, 3)]
-        k  = [roomai.abstract.PokerCard(3,1),roomai.abstract.PokerCard(4,2),roomai.abstract.PokerCard(5,3),roomai.abstract.PokerCard(6,0),roomai.abstract.PokerCard(7,2)]
+        """
+
+        """
+        h1 = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
+        h2 = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
+        h3 = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]
+        k  = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(4, 2), roomai.common.PokerCard(5, 3), roomai.common.PokerCard(6, 0), roomai.common.PokerCard(7, 2)]
 
         p1 = TexasHoldemEnv.cards2pattern(h1, k)
         p2 = TexasHoldemEnv.cards2pattern(h2, k)
         p3 = TexasHoldemEnv.cards2pattern(h3, k)
-        print TexasHoldemEnv.compare_patterns(p1, p2)
-        print TexasHoldemEnv.compare_patterns(p2, p3)
-
