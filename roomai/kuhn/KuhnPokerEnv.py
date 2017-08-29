@@ -13,7 +13,6 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
     #@override
     def init(self, params=dict()):
         """
-
         Args:
             params:
 
