@@ -1,10 +1,12 @@
 #!/bin/python
-from roomai.algorithms import CRMPlayer
-from roomai.algorithms import CRMAlgorithm
-from roomai.kuhn       import KuhnPokerEnv
-from roomai.kuhn       import KuhnPokerRandomPlayer
-from roomai.kuhn       import KuhnPokerAlwaysBetPlayer
 import random
+
+from algorithms import CRMAlgorithm
+from algorithms import CRMPlayer
+from roomai.kuhn import KuhnPokerAlwaysBetPlayer
+from roomai.kuhn import KuhnPokerEnv
+from roomai.kuhn import KuhnPokerRandomPlayer
+
 
 class KuhnPokerCRMPlayer(CRMPlayer):
     """
@@ -26,7 +28,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
             targets:
         """
         for i in xrange(len(actions)):
-            state_action = "%s_%s"%(state, actions[i].key())
+            state_action = "%s_%s"%(state, actions[i].key)
             self.strategies[state_action] = targets[i]
 
     def get_strategies(self, state, actions):
@@ -41,7 +43,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
         """
         probs = [1.0 for i in xrange(len(actions))]
         for  i in xrange(len(actions)):
-            state_action = "%s_%s" % (state, actions[i].key())
+            state_action = "%s_%s" % (state, actions[i].key)
             if state_action not in self.strategies:
                 probs[i] = 1.0 / len(actions)
             else:
@@ -57,7 +59,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
             targets:
         """
         for i in xrange(len(actions)):
-            state_action = "%s_%s"%(state, actions[i].key())
+            state_action = "%s_%s"%(state, actions[i].key)
             self.regrets[state_action] = targets[i]
 
     def get_regrets(self, state, actions):
@@ -72,7 +74,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
         """
         regrets = [0 for i in xrange(len(actions))]
         for i in xrange(len(actions)):
-            state_action = "%s_%s" % (state, actions[i].key())
+            state_action = "%s_%s" % (state, actions[i].key)
             if state_action not in self.regrets:
                 regrets[i] = 0
             else:

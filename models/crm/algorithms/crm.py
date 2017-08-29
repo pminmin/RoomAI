@@ -74,7 +74,7 @@ class CRMAlgorithm(object):
 
 
         if deep == 0:
-            infos, public_state, person_states, private_state = env.init()
+            infos, public_state, person_states, private_state = env.init({"record_history":True, "num_players":2})
         else:
             infos, public_state, person_states, private_state = env.forward(action)
 
