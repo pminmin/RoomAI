@@ -287,7 +287,8 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
 
         ## pattern
-basestring            return False
+        if license_action.pattern[0] != "p_0" and license_action.pattern[0] != action.pattern[0]:
+            return False
         if license_action.pattern[0] == "p_0" and action.pattern == "p_0":
             return False
 
@@ -309,7 +310,7 @@ basestring            return False
         """
 
         Args:
-            hand_card:`     QFDG
+            hand_card:
             pattern:
 
         Returns:
