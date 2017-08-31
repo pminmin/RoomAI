@@ -271,38 +271,31 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 logger.error("The p_0 type action is invalid in the begining of the game or after the previous player took the p_0 type action ")
                 return False
 
+
         ### is action from hand_cards
         hand_keys = dict()
         for c in person_state.hand_cards:
             key = c.key
-            if c not in hand_keys:  hand_keys[key] = 1
-            else:  hand_keys[c] += 1
-        action_keys = dict()
-        for c in action.cards:
-            key = c.key
-            if c not in action_keys: action_keys[key] = 1
-            else:action_keys[key] +=1
+            hand_keys[key] = 1
 
-        for k in action_keys:
-            if k not in hand_keys or hand_keys[k] < action_keys[k]:
+
+
+        for c in action.cards:
+            k = c.key
+            if k not in hand_keys :
                 return False
 
+
         ## pattern
-        if license_action.pattern[0] != "p_0" and license_action.pattern[0] != action.pattern[0]:
-            return False
+basestring            return False
         if license_action.pattern[0] == "p_0" and action.pattern == "p_0":
             return False
 
 
+
         if license_action.pattern[0] != "p_0":
-            max_action_card = action.cards[0]
-            for c in action.cards:
-                if SevenKingPokerCard.compare(max_action_card,c) < 0:
-                    max_action_card = c
-            max_previous_card = license_action.cards[0]
-            for c in license_action.cards:
-                if SevenKingPokerCard.compare(max_previous_card,c) < 0:
-                    max_previous_card = c
+            max_action_card = action.cards[-1]
+            max_previous_card = license_action.cards[-1]
             if SevenKingPokerCard.compare(max_action_card, max_previous_card) < 0 :
                 return False
 
@@ -316,7 +309,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         """
 
         Args:
-            hand_card:
+            hand_card:`     QFDG
             pattern:
 
         Returns:
@@ -334,7 +327,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             point = c.point_rank
             if point not in point2cards:
                 point2cards[point] = []
-            point2cards[point].append(c.__deepcopy__())
+            point2cards[point].append(c)
         for p in point2cards:
             point2cards[p].sort(cmp = SevenKingPokerCard.compare)
 

@@ -463,6 +463,8 @@ class PokerCard(object):
         else:
             return pokercard1.suit_rank - pokercard2.suit_rank
 
+
+
     def __deepcopy__(self,  memodict={}, newinstance = None):
         """
 
