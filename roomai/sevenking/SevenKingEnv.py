@@ -261,6 +261,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         Returns:
 
         """
+        '''
         license_action = public_state.license_action
         if license_action is None:
             license_action = SevenKingAction.lookup("")
@@ -272,6 +273,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
                 return False
 
 
+        
         ### is action from hand_cards
         hand_keys = dict()
         for c in person_state.hand_cards:
@@ -284,7 +286,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             k = c.key
             if k not in hand_keys :
                 return False
-
+        
 
         ## pattern
         if license_action.pattern[0] != "p_0" and license_action.pattern[0] != action.pattern[0]:
@@ -299,7 +301,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             max_previous_card = license_action.cards[-1]
             if SevenKingPokerCard.compare(max_action_card, max_previous_card) < 0 :
                 return False
-
+'''
         return True
 
 
