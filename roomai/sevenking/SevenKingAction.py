@@ -56,7 +56,7 @@ class SevenKingAction(roomai.common.AbstractAction):
         Returns:
 
         """
-        return self.__cards
+        return tuple(self.__cards)
 
     @property
     def pattern(self):

@@ -21,6 +21,45 @@ suit_rank_to_str   = {3:'Spade', 2: 'Heart', 1: 'Diamond', 0:'Club', 4:'ForKing'
 class SevenKingPokerCard(roomai.common.PokerCard):
     """
     """
+    def __init__(self, point, suit = None):
+        """
+
+        Args:
+            point:
+            suit:
+        """
+        point1 = 0
+        suit1  = 0
+        if suit is None:
+            kv = point.split("_")
+            point1 = point_str_to_rank[kv[0]]
+            suit1  = suit_str_to_rank[kv[1]]
+        else:
+            point1 = point
+            if isinstance(point, str):
+                point1 = point_str_to_rank[point]
+            suit1  = suit
+            if isinstance(suit, str):
+                suit1 = suit_str_to_rank[suit]
+
+        self.__point_str  = point_rank_to_str[point1]
+        self.__suit_str   = suit_rank_to_str[suit1]
+        self.__point_rank = point1
+        self.__suit_rank  = suit1
+        self.__key        = "%s_%s" % (self.__point_str, self.__suit_str)
+
+    @property
+    def key(self):
+        return self.__key
+
+    @property
+    def point_str(self):
+        return self.__point_str
+
+    @property
+    def suit_str(self):
+        return self.__suit_str
+
     @property
     def point_rank(self):
         """
@@ -28,7 +67,7 @@ class SevenKingPokerCard(roomai.common.PokerCard):
         Returns:
 
         """
-        return point_str_to_rank[self.point_str]
+        return self.__point_rank
     @property
     def suit_rank(self):
         """
@@ -36,7 +75,7 @@ class SevenKingPokerCard(roomai.common.PokerCard):
         Returns:
 
         """
-        return suit_str_to_rank[self.suit_str]
+        return self.__suit_rank
     def lookup(cls, key):
         """
 
@@ -58,7 +97,7 @@ class SevenKingPokerCard(roomai.common.PokerCard):
 
         """
         if newinstance is None:
-            newinstance = AllSevenKingPokerCards[self.key]
+            newinstance = AllSevenKingPokerCards[self.__key]
         else:
             newinstance = super(SevenKingPokerCard, self).__deepcopy__(newinstance = newinstance)
         return newinstance

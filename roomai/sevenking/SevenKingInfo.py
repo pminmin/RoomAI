@@ -9,15 +9,47 @@ class SevenKingPublicState(roomai.common.AbstractPublicState):
 
         """
         super(SevenKingPublicState,self).__init__()
-        self.stage            = None
-        self.num_players      = None
-        self.showed_cards     = None
-        self.num_showed_cards = None
-        self.num_keep_cards   = None
-        self.num_hand_cards   = None
-        self.is_fold          = None
-        self.num_fold         = None
-        self.license_action   = None
+        self.__stage            = None
+        self.__num_players      = None
+        self.__showed_cards     = None
+        self.__num_showed_cards = None
+        self.__num_keep_cards   = None
+        self.__num_hand_cards   = None
+        self.__is_fold          = None
+        self.__num_fold         = None
+        self.__license_action   = None
+
+    @property
+    def stage(self):
+        return self.__stage
+
+    @property
+    def num_players(self):
+        return self.__num_players
+
+    @property
+    def showed_cards(self):
+        if self.__showed_cards is None:
+            return None
+        return tuple(self.__showed_cards)
+
+    @property
+    def num_showed_cards(self):
+        return self.__num_showed_cards
+
+    @property
+    def is_fold(self):
+        if self.__is_fold is None:
+            return None
+        return tuple(self.__is_fold)
+
+    @property
+    def num_fold(self):
+        return self.__num_fold
+
+    @property
+    def license_action(self):
+        return self.__license_action
 
     def __deepcopy__(self, newinstance = None, memodict={}):
         """
@@ -31,12 +63,12 @@ class SevenKingPublicState(roomai.common.AbstractPublicState):
         """
         if  newinstance is None:
             newinstance = SevenKingPublicState()
-        newinstance            = super(SevenKingPublicState,self).__deepcopy__(newinstance = newinstance)
+        newinstance   = super(SevenKingPublicState,self).__deepcopy__(newinstance = newinstance)
 
         if self.showed_cards is None:
-            newinstance.showed_cards = None
+            newinstance.__showed_cards = None
         else:
-            newinstance.showed_cards = [card.__deepcopy__() for card in self.showed_cards]
+            newinstance.__showed_cards = [card.__deepcopy__() for card in self.showed_cards]
         return newinstance
 
 class SevenKingPrivateState(roomai.common.AbstractPrivateState):
@@ -47,7 +79,11 @@ class SevenKingPrivateState(roomai.common.AbstractPrivateState):
 
         """
         super(SevenKingPrivateState,self).__init__()
-        self.keep_cards   = []
+        self.__keep_cards   = []
+
+    @property
+    def keep_cards(self):
+        return tuple(self.__keep_cards)
 
     def __deepcopy__(self, newinstance = None, memodict={}):
         """
@@ -61,8 +97,8 @@ class SevenKingPrivateState(roomai.common.AbstractPrivateState):
         """
         if newinstance is None:
             newinstance = SevenKingPrivateState()
-        newinstance            = super(SevenKingPrivateState,self).__deepcopy__(newinstance = newinstance)
-        newinstance.keep_cards =  [card.__deepcopy__() for card in self.keep_cards   ]
+        newinstance              = super(SevenKingPrivateState,self).__deepcopy__(newinstance = newinstance)
+        newinstance.__keep_cards =  [card.__deepcopy__() for card in self.keep_cards   ]
         return newinstance
 
 
@@ -74,7 +110,11 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
 
         """
         super(SevenKingPersonState,self).__init__()
-        self.hand_cards   = []
+        self.__hand_cards   = []
+
+    @property
+    def hand_cards(self):
+        return tuple(self.__hand_cards)
 
     def __deepcopy__(self, memodict={}, newinstance = None):
         """
@@ -87,9 +127,9 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
 
         """
         if newinstance is None:
-            newinstance        = SevenKingPersonState()
-        newinstance            = super(SevenKingPersonState, self).__deepcopy__(newinstance= newinstance)
-        newinstance.hand_cards = [card.__deepcopy__() for card in self.hand_cards]
+            newinstance          = SevenKingPersonState()
+        newinstance              = super(SevenKingPersonState, self).__deepcopy__(newinstance= newinstance)
+        newinstance.__hand_cards = [card.__deepcopy__() for card in self.hand_cards]
         return newinstance
 
 

@@ -97,8 +97,17 @@ class Info(object):
         """
 
         """
-        self.public_state       = AbstractPublicState()
-        self.person_state       = AbstractPersonState()
+        self.__public_state       = AbstractPublicState()
+        self.__person_state       = AbstractPersonState()
+
+
+    @property
+    def public_state(self):
+        return self.__public_state
+    @property
+    def person_state(self):
+        return self.__person_state
+
     def __deepcopy__(self, memodict={}, newinstance = None):
         """
 
@@ -111,8 +120,8 @@ class Info(object):
         """
         if newinstance is None:
             newinstance = Info()
-        newinstance.public_state = self.public_state.__deepcopy__()
-        newinstance.public_state = self.person_state.__deepcopy__()
+        newinstance.__public_state = self.__public_state.__deepcopy__()
+        newinstance.__public_state = self.__person_state.__deepcopy__()
         return newinstance
 
 class AbstractAction(object):
@@ -219,8 +228,8 @@ class AbstractEnv(object):
         num_players = len(self.person_states)
         infos = [Info() for i in xrange(num_players)]
         for i in xrange(num_players):
-            infos[i].person_state = self.person_states[i].__deepcopy__()
-            infos[i].public_state = self.public_state.__deepcopy__()
+            infos[i]._Info__person_state = self.person_states[i]
+            infos[i]._Info__public_state = self.public_state
 
         return infos
 
@@ -355,9 +364,11 @@ class PokerCard(object):
             if isinstance(suit, str):
                 suit1 = suit_str_to_rank[suit]
 
-        self.__point_str = point_rank_to_str[point1]
-        self.__suit_str  = suit_rank_to_str[suit1]
-        self.__key = "%s_%s" % (self.point_str, self.suit_str)
+        self.__point_str  = point_rank_to_str[point1]
+        self.__suit_str   = suit_rank_to_str[suit1]
+        self.__point_rank = point1
+        self.__suit_rank  = suit1
+        self.__key = "%s_%s" % (self.__point_str, self.__suit_str)
 
     @property
     def point_str(self):
@@ -384,7 +395,7 @@ class PokerCard(object):
         Returns:
 
         """
-        return point_str_to_rank[self.__point_str]
+        return self.__point_rank
     @property
     def suit_rank(self):
         """
@@ -392,7 +403,7 @@ class PokerCard(object):
         Returns:
 
         """
-        return
+        return self.__suit_rank
 
     @property
     def key(self):
@@ -415,6 +426,7 @@ class PokerCard(object):
         """
         return AllPokerCards[key]
 
+    '''
     def get_point_rank(self):
         """
 
@@ -430,6 +442,7 @@ class PokerCard(object):
 
         """
         return suit_str_to_rank[self.suit_str]
+    '''
 
     @classmethod
     def compare(cls, pokercard1, pokercard2):
@@ -442,13 +455,13 @@ class PokerCard(object):
         Returns:
 
         """
-        pr1 = pokercard1.get_point_rank()
-        pr2 = pokercard2.get_point_rank()
+        pr1 = pokercard1.point_rank
+        pr2 = pokercard2.point_rank
 
         if pr1 != pr2:
             return pr1 - pr2
         else:
-            return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
+            return pokercard1.suit_rank - pokercard2.suit_rank
 
     def __deepcopy__(self,  memodict={}, newinstance = None):
         """

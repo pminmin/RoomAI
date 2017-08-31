@@ -39,8 +39,8 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
         Returns:
 
         """
-        pr1 = pokercard1.get_point_rank()
-        pr2 = pokercard2.get_point_rank()
+        pr1 = pokercard1.point_rank
+        pr2 = pokercard2.point_rank
         if pr1 != pr2:
             return pr1-pr2
         else:
