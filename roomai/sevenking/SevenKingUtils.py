@@ -96,10 +96,15 @@ class SevenKingPokerCard(roomai.common.PokerCard):
         Returns:
 
         """
+
+        if self.key in AllSevenKingPokerCards:
+            return AllSevenKingPokerCards[self.key]
+
         if newinstance is None:
             newinstance = AllSevenKingPokerCards[self.__key]
         else:
             newinstance = super(SevenKingPokerCard, self).__deepcopy__(newinstance = newinstance)
+
         return newinstance
 
 AllSevenKingPokerCards = dict()

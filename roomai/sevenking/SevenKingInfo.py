@@ -1,5 +1,6 @@
 #!/bin/python
 import roomai.common
+from roomai.sevenking import SevenKingPokerCard
 
 class SevenKingPublicState(roomai.common.AbstractPublicState):
     """
@@ -110,11 +111,97 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
 
         """
         super(SevenKingPersonState,self).__init__()
-        self.__hand_cards   = []
+        self.__hand_cards         = []
+        self.__hand_cards_set    = set()
+        self.__hand_cards_key     = ""
+
 
     @property
     def hand_cards(self):
         return tuple(self.__hand_cards)
+
+    @property
+    def hand_cards_key(self):
+        return self.__hand_cards_key
+
+
+    def __add_card(self, c):
+        self.__hand_cards.append(c)
+        self.__hand_cards_set.add(c.key)
+
+        for j in range(len(self.__hand_cards)-1,0,-1):
+            if SevenKingPokerCard.compare(self.__hand_cards[j - 1], self.__hand_cards[j]) > 0:
+                tmp = self.__hand_cards[j]
+                self.__hand_cards[j] = self.__hand_cards[j-1]
+                self.__hand_cards[j-1] = tmp
+            else:
+                break
+
+        #self.__hand_cards.sort(cmp=SevenKingPokerCard.compare)
+        self.__hand_cards_key = ",".join([c.key for c in self.__hand_cards])
+
+    def __add_cards(self, cards):
+        len1 = len(self.__hand_cards)
+        for c in cards:
+            self.__hand_cards.append(c)
+            self.__hand_cards_set.add(c.key)
+        len2 = len(self.__hand_cards)
+
+
+        for i in range(len1,len2-1):
+            for j in range(i,0,-1):
+                if SevenKingPokerCard.compare(self.__hand_cards[j-1], self.__hand_cards[j]) > 0:
+                    tmp      = self.__hand_cards[j]
+                    self.__hand_cards[j] = self.__hand_cards[j-1]
+                    self.__hand_cards[j-1] = tmp
+                else:
+                    break
+
+
+        #self.__hand_cards.sort(cmp=SevenKingPokerCard.compare)
+        self.__hand_cards_key = ",".join([c.key for c in self.__hand_cards])
+
+
+
+    def __del_card(self, c):
+        self.__hand_cards_set.remove(c.key)
+
+        tmp = self.__hand_cards
+        self.__hand_cards = []
+        for i in range(len(tmp)):
+            if c.key == tmp[i].key:
+                continue
+            self.__hand_cards.append(tmp[i])
+        self.__hand_cards_key = ",".join([c.key for c in self.__hand_cards])
+
+
+    def __del_cards(self, cards):
+        for c in cards:
+            self.__hand_cards_set.remove(c.key)
+
+        tmp = self.__hand_cards
+        self.__hand_cards = []
+        for i in range(len(tmp)):
+            if tmp[i].key not in self.__hand_cards_set:
+                continue
+            self.__hand_cards.append(tmp[i])
+        self.__hand_cards_key = ",".join([c.key for c in self.__hand_cards])
+
+    def __gen_pointrank2cards(self):
+        if self.__hand_cards_key in AllPointRank2Cards:
+            return AllPointRank2Cards[self.__hand_cards_key]
+        else:
+            point2cards = dict()
+            for c in self.hand_cards:
+                point = c.point_rank
+                if point not in point2cards:
+                    point2cards[point] = []
+                point2cards[point].append(c)
+            #for p in point2cards:
+            #    point2cards[p].sort(cmp=SevenKingPokerCard.compare)
+
+            AllPointRank2Cards[self.__hand_cards_key] = point2cards
+            return point2cards
 
     def __deepcopy__(self, memodict={}, newinstance = None):
         """
@@ -134,3 +221,4 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
 
 
 
+AllPointRank2Cards = dict()

@@ -217,6 +217,7 @@ class AbstractEnv(object):
         self.private_state  = AbstractPrivateState()
         self.person_states  = [AbstractPrivateState()]
         self.record_history = False
+        self.__infos        = None
 
 
     def __gen_infos__(self):
@@ -225,13 +226,17 @@ class AbstractEnv(object):
         Returns:
 
         """
-        num_players = len(self.person_states)
-        infos = [Info() for i in xrange(num_players)]
-        for i in xrange(num_players):
-            infos[i]._Info__person_state = self.person_states[i]
-            infos[i]._Info__public_state = self.public_state
 
-        return infos
+        num_players = len(self.person_states)
+        if self.__infos is None:
+            self.__infos = [Info() for i in xrange(num_players)]
+
+        for i in xrange(num_players):
+            self.__infos[i]._Info__person_state = self.person_states[i]
+            self.__infos[i]._Info__public_state = self.public_state
+
+        return tuple(self.__infos)
+
 
     def __gen_history__(self):
         """

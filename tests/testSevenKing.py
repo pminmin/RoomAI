@@ -102,7 +102,7 @@ class testSevenKing(unittest.TestCase):
         print ("available_actions_v=",person_states[turn].available_actions.values())
 
 
-        action = SevenKingAction("%s,%s" % (person_states[turn].hand_cards[0].key, person_states[turn].hand_cards[1].key))
+        action = SevenKingAction("%s" % (person_states[turn].hand_cards[0].key))
         infos, public_state, person_states, private_state = env.forward(action)
 
 
