@@ -4,6 +4,7 @@ import math
 import copy
 import roomai.common
 import roomai.kuhn.KuhnPokerUtils
+logger = roomai.get_logger()
 
 class KuhnPokerEnv(roomai.common.AbstractEnv):
     """
@@ -12,13 +13,14 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
     #@override
     def init(self, params=dict()):
         """
-
         Args:
             params:
 
         Returns:
 
         """
+        if "num_players" in params and params["num_players"] != 2:
+            logger.warning("KuhnPoker is a game of two players, and doesn't accept num_players=%d"%(params["num_players"]))
 
         if "record_history" in params:
             self.record_history = params["record_history"]

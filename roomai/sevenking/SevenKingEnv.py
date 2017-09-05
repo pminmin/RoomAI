@@ -55,13 +55,14 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         self.person_states_history = []
 
         ## private_state
-        self.private_state.keep_cards = allcards
+        self.private_state._SevenKingPrivateState__keep_cards = allcards
 
         for i in range(self.num_players):
-            self.person_states[i].hand_cards = []
+            tmp = []
             for j in range(5):
-                c = self.private_state.keep_cards.pop()
-                self.person_states[i].hand_cards.append(c)
+                c = self.private_state._SevenKingPrivateState__keep_cards.pop()
+                tmp.append(c)
+            self.person_states[i]._SevenKingPersonState__add_cards(tmp)
 
         ## public_state
         self.public_state.turn,_          = self.choose_player_with_lowest_card()
@@ -69,14 +70,14 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         self.public_state.scores          = []
         self.public_state.previous_id     = None
         self.public_state.previous_action = None
-        self.public_state.license_action  = SevenKingAction.lookup("")
-        self.public_state.stage           = 0
+        self.public_state._SevenKingPublicState__license_action  = SevenKingAction.lookup("")
+        self.public_state._SevenKingPublicState__stage           = 0
 
-        self.public_state.num_players     = self.num_players
-        self.public_state.num_keep_cards  = len(self.private_state.keep_cards)
-        self.public_state.num_hand_cards  = [len(person_state.hand_cards) for person_state in self.person_states]
-        self.public_state.is_fold         = [False for i in range(self.public_state.num_players)]
-        self.public_state.num_fold        = 0
+        self.public_state._SevenKingPublicState__num_players     = self.num_players
+        self.public_state._SevenKingPublicState__num_keep_cards  = len(self.private_state.keep_cards)
+        self.public_state._SevenKingPublicState__num_hand_cards  = [len(person_state.hand_cards) for person_state in self.person_states]
+        self.public_state._SevenKingPublicState__is_fold         = [False for i in range(self.public_state.num_players)]
+        self.public_state._SevenKingPublicState__num_fold        = 0
 
         ## person_state
         for i in range(self.num_players):
@@ -102,36 +103,32 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         pes  = self.person_states
         turn = pu.turn
 
-        if SevenKingEnv.is_action_valid(action, pu, pes[turn]) == False:
+        if action.key not in pes[turn].available_actions:
             raise  ValueError("The (%s) is an invalid action " % (action.key))
 
         ## the action plays its role
         if action.pattern[0] == "p_0":
-            pu.is_fold[turn]           = True
-            pu.num_fold               += 1
+            pu._SevenKingPublicState__is_fold[turn]           = True
+            pu._SevenKingPublicState__num_fold               += 1
             pes[turn].available_actions = dict()
         else:
-            action_key_tmp  = dict([(c.key, None) for c in action.cards])
-            cards_tmp       = pes[turn].hand_cards
-
-            pes[turn].hand_cards = []
-            for c in cards_tmp:
-                if c.key not in action_key_tmp:
-                    pes[turn].hand_cards.append(c)
+            pes[turn]._SevenKingPersonState__del_cards(action.cards)
 
             if pu.stage == 0:
+                tmp = []
                 for i in range(5 - len(pes[turn].hand_cards)):
-                    c = pr.keep_cards.pop()
-                    pes[turn].hand_cards.append(c)
+                    c = pr._SevenKingPrivateState__keep_cards.pop()
+                    tmp.append(c)
+                pes[turn]._SevenKingPersonState__add_cards(tmp)
             elif pu.stage == 1:
-                pu.num_hand_cards[turn] = len(pes[turn].hand_cards)
+                pu._SevenKingPublicState__num_hand_cards[turn] = len(pes[turn]._SevenKingPersonState__hand_cards)
 
             pes[turn].available_actions = dict()
 
         pu.previous_id     = turn
-        pu.previous_action = action.__deepcopy__()
+        pu.previous_action = action
         if action.pattern[0] != "p_0":
-            pu.license_action = action
+            pu._SevenKingPublicState__license_action = action
 
 
 
@@ -144,30 +141,30 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             pu.scores         = self.compute_scores()
             new_turn          = None
             pu.turn           = new_turn
-            pu.license_action = SevenKingAction.lookup("")
+            pu._SevenKingPublicState__license_action = SevenKingAction.lookup("")
 
         ## stage 0 to 1
         elif len(self.private_state.keep_cards) < 5 and pu.stage == 0:
             new_turn, min_card              = self.choose_player_with_lowest_card()
             pu.turn                         = new_turn
-            pu.num_fold                     = 0
-            pu.is_fold                      = [False for i in range(pu.num_players)]
-            pu.license_action               = SevenKingAction.lookup("")
+            pu._SevenKingPublicState__num_fold                     = 0
+            pu._SevenKingPublicState__is_fold                      = [False for i in range(pu.num_players)]
+            pu._SevenKingPublicState__license_action               = SevenKingAction.lookup("")
             pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
             keys = pes[new_turn].available_actions.keys()
             for key in keys:
                 if min_card.key not in key:
                     del pes[new_turn].available_actions[key]
-            pu.stage                        = 1
+            pu._SevenKingPublicState__stage                        = 1
 
 
         ## round next
         elif self.public_state.num_fold + 1 == pu.num_players:
-            new_turn                        = self.choose_player_with_nofold()
-            pu.turn                         = new_turn
-            pu.num_fold                     = 0
-            pu.is_fold                      = [False for i in range(pu.num_players)]
-            pu.license_action               = SevenKingAction.lookup("")
+            new_turn                                               = self.choose_player_with_nofold()
+            pu.turn                                                = new_turn
+            pu._SevenKingPublicState__num_fold                     = 0
+            pu._SevenKingPublicState__is_fold                      = [False for i in range(pu.num_players)]
+            pu._SevenKingPublicState__license_action               = SevenKingAction.lookup("")
             pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
 
 
@@ -247,7 +244,18 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         return public_state.scores
 
 
+    @classmethod
+    def __is_action_valid__(cls, action, public_state, person_state):
 
+        license_action = public_state.license_action
+
+        if len(action.cards) > 0 and license_action is not None and len(license_action.cards) > 0:
+            max_action_card = action.cards[-1]
+            max_previous_card = license_action.cards[-1]
+            if SevenKingPokerCard.compare(max_action_card, max_previous_card) < 0:
+                return False
+
+        return True
 
     @classmethod
     def is_action_valid(self, action, public_state, person_state):
@@ -261,58 +269,14 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         Returns:
 
         """
-        license_action = public_state.license_action
-        if license_action is None:
-            license_action = SevenKingAction.lookup("")
-
-        if action.pattern[0] == "p_0":
-            if license_action.pattern[0] != "p_0":   return True
-            elif license_action.pattern[0] == "p_0":
-                logger.error("The p_0 type action is invalid in the begining of the game or after the previous player took the p_0 type action ")
-                return False
-
-        ### is action from hand_cards
-        hand_keys = dict()
-        for c in person_state.hand_cards:
-            key = c.key
-            if c not in hand_keys:  hand_keys[key] = 1
-            else:  hand_keys[c] += 1
-        action_keys = dict()
-        for c in action.cards:
-            key = c.key
-            if c not in action_keys: action_keys[key] = 1
-            else:action_keys[key] +=1
-
-        for k in action_keys:
-            if k not in hand_keys or hand_keys[k] < action_keys[k]:
-                return False
-
-        ## pattern
-        if license_action.pattern[0] != "p_0" and license_action.pattern[0] != action.pattern[0]:
-            return False
-        if license_action.pattern[0] == "p_0" and action.pattern == "p_0":
-            return False
-
-
-        if license_action.pattern[0] != "p_0":
-            max_action_card = action.cards[0]
-            for c in action.cards:
-                if SevenKingPokerCard.compare(max_action_card,c) < 0:
-                    max_action_card = c
-            max_previous_card = license_action.cards[0]
-            for c in license_action.cards:
-                if SevenKingPokerCard.compare(max_previous_card,c) < 0:
-                    max_previous_card = c
-            if SevenKingPokerCard.compare(max_action_card, max_previous_card) < 0 :
-                return False
-
-        return True
+        return action.key in person_state.available_actions
 
 
 
     ########################### about gen_available_actions ########################
+
     @classmethod
-    def __gen_available_actions_with_pattern(cls, hand_card, pattern):
+    def __gen_available_actions_with_pattern__(cls, public_state, person_state, pattern):
         """
 
         Args:
@@ -324,81 +288,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         """
         res = []
 
-        if len(hand_card) < pattern[1]:
-            return res
-        if pattern[0] == "p_0":
-            return res
-
-        point2cards = dict()
-        for c in hand_card:
-            point = c.get_point_rank()
-            if point not in point2cards:
-                point2cards[point] = []
-            point2cards[point].append(c.__deepcopy__())
-        for p in point2cards:
-            point2cards[p].sort(cmp = SevenKingPokerCard.compare)
-
-        if pattern[0] == "p_1":
-            for c in hand_card:
-                res.append(SevenKingAction.lookup(c.key))
-
-        elif pattern[0] == "p_2":
-            for p in point2cards:
-                len1 = len(point2cards[p])
-                if len1 == 2:
-                    str = "%s,%s"%(point2cards[p][0].key,point2cards[p][1].key)
-                    res.append(SevenKingAction.lookup(str))
-                if len1 == 3:
-                    str = "%s,%s"%(point2cards[p][0].key,point2cards[p][1].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s"%(point2cards[p][0].key,point2cards[p][2].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s"%(point2cards[p][1].key,point2cards[p][2].key)
-                    res.append(SevenKingAction.lookup(str))
-                if len1 == 4:
-                    str = "%s,%s" % (point2cards[p][0].key, point2cards[p][1].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s" % (point2cards[p][0].key, point2cards[p][2].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s" % (point2cards[p][0].key, point2cards[p][3].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s" % (point2cards[p][1].key, point2cards[p][2].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s" % (point2cards[p][1].key, point2cards[p][3].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s" % (point2cards[p][2].key, point2cards[p][3].key)
-                    res.append(SevenKingAction.lookup(str))
-
-
-        elif pattern[0] == "p_3":
-            for p in point2cards:
-                len1 = len(point2cards[p])
-                if len1 == 3:
-                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1].key, point2cards[p][2].key)
-                    res.append(SevenKingAction.lookup(str))
-                if len1 == 4:
-                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1].key, point2cards[p][2].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1].key, point2cards[p][3].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][2].key, point2cards[p][3].key)
-                    res.append(SevenKingAction.lookup(str))
-                    str = "%s,%s,%s" % (point2cards[p][1].key, point2cards[p][2].key, point2cards[p][3].key)
-                    res.append(SevenKingAction.lookup(str))
-
-        elif pattern[0] == "p_4":
-            for p in point2cards:
-                if len(point2cards[p]) >= 4:
-                    str = "%s,%s,%s,%s"%(
-                        point2cards[p][0].key,
-                        point2cards[p][1].key,
-                        point2cards[p][2].key,
-                        point2cards[p][3].key
-                    )
-                    res.append(SevenKingAction.lookup(str))
-
-        else:
-            raise ValueError("The %s pattern is invalid"%(pattern[0]))
+       
 
         return res
 
@@ -421,19 +311,138 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         hand_cards = person_state.hand_cards
 
 
+        patterns = set()
         if license_action.pattern[0] == "p_0":
-            for pattern in AllSevenKingPatterns.values():
-                if pattern[0] == "p_0":continue
-                actions = cls.__gen_available_actions_with_pattern(hand_cards, pattern)
-                for action in actions:
-                    if cls.is_action_valid(action, public_state, person_state) == True:
-                        available_actions[action.key] = action
+            for p in AllSevenKingPatterns.values():
+                if p[0] != "p_0":
+                    patterns.add(p)
         else:
-            actions = cls.__gen_available_actions_with_pattern(hand_cards, license_action.pattern)
-            for action in actions:
-                if cls.is_action_valid(action, public_state, person_state) == True:
-                    available_actions[action.key] = action
-            available_actions[""] = SevenKingAction.lookup("")
+            patterns.add(license_action.pattern)
+            patterns.add(AllSevenKingPatterns["p_0"])
+
+        for pattern in patterns:
+
+                if pattern[1] >= 2:
+                    point2cards = person_state._SevenKingPersonState__gen_pointrank2cards()
+
+                if len(person_state.hand_cards) < pattern[1]:
+                    continue
+
+                elif pattern[0] == "p_0":
+                    available_actions[""] = SevenKingAction.lookup("")
+
+
+                elif pattern[0] == "p_1":
+                    for c in person_state.hand_cards:
+                        available_actions[c.key] = (SevenKingAction.lookup(c.key))
+
+                elif pattern[0] == "p_2":
+                    for p in point2cards:
+
+                        license_pattern = license_action.pattern
+                        license_card    = None
+                        if license_pattern[0] != "p_0":
+                            #print license_action.key, license_action.pattern, license_pattern[0] != "p_0"
+                            license_card    = license_action.cards[-1]
+                        len1 = len(point2cards[p])
+
+                        if len1 == 2:
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][1],
+                                                                                      license_card) > 0:
+                                str = "%s,%s" % (point2cards[p][0].key, point2cards[p][1].key)
+                                available_actions[str] = SevenKingAction.lookup(str)
+
+                        if len1 == 3:
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][1],
+                                                                                      license_card) > 0:
+                                str = "%s,%s" % (point2cards[p][0].key, point2cards[p][1].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][2],
+                                                                                      license_card) > 0:
+                                str = "%s,%s" % (point2cards[p][0].key, point2cards[p][2].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+                                str = "%s,%s" % (point2cards[p][1].key, point2cards[p][2].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+
+                        if len1 == 4:
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][1],
+                                                                                      license_card) > 0:
+                                str = "%s,%s" % (point2cards[p][0].key, point2cards[p][1].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][2],
+                                                                                      license_card) > 0:
+                                str = "%s,%s" % (point2cards[p][0].key, point2cards[p][2].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+                                str = "%s,%s" % (point2cards[p][1].key, point2cards[p][2].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][3],
+                                                                                      license_card) > 0:
+                                str = "%s,%s" % (point2cards[p][0].key, point2cards[p][3].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+                                str = "%s,%s" % (point2cards[p][1].key, point2cards[p][3].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+                                str = "%s,%s" % (point2cards[p][2].key, point2cards[p][3].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+
+
+                elif pattern[0] == "p_3":
+                    for p in point2cards:
+
+                        license_pattern = license_action.pattern
+                        license_card    = None
+                        if license_pattern[0] != "p_0" :
+                            license_card    = license_action.cards[-1]
+                        len1 = len(point2cards[p])
+
+                        if len1 == 3:
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][2],
+                                                                                      license_card) > 0:
+                                str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1].key, point2cards[p][2].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+                        if len1 == 4:
+
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][2],
+                                                                                      license_card) > 0:
+                                str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1].key, point2cards[p][2].key)
+                                available_actions[str] = (SevenKingAction.lookup(str))
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][3],
+                                                                                      license_card) > 0:
+                                str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][1].key, point2cards[p][3].key)
+                                available_actions[str]=(SevenKingAction.lookup(str))
+                                str = "%s,%s,%s" % (point2cards[p][0].key, point2cards[p][2].key, point2cards[p][3].key)
+                                available_actions[str]=(SevenKingAction.lookup(str))
+                                str = "%s,%s,%s" % (point2cards[p][1].key, point2cards[p][2].key, point2cards[p][3].key)
+                                available_actions[str]=(SevenKingAction.lookup(str))
+
+                elif pattern[0] == "p_4":
+                    for p in point2cards:
+                        license_pattern = license_action.pattern
+                        license_card    = None
+                        if license_pattern[0] != "p_0" :
+                            license_card    = license_action.cards[-1]
+                        len1 = len(point2cards[p])
+
+                        if len1 >= 4:
+                            if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(point2cards[p][3],
+                                                                                  license_card) > 0:
+                                str = "%s,%s,%s,%s" % (
+                                    point2cards[p][0].key,
+                                    point2cards[p][1].key,
+                                    point2cards[p][2].key,
+                                    point2cards[p][3].key
+                                )
+                                available_actions[str]=(SevenKingAction.lookup(str))
+
+                if pattern[0] != "p_0" and pattern[0] != "p_1" and\
+                   pattern[0] != "p_2" and pattern[0] != "p_3" and pattern[0] != "p_4":
+                    raise ValueError("The %s pattern is invalid" % (pattern[0]))
+
+
+        #for a in available_actions.values():
+        #    if SevenKingEnv.__is_action_valid__(a,public_state,person_state) == False:
+        #        del available_actions[a.key]
 
         return available_actions
 

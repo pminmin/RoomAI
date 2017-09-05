@@ -102,7 +102,7 @@ class testSevenKing(unittest.TestCase):
         print ("available_actions_v=",person_states[turn].available_actions.values())
 
 
-        action = SevenKingAction("%s" % (person_states[turn].hand_cards[0].key))
+        action = SevenKingAction("%s,%s" % (person_states[turn].hand_cards[0].key, person_states[turn].hand_cards[1].key))
         infos, public_state, person_states, private_state = env.forward(action)
 
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
 
     import time
     start =time.time()
-    for i in range(1000):
+    for i in range(100):
         scores = env.compete(env, players)
     end = time.time()
     print end-start

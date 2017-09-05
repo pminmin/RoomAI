@@ -56,7 +56,7 @@ class SevenKingAction(roomai.common.AbstractAction):
         Returns:
 
         """
-        return self.__cards
+        return tuple(self.__cards)
 
     @property
     def pattern(self):
@@ -84,7 +84,7 @@ class SevenKingAction(roomai.common.AbstractAction):
             return AllSevenKingActions[key]
 
     def __deepcopy__(self, memodict={}, newinstance = None):
-        """
+        '''
 
         Args:
             memodict:
@@ -92,13 +92,22 @@ class SevenKingAction(roomai.common.AbstractAction):
 
         Returns:
 
-        """
-        if newinstance is None:
-            newinstance = SevenKingAction(self.key)
-        newinstance         = super(SevenKingAction,self).__deepcopy__(newinstance = newinstance)
-        newinstance.__key     = self.key
-        newinstance.__cards   = [card.__deepcopy__() for card in self.cards]
-        newinstance.__pattern = self.pattern
-        return newinstance
+        '''
+
+        if self.__key in AllSevenKingActions:
+            return AllSevenKingActions[self.__key]
+
+        else:
+            if newinstance is None:
+                newinstance = SevenKingAction(self.key)
+            else:
+                newinstance           = super(SevenKingAction,self).__deepcopy__(newinstance = newinstance)
+                newinstance.__key     = self.__key
+                newinstance.__cards   = [card.__deepcopy__() for card in self.__cards]
+                newinstance.__pattern = self.__pattern
+            AllSevenKingActions[self.__key] = newinstance
+
+            return newinstance
 
 AllSevenKingActions = dict()
+

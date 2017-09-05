@@ -1,13 +1,12 @@
 #!/bin/python
 
-import roomai.common
-import roomai.algorithms
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+
+import algorithms
 
 
-
-class KuhnPokerCRMPlayer(roomai.algorithms.CRMPlayer):
+class KuhnPokerCRMPlayer(algorithms.CRMPlayer):
     """
     """
     def __init__(self, num_players=2):

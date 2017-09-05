@@ -542,19 +542,19 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         """
         pointrank2cards = dict()
         for c in hand_cards + remaining_cards:
-            if c.get_point_rank() in pointrank2cards:
-                pointrank2cards[c.get_point_rank()].append(c)
+            if c.point_rank in pointrank2cards:
+                pointrank2cards[c.point_rank].append(c)
             else:
-                pointrank2cards[c.get_point_rank()] = [c]
+                pointrank2cards[c.point_rank] = [c]
         for p in pointrank2cards:
             pointrank2cards[p].sort(roomai.common.PokerCard.compare)
 
         suitrank2cards = dict()
         for c in hand_cards + remaining_cards:
-            if c.get_suit_rank() in suitrank2cards:
-                suitrank2cards[c.get_suit_rank()].append(c)
+            if c.suit_rank in suitrank2cards:
+                suitrank2cards[c.suit_rank].append(c)
             else:
-                suitrank2cards[c.get_suit_rank()] = [c]
+                suitrank2cards[c.suit_rank] = [c]
         for s in suitrank2cards:
             suitrank2cards[s].sort(roomai.common.PokerCard.compare)
 
@@ -575,7 +575,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             if len(suitrank2cards[s]) >= 5:
                 numStraight = 1
                 for i in xrange(len(suitrank2cards[s]) - 2, -1, -1):
-                    if suitrank2cards[s][i].get_point_rank() == suitrank2cards[s][i + 1].get_point_rank() - 1:
+                    if suitrank2cards[s][i].point_rank == suitrank2cards[s][i + 1].point_rank - 1:
                         numStraight += 1
                     else:
                         numStraight = 1
