@@ -103,7 +103,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
         pes  = self.person_states
         turn = pu.turn
 
-        if action.key not in pes[turn].available_actions:
+        if self.is_action_valid(action,pu, pes[turn]) == False:
             raise  ValueError("The (%s) is an invalid action " % (action.key))
 
         ## the action plays its role
@@ -245,19 +245,6 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
 
     @classmethod
-    def __is_action_valid__(cls, action, public_state, person_state):
-
-        license_action = public_state.license_action
-
-        if len(action.cards) > 0 and license_action is not None and len(license_action.cards) > 0:
-            max_action_card = action.cards[-1]
-            max_previous_card = license_action.cards[-1]
-            if SevenKingPokerCard.compare(max_action_card, max_previous_card) < 0:
-                return False
-
-        return True
-
-    @classmethod
     def is_action_valid(self, action, public_state, person_state):
         """
 
@@ -274,23 +261,6 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
 
     ########################### about gen_available_actions ########################
-
-    @classmethod
-    def __gen_available_actions_with_pattern__(cls, public_state, person_state, pattern):
-        """
-
-        Args:
-            hand_card:
-            pattern:
-
-        Returns:
-
-        """
-        res = []
-
-       
-
-        return res
 
     @classmethod
     def available_actions(cls, public_state, person_state):
