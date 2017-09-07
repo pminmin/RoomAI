@@ -9,7 +9,7 @@ import algorithms
 class KuhnPokerCRMPlayer(algorithms.CRMPlayer):
     """
     """
-    def __init__(self, num_players=2):
+    def __init__(self):
         """
 
         Args:
@@ -17,7 +17,7 @@ class KuhnPokerCRMPlayer(algorithms.CRMPlayer):
         """
 
         self.graph       = tf.Graph()
-        self.num_players = num_players
+        self.num_players = 2 #only for 2 players
 
         with self.graph.as_default() as graph:
 
