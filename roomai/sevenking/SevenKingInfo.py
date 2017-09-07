@@ -112,7 +112,7 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
         """
         super(SevenKingPersonState,self).__init__()
         self.__hand_cards         = []
-        self.__hand_cards_set    = set()
+        self.__hand_cards_set     = set()
         self.__hand_cards_key     = ""
 
 
@@ -123,6 +123,10 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
     @property
     def hand_cards_key(self):
         return self.__hand_cards_key
+
+    @property
+    def hand_cards_set(self):
+        return frozenset(self.__hand_cards_set)
 
 
     def __add_card(self, c):
@@ -215,8 +219,10 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
         """
         if newinstance is None:
             newinstance          = SevenKingPersonState()
-        newinstance              = super(SevenKingPersonState, self).__deepcopy__(newinstance= newinstance)
-        newinstance.__hand_cards = [card.__deepcopy__() for card in self.hand_cards]
+        newinstance                     = super(SevenKingPersonState, self).__deepcopy__(newinstance= newinstance)
+        newinstance.__hand_cards        = list(tuple(self.__hand_cards))
+        newinstance.__hand_cards        = set(self.__hand_cards_set)
+        newinstance.__hand_cards_key    = self.__hand_cards_key
         return newinstance
 
 
