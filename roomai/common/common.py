@@ -198,6 +198,20 @@ class AbstractPlayer(object):
         raise NotImplementedError("The reset function hasn't been implemented")
 
 
+class RandomPlayer(AbstractPlayer):
+
+    """
+    """
+    def receive_info(self, info):
+        self.available_actions = info.person_state.available_actions
+
+    def take_action(self):
+        import random
+        idx = int(random.random() * len(self.available_actions))
+        return self.available_actions.values()[idx]
+
+    def reset(self):
+        pass
 
 
 class AbstractEnv(object):

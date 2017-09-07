@@ -205,7 +205,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             pu.public_cards = pr.keep_cards[0:5]
             pu.is_terminal  = True
             pu.scores       = self.compute_scores()
-
+            pe[pu.previous_id].available_actions = dict()
 
         # enter into the next stage
         elif TexasHoldemEnv.is_nextround(self.public_state):
@@ -266,7 +266,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         total_count        = 1000
 
 
-        for count in xrange(total_count):
+        for count in range(total_count):
 
             chips          = [(1000 + int(random.random() * 200)) for i in range(len(players))]
             num_players    = len(players)
@@ -291,21 +291,6 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 players[i].receive_info(infos[i])
                 total_scores[i] += public.scores[i]
 
-            '''
-            if count < 1000:
-                print count,public.dealer_id,public.scores,public.stage
-                for i in xrange(public.num_players):
-                    for j in xrange(len(private.hand_cards[i])):
-                        print private.hand_cards[i][j].key,
-                    print ""
-                print len(public.public_cards)
-                for j in xrange(len(public.public_cards)):
-                    print public.public_cards[j].key,
-                print ""
-                for i in xrange(public.num_players):
-                    x = cls.cards2pattern(private.hand_cards[i], public.public_cards)
-                    print x[0],x[5]
-            '''
 
             if (count + 1)%500 == 0:
                 tmp_scores = [0 for i in xrange(len(total_scores))]
@@ -772,7 +757,8 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 key_actions[action.key] = action
 
         ## for raise
-        if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn] + pu.raise_account:
+        #if pu.bets[turn] != pu.max_bet_sofar and \
+        if pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn] + pu.raise_account:
             num = (pu.chips[turn] - (pu.max_bet_sofar - pu.bets[turn])) / pu.raise_account
             for i in xrange(1, num + 1):
                 price = pu.max_bet_sofar - pu.bets[turn] + pu.raise_account * i

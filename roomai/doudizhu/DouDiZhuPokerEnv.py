@@ -14,8 +14,8 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
     def __init__(self):
         """
-
         """
+        super(DouDiZhuPokerEnv, self).__init__()
         self.public_state  = DouDiZhuPublicState()
         self.private_state = DouDiZhuPrivateState()
         self.person_states = [DouDiZhuPersonState() for i in range(3)]
@@ -233,7 +233,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
         while public_state.is_terminal == False:
             turn = public_state.turn
-            action = players[turn].takeAction()
+            action = players[turn].take_action()
             infos, public_state, person_states, private_state = env.forward(action)
             for i in range(len(players)):
                 players[i].receive_info(infos[i])

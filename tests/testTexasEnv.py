@@ -282,3 +282,4 @@ class TexasEnvTester(unittest.TestCase):
 
         scores = TexasHoldemEnv.compete(env, players)
         print scores
+

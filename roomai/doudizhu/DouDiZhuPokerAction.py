@@ -55,8 +55,8 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
             masterCards:
             slaveCards:
         """
-        self.__masterCards        = copy.deepcopy(masterCards)
-        self.__slaveCards         = copy.deepcopy(slaveCards)
+        self.__masterCards        = [c for c in masterCards]
+        self.__slaveCards         = [c for c in slaveCards]
 
         self.__masterPoints2Count = None
         self.__slavePoints2Count  = None
@@ -239,7 +239,8 @@ pattern_file = get_file(path + "/patterns.py")
 for line in pattern_file:
     line = line.replace(" ", "").strip()
     line = line.split("#")[0]
-    if len(line) == 0:  continue
+    if len(line) == 0 or line[0] == "p_15_5_1_5_0":
+        continue
     lines = line.split(",")
     for i in range(1, len(lines)):
         lines[i] = int(lines[i])
@@ -252,6 +253,10 @@ action_file = get_file(path + "/actions.py")
 for line in action_file:
     line = line.replace(" ", "").strip()
     lines = line.split("\t")
+
+    if lines[3] == "p_15_5_1_5_0":
+        continue
+
     m = [int(str1) for str1 in lines[1].split(",")]
     s = []
     if len(lines[2]) > 0:
