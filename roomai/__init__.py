@@ -1,4 +1,4 @@
 #!/bin/python
-from RoomAILogger import *
-from utils import *
+from roomai.RoomAILogger import *
+from roomai.utils import *
 

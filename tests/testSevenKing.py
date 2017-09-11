@@ -112,7 +112,7 @@ class testSevenKing(unittest.TestCase):
         """
         env = SevenKingEnv()
         env.num_players = 2
-        players = [SevenKingRandomPlayer() for i in xrange(2)]
+        players = [SevenKingRandomPlayer() for i in range(2)]
 
         for i in range(100):
             SevenKingEnv.compete(env, players)
@@ -124,10 +124,10 @@ class testSevenKing(unittest.TestCase):
         env = SevenKingEnv()
         env.num_players = 3
 
-        print "aaa"
+        print ("aaa")
         players = [AlwaysFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
         scores  = env.compete(env, players)
-        print scores
+        print (scores)
 
         self.assertEqual(scores[0],-1)
         self.assertEqual(scores[1],-1)
@@ -153,4 +153,4 @@ if __name__ == "__main__":
     for i in range(1000):
         scores = env.compete(env, players)
     end = time.time()
-    print end-start
+    print (end-start)

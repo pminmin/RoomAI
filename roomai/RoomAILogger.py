@@ -42,10 +42,10 @@ def init_logger(opts):
     global handler;
     global project_name;
 
-    print opts;
+    print (opts);
     if "project_name" in opts:
         project_name = opts["project_name"];
-        print "in Logger", project_name;
+        print ("in Logger", project_name);
 
     logger.removeHandler(handler);
     logger = logging.getLogger(project_name);

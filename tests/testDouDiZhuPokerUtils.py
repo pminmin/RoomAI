@@ -49,5 +49,12 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         from roomai.doudizhu.DouDiZhuPokerAction import  DouDiZhuPokerAction as Action
         a = Action.lookup("3333")
 
-        print a.pattern
+        print (a.pattern)
         assert(a.pattern[0] == "p_4_1_0_0_0")
+
+        a = Action.lookup("3334445556667778")
+        assert(a.pattern[0] == "p_12_4_1_4_0")
+        assert(a.maxMasterPoint ==4)
+
+        a = Action.lookup("333444555666")
+        assert(a.pattern[0] == "p_12_4_1_0_0")

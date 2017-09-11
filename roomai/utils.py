@@ -9,7 +9,7 @@ def version():
 
     """
     version = "0a11"
-    print "roomai-%s"%version
-    return "roomai-%s"%version
+    print ("roomai-%s"%version)
+    return ("roomai-%s"%version)
 
 

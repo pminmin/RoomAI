@@ -239,7 +239,7 @@ pattern_file = get_file(path + "/patterns.py")
 for line in pattern_file:
     line = line.replace(" ", "").strip()
     line = line.split("#")[0]
-    if len(line) == 0 or line[0] == "p_15_5_1_5_0":
+    if len(line) == 0 or len(line[0].strip()) == 0:
         continue
     lines = line.split(",")
     for i in range(1, len(lines)):
@@ -254,7 +254,7 @@ for line in action_file:
     line = line.replace(" ", "").strip()
     lines = line.split("\t")
 
-    if lines[3] == "p_15_5_1_5_0":
+    if lines[3] not in AllPatterns:
         continue
 
     m = [int(str1) for str1 in lines[1].split(",")]
@@ -263,7 +263,7 @@ for line in action_file:
         s = [int(str1) for str1 in lines[2].split(",")]
     action = DouDiZhuPokerAction(m, s)
     if action.key != lines[0] or action.pattern[0] != lines[3]:
-        print lines
+        print (lines)
         raise ValueError("%s is wrong. The generated action has key(%s) and pattern(%s)"%(line, action.key,action.pattern[0]))
 
 

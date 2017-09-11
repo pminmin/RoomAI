@@ -336,6 +336,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
                 sCardss = DouDiZhuPokerEnv.extractSlaveCards(person_state.hand_cards, mCards, pattern)
                 for sCards in sCardss:
+
                     action_key  = DouDiZhuPokerAction.master_slave_cards_to_key(mCards, sCards)
                     action      = DouDiZhuPokerAction.lookup(action_key)
                     if cls.is_action_valid(action, public_state,person_state) == True:
@@ -430,7 +431,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         numPoint = pattern[2]
         if numPoint <= 0:
             return cardss
-        count = pattern[1]/numPoint
+        count = int(pattern[1]/numPoint)
 
         if is_straight == 1:
             c = 0
@@ -488,6 +489,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
         if numMaster / numMasterPoint == 3:
             if numSlave / numMasterPoint == 1:  # single
                 for c in range(len(hand_cards.cards)):
+                    if used[c] != 0: continue
                     for i in range(hand_cards.cards[c] - used[c]):
                         candidates.append(c)
                 if len(candidates) >= numSlave:
@@ -496,7 +498,8 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
             elif numSlave / numMasterPoint == 2:  # pair
                 for c in range(len(hand_cards.cards)):
-                    for i in range ((hand_cards.cards[c] - used[c])/2) :
+                    if used[c] != 0: continue
+                    for i in range (int((hand_cards.cards[c] - used[c])/2)) :
                         candidates.append(c)
                 if len(candidates) >= numSlave / 2:
                     res1 = list(set(list(itertools.combinations(candidates, int(numSlave / 2)))))
@@ -509,6 +512,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
             if numSlave / numMasterPoint == 2:  # single
                 for c in range(len(hand_cards.cards)):
+                    if used[c] != 0: continue
                     for i in range(hand_cards.cards[c] - used[c]):
                         candidates.append(c)
                 if len(candidates) >= numSlave:
@@ -518,7 +522,8 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
 
             elif numSlave / numMasterPoint == 4:  # pair
                 for c in range(len(hand_cards.cards)):
-                    for i in range((hand_cards.cards[c] - used[c])/2):
+                    if used[c] != 0: continue
+                    for i in range(int((hand_cards.cards[c] - used[c])/2)):
                         candidates.append(c)
                 if len(candidates) >= numSlave / 2:
                     res1 = list(set(list(itertools.combinations(candidates, int(numSlave / 2)))))
@@ -547,7 +552,7 @@ class DouDiZhuPokerEnv(roomai.common.AbstractEnv):
             return count1 - count2
 
         numMaster1 = action1.pattern[1]
-        numMaster2 = action2.pattern[2]
+        numMaster2 = action2.pattern[1]
         if numMaster1 != numMaster2:
             return numMaster1  - numMaster2
 
