@@ -5,15 +5,23 @@ class SevenKingCRMPlayer(algorithms.CRMPlayer):
     """
     """
 
+    def pool2d(self, variable, k = 2):
+        return tf.nn.max_pool(variable, ksize=[1,k,k,1],strides=[1,k,k,1],padding="SAME")
+
     def cnn_card_variable(self, card_variables):
-        cnn_w1 = tf.Variable(tf.float32, (1, 5, 4, 5))
-        cnn_w2 = tf.Variable(tf.float32, (1, 5, 4, 5))
+        cnn_w1 = tf.Variable(tf.float32, [1, 5, 4, 5])
+        cnn_w2 = tf.Variable(tf.float32, [1, 5, 4, 5])
 
-        conv1  = tf.nn.conv2d(card_variables, cnn_w1, [1,1,1,1], padding="VALID")
-        pool1  = tf.nn.max_pool(conv1, [1,2,2,1],[1,1,1,1],padding="VALID")
+        conv1  = tf.nn.conv2d(card_variables, cnn_w1, [1,1,1,1], padding="SAME")
+        pool1  = self.pool2d(conv1,k=2)
 
-        conv2  = tf.nn.conv2d(card_variables, cnn_w1, [1,1,1,1], padding="VALID")
-        pool2  = tf.nn.max_pool(conv1, [1,2,2,1],[1,1,1,1],padding="VALID")
+        conv2  = tf.nn.conv2d(pool1, cnn_w1, [1,1,1,1], padding="SAME")
+        pool2  = self.pool2d(conv2,k=2)
+
+        fc1    = tf.reshape(pool2,[-1,])
+
+
+        return pool2
 
 
     def __init__(self, num_players=2):
@@ -32,13 +40,6 @@ class SevenKingCRMPlayer(algorithms.CRMPlayer):
             self.state_action_vector = self.cnn_card_variable(self.card_variable)
 
 
-            self.handcards_conv1 = tf.nn.conv2d(self.handcards_variables, self.handcards_w["conv_w1"], [1, 1, 1, 1],
-                                            padding="VALID")
-            self.handcards_pool1 = tf.nn.max_pool(self.handcards_conv1, [1, 2, 2, 1], [1, 1, 1, 1], padding="VALID")
-            self.handcards_conv2 = tf.nn.conv2d(self.handcards_pool1, self.handcards_w["conv_w2"], [1, 1, 1, 1],
-                                            padding="VALID")
-            self.handcards_pool2 = tf.nn.max_pool(self.handcards_conv2, [1, 2, 2, 1], [1, 1, 1, 1], padding="VALID")
-            self.handcards_vector = tf.nn.relu(self.handcards_pool1.reshape())
 
 
             ### output ####
