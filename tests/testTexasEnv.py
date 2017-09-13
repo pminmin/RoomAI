@@ -25,9 +25,9 @@ class TexasEnvTester(unittest.TestCase):
 
         infos,public_state, person_states, private_state  = env.init(params)
         self.assertEqual(infos[0].person_state.id,0)
-        env.private_state.hand_cards[0] = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
-        env.private_state.hand_cards[0] = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
-        env.private_state.hand_cards[0] = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
+        env.person_states[0].hand_cards = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
+        env.person_states[0].hand_cards = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
+        env.person_states[0].hand_cards = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
         env.private_state.keep_cards    = [roomai.common.PokerCard(3,0),  roomai.common.PokerCard(4,0),roomai.common.PokerCard(5,0),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,0)]
 
         self.assertEqual(env.public_state.turn, 0)
@@ -99,9 +99,9 @@ class TexasEnvTester(unittest.TestCase):
 
         infos,public_state, person_states, private_state = env.init(params)
         self.assertEqual(infos[0].person_state.id,0)
-        env.private_state.hand_cards[0] = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
-        env.private_state.hand_cards[1] = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
-        env.private_state.hand_cards[2] = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]
+        env.person_states[0].hand_cards = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
+        env.person_states[1].hand_cards = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
+        env.person_states[2].hand_cards = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]
         env.private_state.keep_cards    = [roomai.common.PokerCard(3,1),roomai.common.PokerCard(4,2),roomai.common.PokerCard(5,3),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,3)]
         self.assertEqual(env.public_state.turn, 0)
         self.assertNotEqual(len(infos[0].person_state.available_actions), 0)

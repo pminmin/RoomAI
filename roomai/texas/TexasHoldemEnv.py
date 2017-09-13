@@ -9,6 +9,8 @@ import logging
 
 from roomai.common import Info
 from TexasHoldemUtil import *
+from TexasHoldemAction import *
+from TexasHoldemInfo import *
 
 
 class TexasHoldemEnv(roomai.common.AbstractEnv):
@@ -68,10 +70,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         if "allcards" in params:
             self.allcards = [c.__deepcopy__() for c in params["allcards"]]
         else:
-            self.allcards = []
-            for i in xrange(13):
-                for j in xrange(4):
-                    self.allcards.append(roomai.common.PokerCard(i, j))
+            self.allcards = roomai.common.AllPokerCards_Without_King.values()
             random.shuffle(self.allcards)
 
         if "record_history" in params:
@@ -82,86 +81,88 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         self.check_initialization_configuration(self)
 
+        '''
         hand_cards       = []
         for i in xrange(self.num_players):
               hand_cards.append(self.allcards[i*2:(i+1)*2])
         keep_cards   = self.allcards[self.num_players*2:self.num_players*2+5]
+        '''
 
         ## public info
         small = (self.dealer_id + 1) % self.num_players
         big   = (self.dealer_id + 2) % self.num_players
 
-        self.public_state                       = TexasHoldemPublicState()
-        self.public_state.num_players           = self.num_players
-        self.public_state.dealer_id             = self.dealer_id
-        self.public_state.big_blind_bet         = self.big_blind_bet
-        self.public_state.raise_account         = self.big_blind_bet
+        self.public_state        = TexasHoldemPublicState()
+        pu                       = self.public_state
+        pu.num_players           = self.num_players
+        pu.dealer_id             = self.dealer_id
+        pu.big_blind_bet         = self.big_blind_bet
+        pu.raise_account         = self.big_blind_bet
 
-        self.public_state.is_fold               = [False for i in xrange(self.num_players)]
-        self.public_state.num_quit              = 0
-        self.public_state.is_allin              = [False for i in xrange(self.num_players)]
-        self.public_state.num_allin             = 0
-        self.public_state.is_needed_to_action   = [True for i in xrange(self.num_players)]
-        self.public_state.num_needed_to_action  = self.public_state.num_players
+        pu.is_fold               = [False for i in range(self.num_players)]
+        pu.num_quit              = 0
+        pu.is_allin              = [False for i in range(self.num_players)]
+        pu.num_allin             = 0
+        pu.is_needed_to_action   = [True for i in range(self.num_players)]
+        pu.num_needed_to_action  = pu.num_players
 
-        self.public_state.bets                  = [0 for i in xrange(self.num_players)]
-        self.public_state.chips                 = self.chips
-        self.public_state.stage                 = StageSpace.firstStage
-        self.public_state.turn                  = (big+1)%self.public_state.num_players
-        self.public_state.public_cards          = []
+        pu.bets                  = [0 for i in range(self.num_players)]
+        pu.chips                 = self.chips
+        pu.stage                 = StageSpace.firstStage
+        pu.turn                  = (big+1)%pu.num_players
+        pu.public_cards          = []
 
-        self.public_state.previous_id           = None
-        self.public_state.previous_action       = None
+        pu.previous_id           = None
+        pu.previous_action       = None
 
-        if self.public_state.chips[big] > self.big_blind_bet:
-            self.public_state.chips[big] -= self.big_blind_bet
-            self.public_state.bets[big]  += self.big_blind_bet
+        if pu.chips[big] > self.big_blind_bet:
+            pu.chips[big] -= self.big_blind_bet
+            pu.bets[big]  += self.big_blind_bet
         else:
-            self.public_state.bets[big]     = self.public_state.chips[big]
-            self.public_state.chips[big]    = 0
-            self.public_state.is_allin[big] = True
-            self.public_state.num_allin    += 1
-        self.public_state.max_bet_sofar     = self.public_state.bets[big]
-        self.public_state.raise_account = self.big_blind_bet
+            pu.bets[big]     = pu.chips[big]
+            pu.chips[big]    = 0
+            pu.is_allin[big] = True
+            pu.num_allin    += 1
+        pu.max_bet_sofar     = pu.bets[big]
+        pu.raise_account = self.big_blind_bet
 
-        if self.public_state.chips[small] > self.big_blind_bet / 2:
-            self.public_state.chips[small] -= self.big_blind_bet /2
-            self.public_state.bets[small]  += self.big_blind_bet /2
+        if pu.chips[small] > self.big_blind_bet / 2:
+            pu.chips[small] -= self.big_blind_bet /2
+            pu.bets[small]  += self.big_blind_bet /2
         else:
-            self.public_state.bets[small]     = self.public_state.chips[small]
-            self.public_state.chips[small]    = 0
-            self.public_state.is_allin[small] = True
-            self.public_state.num_allin      += 1
+            pu.bets[small]     = pu.chips[small]
+            pu.chips[small]    = 0
+            pu.is_allin[small] = True
+            pu.num_allin      += 1
 
-        self.public_state.is_terminal         = False
-        self.public_state.scores              = None
+        pu.is_terminal         = False
+        pu.scores              = None
 
         # private info
         self.private_state = TexasHoldemPrivateState()
-        self.private_state.hand_cards       = [[] for i in xrange(self.num_players)]
-        for i in xrange(self.num_players):
-            self.private_state.hand_cards[i]  = [hand_cards[i][j].__deepcopy__() for j in xrange(len(hand_cards[i]))]
-        self.private_state.keep_cards         = [keep_cards[i].__deepcopy__() for i in xrange(len(keep_cards))]
+        pr                 = self.private_state
+        pr.keep_cards      = self.allcards[self.num_players*2:self.num_players*2+5]
 
         ## person info
-        self.person_states                      = [TexasHoldemPersonState() for i in xrange(self.num_players)]
+        self.person_states    = [TexasHoldemPersonState() for i in range(self.num_players)]
+        pes                   = self.person_states
         for i in xrange(self.num_players):
-            self.person_states[i].id = i
-            self.person_states[i].hand_cards = [hand_cards[i][j].__deepcopy__() for j in xrange(len(hand_cards[i]))]
-        self.person_states[self.public_state.turn].available_actions = self.available_actions(self.public_state, self.person_states[self.public_state.turn])
+            pes[i].id = i
+            pes[i].hand_cards = self.allcards[i*2:(i+1)*2]
+        pes[pu.turn].available_actions = self.available_actions(pu, pes[pu.turn])
 
         self.__gen_history__()
         infos = self.__gen_infos__()
 
         if self.logger.level <= logging.DEBUG:
             self.logger.debug("TexasHoldemEnv.init: num_players = %d, dealer_id = %d, chip = %d, big_blind_bet = %d"%(\
-                self.public_state.num_players,\
-                self.public_state.dealer_id,\
-                self.public_state.chips[0],\
-                self.public_state.big_blind_bet
+                pu.num_players,\
+                pu.dealer_id,\
+                pu.chips[0],\
+                pu.big_blind_bet
             ))
 
-        return infos, self.public_state, self.person_states, self.private_state
+        return infos, pu, pes, pr
 
     ## we need ensure the action is valid
     #@Overide
@@ -309,8 +310,9 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         Returns:
             a score array
         """
-        pu = self.public_state
-        pr = self.private_state
+        pu  = self.public_state
+        pes = self.person_states
+        pr  = self.private_state
 
         ## compute score before showdown, the winner takes all
         if pu.num_players  ==  pu.num_quit + 1:
@@ -326,7 +328,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             playerid_pattern_bets = [] #for not_quit players
             for i in xrange(pu.num_players):
                 if pu.is_fold[i] == True: continue
-                hand_pattern = self.cards2pattern(pr.hand_cards[i], pr.keep_cards)
+                hand_pattern = self.cards2pattern(pes[i].hand_cards, pr.keep_cards)
                 playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
             playerid_pattern_bets.sort(key=lambda x:x[1], cmp=self.compare_patterns)
 
@@ -740,19 +742,19 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         key_actions = dict()
 
         ## for fold
-        action = TexasHoldemAction(TexasHoldemAction.Fold + "_0")
+        action = TexasHoldemAction.lookup(TexasHoldemAction.Fold + "_0")
         if cls.is_action_valid(action,public_state, person_state):
             key_actions[action.key] = action
 
         ## for check
         if pu.bets[turn] == pu.max_bet_sofar:
-            action = TexasHoldemAction(TexasHoldemAction.Check + "_0")
+            action = TexasHoldemAction.lookup(TexasHoldemAction.Check + "_0")
             if cls.is_action_valid(action, public_state, person_state):
                 key_actions[action.key] = action
 
         ## for call
         if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn]:
-            action = TexasHoldemAction(TexasHoldemAction.Call + "_%d" % (pu.max_bet_sofar - pu.bets[turn]))
+            action = TexasHoldemAction.lookup(TexasHoldemAction.Call + "_%d" % (pu.max_bet_sofar - pu.bets[turn]))
             if cls.is_action_valid(action, public_state, person_state):
                 key_actions[action.key] = action
 
@@ -763,12 +765,12 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             for i in xrange(1, num + 1):
                 price = pu.max_bet_sofar - pu.bets[turn] + pu.raise_account * i
                 if price == pu.chips[pu.turn]:  continue
-                action = TexasHoldemAction(TexasHoldemAction.Raise + "_%d" % (price))
+                action = TexasHoldemAction.lookup(TexasHoldemAction.Raise + "_%d" % (price))
                 if cls.is_action_valid(action, public_state, person_state):
                     key_actions[action.key] = action
 
         ## for all in
-        action = TexasHoldemAction(TexasHoldemAction.AllIn + "_%d" % (pu.chips[turn]))
+        action = TexasHoldemAction.lookup(TexasHoldemAction.AllIn + "_%d" % (pu.chips[turn]))
         if cls.is_action_valid(action, public_state, person_state):
             key_actions[action.key] = action
 

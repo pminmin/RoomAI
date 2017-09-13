@@ -243,7 +243,7 @@ class AbstractEnv(object):
 
         num_players = len(self.person_states)
         if self.__infos is None:
-            self.__infos = [Info() for i in xrange(num_players)]
+            self.__infos = [Info() for i in range(num_players)]
 
         for i in xrange(num_players):
             self.__infos[i]._Info__person_state = self.person_states[i]
@@ -496,7 +496,9 @@ class PokerCard(object):
         """
         if newinstance is None:
             newinstance = AllPokerCards[self.key]
+
         return newinstance
+
     def lookup(self, key):
         """
 
@@ -506,10 +508,14 @@ class PokerCard(object):
         AllPokerCards[key]
 
 AllPokerCards = dict()
+AllPokerCards_Without_King = dict()
 for point_str in point_str_to_rank:
     if point_str != 'r' and point_str != "R":
         for suit_str in suit_str_to_rank:
             if suit_str != "ForKing":
                 AllPokerCards["%s_%s"%(point_str,suit_str)] = PokerCard("%s_%s"%(point_str,suit_str))
+                AllPokerCards_Without_King["%s_%s" % (point_str, suit_str)] = PokerCard("%s_%s" % (point_str, suit_str))
 AllPokerCards["r_ForKing"] = (PokerCard("r_ForKing"))
 AllPokerCards["R_ForKing"] = (PokerCard("R_ForKing"))
+
+
