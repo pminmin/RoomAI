@@ -738,25 +738,33 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         """
         pu = public_state
+        pe = person_state
         turn = pu.turn
         key_actions = dict()
 
+        if pu.is_allin[turn] == True or pu.is_fold[turn] == True:
+            return
+        if pu.chips[turn] == 0:
+            return
+
+
+
         ## for fold
         action = TexasHoldemAction.lookup(TexasHoldemAction.Fold + "_0")
-        if cls.is_action_valid(action,public_state, person_state):
-            key_actions[action.key] = action
+        #if cls.is_action_valid(action,public_state, person_state):
+        key_actions[action.key] = action
 
         ## for check
         if pu.bets[turn] == pu.max_bet_sofar:
             action = TexasHoldemAction.lookup(TexasHoldemAction.Check + "_0")
-            if cls.is_action_valid(action, public_state, person_state):
-                key_actions[action.key] = action
+            #if cls.is_action_valid(action, public_state, person_state):
+            key_actions[action.key] = action
 
         ## for call
         if pu.bets[turn] != pu.max_bet_sofar and pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn]:
             action = TexasHoldemAction.lookup(TexasHoldemAction.Call + "_%d" % (pu.max_bet_sofar - pu.bets[turn]))
-            if cls.is_action_valid(action, public_state, person_state):
-                key_actions[action.key] = action
+            #if cls.is_action_valid(action, public_state, person_state):
+            key_actions[action.key] = action
 
         ## for raise
         #if pu.bets[turn] != pu.max_bet_sofar and \
@@ -766,18 +774,19 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 price = pu.max_bet_sofar - pu.bets[turn] + pu.raise_account * i
                 if price == pu.chips[pu.turn]:  continue
                 action = TexasHoldemAction.lookup(TexasHoldemAction.Raise + "_%d" % (price))
-                if cls.is_action_valid(action, public_state, person_state):
-                    key_actions[action.key] = action
+                #if cls.is_action_valid(action, public_state, person_state):
+                key_actions[action.key] = action
 
         ## for all in
         action = TexasHoldemAction.lookup(TexasHoldemAction.AllIn + "_%d" % (pu.chips[turn]))
-        if cls.is_action_valid(action, public_state, person_state):
-            key_actions[action.key] = action
+        #if cls.is_action_valid(action, public_state, person_state):
+        key_actions[action.key] = action
 
         return key_actions
 
     @classmethod
     def is_action_valid(cls, action, public_state, person_state):
+
         """
 
         Args:
@@ -788,6 +797,8 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         Returns:
 
         """
+
+        '''
         pu = public_state
 
         if (not isinstance(public_state, TexasHoldemPublicState)) or (not isinstance(action, TexasHoldemAction)):
@@ -827,4 +838,6 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 return False
         else:
             raise Exception("Invalid action.option" + action.option)
+        '''
+        return action.key in person_state.available_actions
 
