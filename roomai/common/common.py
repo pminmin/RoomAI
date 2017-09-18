@@ -246,8 +246,8 @@ class AbstractEnv(object):
             self.__infos = [Info() for i in range(num_players)]
 
         for i in xrange(num_players):
-            self.__infos[i]._Info__person_state = self.person_states[i]
-            self.__infos[i]._Info__public_state = self.public_state
+            self.__infos[i]._Info__person_state = self.person_states[i]#.__deepcopy__()
+            self.__infos[i]._Info__public_state = self.public_state#.__deepcopy__()
 
         return tuple(self.__infos)
 

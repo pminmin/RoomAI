@@ -146,11 +146,11 @@ class testSevenKing(unittest.TestCase):
 
 if __name__ == "__main__":
     env = SevenKingEnv()
-    players = [AlwaysFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
+    players = [AlwaysFoldPlayer(), AlwaysNotFoldPlayer(), AlwaysNotFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
 
     import time
     start =time.time()
-    for i in range(100):
+    for i in range(10000):
         scores = env.compete(env, players)
     end = time.time()
     print end-start
