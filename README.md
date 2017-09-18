@@ -4,7 +4,7 @@ RoomAI is a toolkit for developing and comparing AI-bots of imperfect informatio
 
 
 
-# Installation
+# Installation and Your First Try
 
 You can install roomai with pip
 
@@ -20,7 +20,7 @@ Try your first RoomAI program
 from roomai.kuhn import *;
 import random
 
-class KuhnPokerExamplePlayer(roomai.abstract.AbstractPlayer):
+class KuhnPokerExamplePlayer(roomai.common.AbstractPlayer):
     #@override
     def receive_info(self, info):
         if info.person_state.available_actions is not None:
