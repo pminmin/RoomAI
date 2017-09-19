@@ -1,7 +1,6 @@
 # RoomAI
 
 [![Build Status](https://travis-ci.org/roomai/RoomAI.svg?branch=master)](https://travis-ci.org/roomai/RoomAI.svg?branch=master)
-[![GitHub license](http://dmlc.github.io/img/mit.svg)](./LICENSE)
 
 RoomAI is a toolkit for developing and comparing AI-bots of imperfect information games.
 
