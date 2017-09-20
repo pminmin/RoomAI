@@ -67,14 +67,14 @@ class FiveCardStudTester(unittest.TestCase):
 
         """
 
-        for i in xrange(100):
-            players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in xrange(3)]
+        for i in range(100):
+            players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in range(3)]
             env     = roomai.fivecardstud.FiveCardStudEnv()
             num_players = 3
             chips       = [1000,1000,1000]
 
             infos,public_state,_,_ = env.init({"num_players":num_players,"chips":chips})
-            for i in xrange(len(players)):
+            for i in range(len(players)):
                 players[i].receive_info(infos[i])
 
             while public_state.is_terminal == False:
@@ -82,17 +82,17 @@ class FiveCardStudTester(unittest.TestCase):
                 action = players[turn].take_action()
 
                 infos,public_state,_,_ = env.forward(action)
-                for i in xrange(len(players)):
+                for i in range(len(players)):
                     players[i].receive_info(infos[i])
 
-        for i in xrange(100):
-            players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in xrange(2)]
+        for i in range(100):
+            players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in range(2)]
             env     = roomai.fivecardstud.FiveCardStudEnv()
             num_players = 2
             chips       = [1000,1000]
 
             infos,public_state,_,_ = env.init({"num_players":num_players, "chips":chips})
-            for i in xrange(len(players)):
+            for i in range(len(players)):
                 players[i].receive_info(infos[i])
 
             while public_state.is_terminal == False:
@@ -100,7 +100,7 @@ class FiveCardStudTester(unittest.TestCase):
                 action = players[turn].take_action()
 
                 infos,public_state,_,_ = env.forward(action)
-                for i in xrange(len(players)):
+                for i in range(len(players)):
                     players[i].receive_info(infos[i])
 
 
@@ -109,12 +109,12 @@ class FiveCardStudTester(unittest.TestCase):
 
         """
         env     = FiveCardStudEnv()
-        players = [FiveCardStudRandomPlayer() for i in xrange(5)]
+        players = [FiveCardStudRandomPlayer() for i in range(5)]
         scores  = FiveCardStudEnv.compete(env, players)
         print scores
         assert(abs(sum(scores)) < 1e-9 )
 
 if __name__ == "__main__":
     env = FiveCardStudEnv()
-    players = [FiveCardStudRandomPlayer() for i in xrange(5)]
+    players = [FiveCardStudRandomPlayer() for i in range(5)]
     scores = FiveCardStudEnv.compete(env, players)

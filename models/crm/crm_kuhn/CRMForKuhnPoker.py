@@ -27,7 +27,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
             actions:
             targets:
         """
-        for i in xrange(len(actions)):
+        for i in range(len(actions)):
             state_action = "%s_%s"%(state, actions[i].key)
             self.strategies[state_action] = targets[i]
 
@@ -41,8 +41,8 @@ class KuhnPokerCRMPlayer(CRMPlayer):
         Returns:
 
         """
-        probs = [1.0 for i in xrange(len(actions))]
-        for  i in xrange(len(actions)):
+        probs = [1.0 for i in range(len(actions))]
+        for  i in range(len(actions)):
             state_action = "%s_%s" % (state, actions[i].key)
             if state_action not in self.strategies:
                 probs[i] = 1.0 / len(actions)
@@ -58,7 +58,7 @@ class KuhnPokerCRMPlayer(CRMPlayer):
             actions:
             targets:
         """
-        for i in xrange(len(actions)):
+        for i in range(len(actions)):
             state_action = "%s_%s"%(state, actions[i].key)
             self.regrets[state_action] = targets[i]
 
@@ -72,8 +72,8 @@ class KuhnPokerCRMPlayer(CRMPlayer):
         Returns:
 
         """
-        regrets = [0 for i in xrange(len(actions))]
-        for i in xrange(len(actions)):
+        regrets = [0 for i in range(len(actions))]
+        for i in range(len(actions)):
             state_action = "%s_%s" % (state, actions[i].key)
             if state_action not in self.regrets:
                 regrets[i] = 0
@@ -111,12 +111,12 @@ class KuhnPokerCRMPlayer(CRMPlayer):
         """
         probs = self.get_strategies(self.state, self.available_actions)
         sum1  = sum(probs)
-        for i in xrange(len(self.available_actions)):
+        for i in range(len(self.available_actions)):
             probs[i] /= sum1
 
         r    = random.random()
         sum1 = 0
-        for i in xrange(len(probs)):
+        for i in range(len(probs)):
             sum1 += probs[i]
             if sum1 > r:
                 return self.available_actions[i]
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     env     = KuhnPokerEnv()
     player  = KuhnPokerCRMPlayer()
     algo    = CRMAlgorithm()
-    for i in xrange(10000):
+    for i in range(10000):
         algo.dfs(env = env, player=player, p0 = 1, p1 = 1, deep = 0)
 
     print player.regrets
@@ -144,12 +144,12 @@ if __name__ == "__main__":
     player_random = KuhnPokerRandomPlayer()
     sum_scores = [0.0,0.0]
     num        = 0
-    for i in xrange(10000):
+    for i in range(10000):
         scores = KuhnPokerEnv.compete(env,[player, player_random])
         sum_scores[0] += scores[0]
         sum_scores[1] += scores[1]
         num           += 1
-    for i in xrange(len(sum_scores)):
+    for i in range(len(sum_scores)):
         sum_scores[i] /= num
     print sum_scores
 
@@ -157,22 +157,22 @@ if __name__ == "__main__":
     player_alwaysbet = KuhnPokerAlwaysBetPlayer()
     sum_scores = [0.0,0.0]
     num        = 0
-    for i in xrange(10000):
+    for i in range(10000):
         scores = KuhnPokerEnv.compete(env,[player, player_alwaysbet])
         sum_scores[0] += scores[0]
         sum_scores[1] += scores[1]
         num           += 1
-    for i in xrange(len(sum_scores)):
+    for i in range(len(sum_scores)):
         sum_scores[i] /= num
     print sum_scores
 
     sum_scores = [0.0, 0.0]
     num = 0
-    for i in xrange(10000):
+    for i in range(10000):
         scores = KuhnPokerEnv.compete(env, [player_random, player_alwaysbet])
         sum_scores[0] += scores[0]
         sum_scores[1] += scores[1]
         num += 1
-    for i in xrange(len(sum_scores)):
+    for i in range(len(sum_scores)):
         sum_scores[i] /= num
     print sum_scores

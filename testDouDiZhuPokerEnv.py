@@ -22,8 +22,8 @@ if __name__ == "__main__":
 
     import time
     start = time.time()
-    for i in xrange(100):
-        players = [Player() for i in xrange(3)]
+    for i in range(100):
+        players = [Player() for i in range(3)]
         env = DouDiZhuPokerEnv()
         env.init()
         env.compete(env, players)

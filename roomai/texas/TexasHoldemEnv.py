@@ -83,7 +83,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         '''
         hand_cards       = []
-        for i in xrange(self.num_players):
+        for i in range(self.num_players):
               hand_cards.append(self.allcards[i*2:(i+1)*2])
         keep_cards   = self.allcards[self.num_players*2:self.num_players*2+5]
         '''
@@ -146,7 +146,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         ## person info
         self.person_states    = [TexasHoldemPersonState() for i in range(self.num_players)]
         pes                   = self.person_states
-        for i in xrange(self.num_players):
+        for i in range(self.num_players):
             pes[i].id = i
             pes[i].hand_cards = self.allcards[i*2:(i+1)*2]
         pes[pu.turn].available_actions = self.available_actions(pu, pes[pu.turn])
@@ -219,8 +219,8 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             pu.stage                      = pu.stage + 1
 
             pu.num_needed_to_action       = 0
-            pu.is_needed_to_action        = [False for i in xrange(pu.num_players)]
-            for i in xrange(pu.num_players):
+            pu.is_needed_to_action        = [False for i in range(pu.num_players)]
+            for i in range(pu.num_players):
                 if pu.is_fold[i] != True and pu.is_allin[i] != True:
                     pu.is_needed_to_action[i]      = True
                     pu.num_needed_to_action       += 1
@@ -263,7 +263,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         """
 
-        total_scores       = [0    for i in xrange(len(players))]
+        total_scores       = [0    for i in range(len(players))]
         total_count        = 1000
 
 
@@ -278,28 +278,28 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                                                         "num_players":num_players,
                                                         "dealer_id":dealer_id,
                                                         "big_blind_bet":big_blind_bet})
-            for i in xrange(len(players)):
+            for i in range(len(players)):
                 players[i].receive_info(infos[i])
             while public.is_terminal == False:
                 turn = public.turn
                 action = players[turn].take_action()
                 #print len(infos[turn].person_state.available_actions),action.key(),turn
                 infos, public, persons, private = env.forward(action)
-                for i in xrange(len(players)):
+                for i in range(len(players)):
                     players[i].receive_info(infos[i])
 
-            for i in xrange(len(players)):
+            for i in range(len(players)):
                 players[i].receive_info(infos[i])
                 total_scores[i] += public.scores[i]
 
 
             if (count + 1)%500 == 0:
-                tmp_scores = [0 for i in xrange(len(total_scores))]
-                for i in xrange(len(total_scores)):
+                tmp_scores = [0 for i in range(len(total_scores))]
+                for i in range(len(total_scores)):
                     tmp_scores[i] = total_scores[i] / (count+1)
                 roomai.get_logger().info("TexasHoldem completes %d competitions, scores=%s"%(count+1, ",".join([str(i) for i in tmp_scores])))
 
-        for i in xrange(len(total_scores)):
+        for i in range(len(total_scores)):
             total_scores[i] /= 1.0 * total_count
 
         return total_scores
@@ -316,17 +316,17 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         ## compute score before showdown, the winner takes all
         if pu.num_players  ==  pu.num_quit + 1:
-            scores = [0 for i in xrange(pu.num_players)]
-            for i in xrange(pu.num_players):
+            scores = [0 for i in range(pu.num_players)]
+            for i in range(pu.num_players):
                 if pu.is_fold[i] == False:
                     scores[i] = sum(pu.bets)
                     break
 
         ## compute score after showdown
         else:
-            scores                = [0 for i in xrange(pu.num_players)]
+            scores                = [0 for i in range(pu.num_players)]
             playerid_pattern_bets = [] #for not_quit players
-            for i in xrange(pu.num_players):
+            for i in range(pu.num_players):
                 if pu.is_fold[i] == True: continue
                 hand_pattern = self.cards2pattern(pes[i].hand_cards, pr.keep_cards)
                 playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
@@ -335,7 +335,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             pot_line = 0
             previous = None
             tmp_playerid_pattern_bets      = []
-            for i in xrange(len(playerid_pattern_bets)-1,-1,-1):
+            for i in range(len(playerid_pattern_bets)-1,-1,-1):
                 if previous == None:
                     tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
@@ -344,13 +344,13 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                     previous = playerid_pattern_bets[i]
                 else:
                     tmp_playerid_pattern_bets.sort(key = lambda x:x[2])
-                    for k in xrange(len(tmp_playerid_pattern_bets)):
+                    for k in range(len(tmp_playerid_pattern_bets)):
                         num1          = len(tmp_playerid_pattern_bets) - k
                         sum1          = 0
                         max_win_score = pu.bets[tmp_playerid_pattern_bets[k][0]]
-                        for p in xrange(pu.num_players):
+                        for p in range(pu.num_players):
                             sum1      += min(max(0, pu.bets[p] - pot_line), max_win_score)
-                        for p in xrange(k, len(tmp_playerid_pattern_bets)):
+                        for p in range(k, len(tmp_playerid_pattern_bets)):
                             scores[tmp_playerid_pattern_bets[p][0]] += sum1 / num1
                         scores[pu.dealer_id] += sum1 % num1
                         if pot_line <= max_win_score:
@@ -362,21 +362,21 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
             if len(tmp_playerid_pattern_bets) > 0:
                 tmp_playerid_pattern_bets.sort(key = lambda  x:x[2])
-                for i in xrange(len(tmp_playerid_pattern_bets)):
+                for i in range(len(tmp_playerid_pattern_bets)):
                     num1 = len(tmp_playerid_pattern_bets) - i
                     sum1 = 0
                     max_win_score = pu.bets[tmp_playerid_pattern_bets[i][0]]
-                    for p in xrange(pu.num_players):
+                    for p in range(pu.num_players):
                         sum1 += min(max(0, pu.bets[p] - pot_line), max_win_score)
-                    for p in xrange(i, len(tmp_playerid_pattern_bets)):
+                    for p in range(i, len(tmp_playerid_pattern_bets)):
                         scores[tmp_playerid_pattern_bets[p][0]] += sum1 / num1
                     scores[pu.dealer_id] += sum1 % num1
                     if pot_line <= max_win_score: pot_line = max_win_score
 
-        for p in xrange(pu.num_players):
+        for p in range(pu.num_players):
             pu.chips[p] += scores[p]
             scores[p]   -= pu.bets[p]
-        for p in xrange(pu.num_players):
+        for p in range(pu.num_players):
             scores[p]   /= pu.big_blind_bet * 1.0
         return scores
 
@@ -549,7 +549,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         for p in pointrank2cards:
             num = len(pointrank2cards[p])
             num2point[num].append(p)
-        for i in xrange(5):
+        for i in range(5):
             num2point[num].sort()
 
         sorted_point = []
@@ -561,7 +561,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         for s in suitrank2cards:
             if len(suitrank2cards[s]) >= 5:
                 numStraight = 1
-                for i in xrange(len(suitrank2cards[s]) - 2, -1, -1):
+                for i in range(len(suitrank2cards[s]) - 2, -1, -1):
                     if suitrank2cards[s][i].point_rank == suitrank2cards[s][i + 1].point_rank - 1:
                         numStraight += 1
                     else:
@@ -576,7 +576,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         if len(num2point[4]) > 0:
             p4 = num2point[4][0]
             p1 = -1
-            for i in xrange(len(sorted_point) - 1, -1, -1):
+            for i in range(len(sorted_point) - 1, -1, -1):
                 if sorted_point[i] != p4:
                     p1 = sorted_point[i]
                     break
@@ -615,7 +615,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
         ##Straight_DiffSuit
         numStraight = 1
-        for idx in xrange(len(sorted_point) - 2, -1, -1):
+        for idx in range(len(sorted_point) - 2, -1, -1):
             if sorted_point[idx] + 1 == sorted_point[idx]:
                 numStraight += 1
             else:
@@ -623,7 +623,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
             if numStraight == 5:
                 pattern = AllCardsPattern["Straight_DiffSuit"]
-                for p in xrange(idx, idx + 5):
+                for p in range(idx, idx + 5):
                     point = sorted_point[p]
                     pattern[6].append(pointrank2cards[point][0])
                 return pattern
@@ -636,7 +636,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             pattern[6] = pointrank2cards[p3][0:3]
 
             num = 0
-            for i in xrange(len(sorted_point) - 1, -1, -1):
+            for i in range(len(sorted_point) - 1, -1, -1):
                 p = sorted_point[i]
                 if p != p3:
                     pattern[6].append(pointrank2cards[p][0])
@@ -655,7 +655,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 pattern[6].append(c)
 
             flag = False
-            for i in xrange(len(sorted_point) - 1, -1, -1):
+            for i in range(len(sorted_point) - 1, -1, -1):
                 p = sorted_point[i]
                 if p != p21 and p != p22:
                     c = pointrank2cards[p][0]
@@ -670,7 +670,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             p2 = num2point[2][0]
             pattern[6] = pointrank2cards[p2][0:2]
             num = 0
-            for p in xrange(len(sorted_point) - 1, -1, -1):
+            for p in range(len(sorted_point) - 1, -1, -1):
                 p1 = sorted_point[p]
                 if p1 != p2:
                     pattern[6].append(pointrank2cards[p1][0])
@@ -680,7 +680,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         ##1_1_1_1_1
         pattern = AllCardsPattern["1_1_1_1_1"]
         count = 0
-        for i in xrange(len(sorted_point) - 1, -1, -1):
+        for i in range(len(sorted_point) - 1, -1, -1):
             p = sorted_point[i]
             for c in pointrank2cards[p]:
                 pattern[6].append(c)
@@ -721,7 +721,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         if p1[5] != p2[5]:
             return p1[5] - p2[5]
         else:
-            for i in xrange(5):
+            for i in range(5):
                 if p1[6][i] != p2[6][i]:
                     return p1[6][i] - p2[6][i]
             return 0
@@ -770,7 +770,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         #if pu.bets[turn] != pu.max_bet_sofar and \
         if pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn] + pu.raise_account:
             num = (pu.chips[turn] - (pu.max_bet_sofar - pu.bets[turn])) / pu.raise_account
-            for i in xrange(1, num + 1):
+            for i in range(1, num + 1):
                 price = pu.max_bet_sofar - pu.bets[turn] + pu.raise_account * i
                 if price == pu.chips[pu.turn]:  continue
                 action = TexasHoldemAction.lookup(TexasHoldemAction.Raise + "_%d" % (price))

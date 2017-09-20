@@ -156,8 +156,8 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             self.allcards = [c.__deepcopy__() for c in params["allcards"]]
         else:
             self.allcards = []
-            for i in xrange(13):
-                for j in xrange(4):
+            for i in range(13):
+                for j in range(4):
                     self.allcards.append(roomai.common.PokerCard(i, j))
             random.shuffle(self.allcards)
 

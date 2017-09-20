@@ -9,7 +9,7 @@ if __name__ == "__main__":
    env.init(players)
 
    s = [0,0];
-   for i in xrange(1000000):
+   for i in range(1000000):
     _, scores = env.compete(players);
     s[0] = s[0] + scores[0]
     s[1] = s[1] + scores[1]
@@ -27,7 +27,7 @@ if __name__ == "__main__":
    env.init(players);
 
    s = [0,0];
-   for i in xrange(10000000):
+   for i in range(10000000):
     _,_,a = env.round(players);
     s[0] = s[0] + a[0]
     s[1] = s[1] + a[1]

@@ -38,7 +38,7 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
 
         self.private_state = roomai.kuhn.KuhnPokerUtils.KuhnPokerPrivateState()
         self.public_state  = roomai.kuhn.KuhnPokerUtils.KuhnPokerPublicState()
-        self.person_states = [roomai.kuhn.KuhnPokerUtils.KuhnPokerPersonState() for i in xrange(2)]
+        self.person_states = [roomai.kuhn.KuhnPokerUtils.KuhnPokerPersonState() for i in range(2)]
 
         self.public_state_history  = []
         self.private_state_history = []
@@ -137,14 +137,14 @@ class KuhnPokerEnv(roomai.common.AbstractEnv):
         """
 
         infos, public_state, person_state, private_state = env.init()
-        for i in xrange(len(players)):
+        for i in range(len(players)):
             players[i].receive_info(infos[i])
 
         while public_state.is_terminal == False:
             turn = infos[-1].public_state.turn
             action = players[turn].take_action()
             infos,public_state, person_state, private_state = env.forward(action)
-            for i in xrange(len(players)):
+            for i in range(len(players)):
                 players[i].receive_info(infos[i])
 
         return public_state.scores

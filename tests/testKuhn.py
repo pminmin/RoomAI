@@ -8,13 +8,13 @@ class KuhnTester(unittest.TestCase):
         """
 
         """
-        for i in xrange(1000):
-            players = [roomai.kuhn.KuhnPokerAlwaysBetPlayer() for i in xrange(2)]
+        for i in range(1000):
+            players = [roomai.kuhn.KuhnPokerAlwaysBetPlayer() for i in range(2)]
             env     = roomai.kuhn.KuhnPokerEnv()
             infos,public_state,_,_ = env.init()
 
 
-            for i in xrange(len(players)):
+            for i in range(len(players)):
                 players[i].receive_info(infos[i])
 
             while public_state.is_terminal == False:
@@ -22,7 +22,7 @@ class KuhnTester(unittest.TestCase):
                 action = players[turn].take_action()
 
                 infos,public_state,_,_ = env.forward(action)
-                for i in xrange(len(players)):
+                for i in range(len(players)):
                     players[i].receive_info(infos[i])
 
     def testKuhnEnvBackward(self):

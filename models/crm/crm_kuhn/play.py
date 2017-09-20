@@ -42,7 +42,7 @@ if __name__ == "__main__":
     import algorithms
     algo       = algorithms.CRMAlgorithm()
     env        = roomai.kuhn.KuhnPokerEnv()
-    for i in xrange(10000):
+    for i in range(10000):
         algo.dfs(env = env, player=crm_player, p0 = 1, p1 = 1, deep = 0)
 
     print crm_player.regrets

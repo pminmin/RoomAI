@@ -18,7 +18,7 @@ def compete(env, players):
    params = dict()
    
    infos, public_state, person_states, private_state = env.init(params)
-   for i in xrange(len(players)):
+   for i in range(len(players)):
        players[i].receive_info(infos[i])
 
    while public_state.is_terminal == False:
@@ -26,7 +26,7 @@ def compete(env, players):
         action = players[turn].take_action()
         
         infos, public_state, person_states, private_state = env.forward(action)
-        for i in xrange(len(players)):
+        for i in range(len(players)):
             players[i].receive_info(infos[i])
 
    return public_state.scores                

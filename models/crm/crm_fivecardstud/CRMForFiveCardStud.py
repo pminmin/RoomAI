@@ -119,7 +119,7 @@ class KuhnPokerCRMPlayer(algorithms.CRMPlayer):
 
         self.hand_cards = parseCards(pu, pe.id).reshape([1, 13, 4, 1])
         self.opponent_hand_cards = []
-        for i in xrange(pu.num_players):
+        for i in range(pu.num_players):
             if i != pe.id:
                 self.opponent_hand_cards.append(parseCards(pu, i))
         self.opponent_hand_cards = np.asarray(self.opponent_hand_cards).reshape([1, 13, 4, pu.num_players])
@@ -142,7 +142,7 @@ def parseCards(public_state, player_id):
 
     """
     pu = public_state
-    cards = np.asarray([[0 for j in xrange(4)] for i in xrange(13)])
+    cards = np.asarray([[0 for j in range(4)] for i in range(13)])
 
     hand_cards_set = [pu.second_hand_cards, pu.third_hand_cards, pu.fourth_hand_cards, pu.fifth_hand_cards]
     for hand_cards in hand_cards_set:
