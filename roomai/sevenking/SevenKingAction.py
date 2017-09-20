@@ -3,6 +3,7 @@ import roomai.common
 import roomai.sevenking
 from roomai.sevenking import AllSevenKingPatterns
 
+from functools import cmp_to_key
 
 class SevenKingAction(roomai.common.AbstractAction):
     """
@@ -23,7 +24,7 @@ class SevenKingAction(roomai.common.AbstractAction):
         if len(key) > 0:
             for c in self.key.split(","):
                 self.__cards.append(roomai.sevenking.SevenKingPokerCard(c))
-            self.__cards.sort(cmp = roomai.sevenking.SevenKingPokerCard.compare)
+            self.__cards.sort(key = cmp_to_key(roomai.sevenking.SevenKingPokerCard.compare))
         self.__pattern = self.action2pattern(self)
 
     @classmethod

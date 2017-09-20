@@ -150,8 +150,8 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             pu._SevenKingPublicState__num_fold                     = 0
             pu._SevenKingPublicState__is_fold                      = [False for i in range(pu.num_players)]
             pu._SevenKingPublicState__license_action               = SevenKingAction.lookup("")
-            pes[new_turn].available_actions = SevenKingEnv.available_actions(pu, pes[new_turn])
-            keys = pes[new_turn].available_actions.keys()
+            pes[new_turn].available_actions                        = SevenKingEnv.available_actions(pu, pes[new_turn])
+            keys = list(pes[new_turn].available_actions.keys())
             for key in keys:
                 if min_card.key not in key:
                     del pes[new_turn].available_actions[key]

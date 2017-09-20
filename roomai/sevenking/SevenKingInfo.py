@@ -141,7 +141,6 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
             else:
                 break
 
-        #self.__hand_cards.sort(cmp=SevenKingPokerCard.compare)
         self.__hand_cards_key = ",".join([c.key for c in self.__hand_cards])
 
     def __add_cards(self, cards):

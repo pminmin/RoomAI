@@ -28,6 +28,7 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
         suit_str_to_rank = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0}
         return suit_str_to_rank[self.suit_str]
 
+
     @classmethod
     def compare(cls, pokercard1, pokercard2):
         """
@@ -45,6 +46,8 @@ class FiveCardStudPokerCard(roomai.common.PokerCard):
             return pr1-pr2
         else:
             return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
+
+
 
 
     def __deepcopy__(self, memodict={}, newinstance = None):

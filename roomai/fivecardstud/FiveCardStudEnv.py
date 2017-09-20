@@ -5,13 +5,14 @@ import copy
 import logging
 import random
 import sys
+from functools import cmp_to_key
 
 
-from FiveCardStudUtils  import FiveCardStudPokerCard
-from FiveCardStudInfo   import FiveCardStudPublicState
-from FiveCardStudInfo   import FiveCardStudPersonState
-from FiveCardStudInfo   import FiveCardStudPrivateState
-from FiveCardStudAction import FiveCardStudAction
+from roomai.fivecardstud.FiveCardStudUtils  import FiveCardStudPokerCard
+from roomai.fivecardstud.FiveCardStudInfo   import FiveCardStudPublicState
+from roomai.fivecardstud.FiveCardStudInfo   import FiveCardStudPersonState
+from roomai.fivecardstud.FiveCardStudInfo   import FiveCardStudPrivateState
+from roomai.fivecardstud.FiveCardStudAction import FiveCardStudAction
 
 class FiveCardStudEnv(roomai.common.AbstractEnv):
     """
@@ -657,8 +658,8 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             if pattern1[5] != pattern2[5]:
                 return pattern1[5] - pattern2[5]
             else:
-                cards1.sort(FiveCardStudPokerCard.compare)
-                cards2.sort(FiveCardStudPokerCard.compare)
+                cards1.sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
+                cards2.sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
                 return FiveCardStudPokerCard.compare(cards1[-1], cards2[-1])
 
         elif len(cards1) == len(cards2) and len(cards1) == 5:
@@ -667,8 +668,8 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             if pattern1[5] != pattern2[5]:
                 return pattern1[5] - pattern2[5]
             else:
-                cards1.sort(FiveCardStudPokerCard.compare)
-                cards2.sort(FiveCardStudPokerCard.compare)
+                cards1.sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
+                cards2.sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
                 return FiveCardStudPokerCard.compare(cards1[-1], cards2[-1])
 
         else:
@@ -676,6 +677,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
 
     @classmethod
     def cards2pattern(cls, cards):
+
         """
 
         Args:
@@ -684,6 +686,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
         Returns:
 
         """
+
         pointrank2cards = dict()
         for c in cards:
             if c.point_rank in pointrank2cards:
@@ -691,7 +694,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             else:
                 pointrank2cards[c.point_rank] = [c]
         for p in pointrank2cards:
-            pointrank2cards[p].sort(FiveCardStudPokerCard.compare)
+            pointrank2cards[p].sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
 
         suitrank2cards = dict()
         for c in cards:
@@ -700,7 +703,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             else:
                 suitrank2cards[c.suit_rank] = [c]
         for s in suitrank2cards:
-            suitrank2cards[s].sort(FiveCardStudPokerCard.compare)
+            suitrank2cards[s].sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
 
         num2pointrank = [[], [], [], [], []]
         for p in pointrank2cards:
@@ -793,7 +796,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             else:
                 pointrank2cards[c.point_rank] = [c]
         for p in pointrank2cards:
-            pointrank2cards[p].sort(FiveCardStudPokerCard.compare)
+            pointrank2cards[p].sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
 
         suitrank2cards = dict()
         for c in cards:
@@ -802,7 +805,7 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
             else:
                 suitrank2cards[c.suit_rank] = [c]
         for s in suitrank2cards:
-            suitrank2cards[s].sort(FiveCardStudPokerCard.compare)
+            suitrank2cards[s].sort(key = cmp_to_key(FiveCardStudPokerCard.compare))
 
         num2pointrank = [[], [], [], [], []]
         for p in pointrank2cards:

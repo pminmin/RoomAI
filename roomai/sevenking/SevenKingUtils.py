@@ -52,6 +52,8 @@ class SevenKingPokerCard(roomai.common.PokerCard):
     def key(self):
         return self.__key
 
+
+
     @property
     def point_str(self):
         return self.__point_str

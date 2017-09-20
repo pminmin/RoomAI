@@ -8,9 +8,11 @@ import roomai
 import logging
 
 from roomai.common import Info
-from TexasHoldemUtil import *
-from TexasHoldemAction import *
-from TexasHoldemInfo import *
+
+from roomai.texas.TexasHoldemUtil import *
+from roomai.texas.TexasHoldemAction import *
+from roomai.texas.TexasHoldemInfo import *
+from functools                    import cmp_to_key
 
 
 class TexasHoldemEnv(roomai.common.AbstractEnv):
@@ -70,7 +72,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         if "allcards" in params:
             self.allcards = [c.__deepcopy__() for c in params["allcards"]]
         else:
-            self.allcards = roomai.common.AllPokerCards_Without_King.values()
+            self.allcards = list(roomai.common.AllPokerCards_Without_King.values())
             random.shuffle(self.allcards)
 
         if "record_history" in params:
@@ -328,9 +330,14 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             playerid_pattern_bets = [] #for not_quit players
             for i in range(pu.num_players):
                 if pu.is_fold[i] == True: continue
-                hand_pattern = self.cards2pattern(pes[i].hand_cards, pr.keep_cards)
-                playerid_pattern_bets.append((i,hand_pattern,pu.bets[i]))
-            playerid_pattern_bets.sort(key=lambda x:x[1], cmp=self.compare_patterns)
+                hand_pattern_cards = self.cards2pattern_cards(pes[i].hand_cards, pr.keep_cards)
+                playerid_pattern_bets.append((i,hand_pattern_cards,pu.bets[i]))
+
+            for playerid_pattern_bet in playerid_pattern_bets:
+                if len(playerid_pattern_bet[1][1]) < 5:
+                    i = 0
+
+            playerid_pattern_bets.sort(key=lambda x:self.compute_rank_pattern_cards(x[1]))
 
             pot_line = 0
             previous = None
@@ -339,7 +346,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                 if previous == None:
                     tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
-                elif self.compare_patterns(playerid_pattern_bets[i][1], previous[1]) == 0:
+                elif self.compare_patterns_cards(playerid_pattern_bets[i][1], previous[1]) == 0:
                     tmp_playerid_pattern_bets.append(playerid_pattern_bets[i])
                     previous = playerid_pattern_bets[i]
                 else:
@@ -517,7 +524,8 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         return public_state.num_needed_to_action == 0
 
     @classmethod
-    def cards2pattern(cls, hand_cards, remaining_cards):
+    def cards2pattern_cards(cls, hand_cards, remaining_cards):
+        key = cmp_to_key(roomai.common.PokerCard.compare)
         """
 
         Args:
@@ -534,7 +542,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             else:
                 pointrank2cards[c.point_rank] = [c]
         for p in pointrank2cards:
-            pointrank2cards[p].sort(roomai.common.PokerCard.compare)
+            pointrank2cards[p].sort(key = key)
 
         suitrank2cards = dict()
         for c in hand_cards + remaining_cards:
@@ -543,7 +551,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
             else:
                 suitrank2cards[c.suit_rank] = [c]
         for s in suitrank2cards:
-            suitrank2cards[s].sort(roomai.common.PokerCard.compare)
+            suitrank2cards[s].sort(key=key)
 
         num2point = [[], [], [], [], []]
         for p in pointrank2cards:
@@ -569,8 +577,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
                     if numStraight == 5:
                         pattern = AllCardsPattern["Straight_SameSuit"]
-                        pattern[6] = suitrank2cards[s][i:i + 5]
-                        return pattern
+                        return (pattern,suitrank2cards[s][i:i + 5])
 
         ##4_1
         if len(num2point[4]) > 0:
@@ -581,9 +588,10 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
                     p1 = sorted_point[i]
                     break
             pattern = AllCardsPattern["4_1"]
-            pattern[6] = pointrank2cards[p4][0:4]
-            pattern[6].append(pointrank2cards[p1][0])
-            return pattern
+            cards   = pointrank2cards[p4][0:4]
+            cards.append(pointrank2cards[p1][0])
+
+            return (pattern,cards)
 
         ##3_2
         if len(num2point[3]) >= 1:
@@ -591,27 +599,27 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
             if len(num2point[3]) == 2:
                 p3 = num2point[3][1]
-                pattern[6] = pointrank2cards[p3][0:3]
+                cards = pointrank2cards[p3][0:3]
                 p2 = num2point[3][0]
-                pattern[6].append(pointrank2cards[p2][0])
-                pattern[6].append(pointrank2cards[p2][1])
-                return pattern
+                cards.append(pointrank2cards[p2][0])
+                cards.append(pointrank2cards[p2][1])
+                return (pattern,cards)
 
             if len(num2point[2]) >= 1:
                 p3 = num2point[3][0]
-                pattern[6] = pointrank2cards[p3][0:3]
+                cards = pointrank2cards[p3][0:3]
                 p2 = num2point[2][len(num2point[2]) - 1]
-                pattern[6].append(pointrank2cards[p2][0])
-                pattern[6].append(pointrank2cards[p2][1])
-                return pattern
+                cards.append(pointrank2cards[p2][0])
+                cards.append(pointrank2cards[p2][1])
+                return (pattern,cards)
 
         ##SameSuit
         for s in suitrank2cards:
             if len(suitrank2cards[s]) >= 5:
                 pattern = AllCardsPattern["SameSuit"]
                 len1 = len(suitrank2cards[s])
-                pattern[6] = suitrank2cards[s][len1 - 5:len1]
-                return pattern
+                cards = suitrank2cards[s][len1 - 5:len1]
+                return (pattern,cards)
 
         ##Straight_DiffSuit
         numStraight = 1
@@ -623,71 +631,74 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
 
             if numStraight == 5:
                 pattern = AllCardsPattern["Straight_DiffSuit"]
+                cards = []
                 for p in range(idx, idx + 5):
                     point = sorted_point[p]
-                    pattern[6].append(pointrank2cards[point][0])
-                return pattern
+                    cards.append(pointrank2cards[point][0])
+                return (pattern,cards)
 
         ##3_1_1
         if len(num2point[3]) == 1:
             pattern = AllCardsPattern["3_1_1"]
 
             p3 = num2point[3][0]
-            pattern[6] = pointrank2cards[p3][0:3]
+            cards = pointrank2cards[p3][0:3]
 
             num = 0
             for i in range(len(sorted_point) - 1, -1, -1):
                 p = sorted_point[i]
                 if p != p3:
-                    pattern[6].append(pointrank2cards[p][0])
+                    cards.append(pointrank2cards[p][0])
                     num += 1
                 if num == 2:    break
-            return pattern
+            return (pattern,cards)
 
         ##2_2_1
         if len(num2point[2]) >= 2:
             pattern = AllCardsPattern["2_2_1"]
             p21 = num2point[2][len(num2point[2]) - 1]
+            cards = []
             for c in pointrank2cards[p21]:
-                pattern[6].append(c)
+                cards.append(c)
             p22 = num2point[2][len(num2point[2]) - 2]
             for c in pointrank2cards[p22]:
-                pattern[6].append(c)
+                cards.append(c)
 
             flag = False
             for i in range(len(sorted_point) - 1, -1, -1):
                 p = sorted_point[i]
                 if p != p21 and p != p22:
                     c = pointrank2cards[p][0]
-                    pattern[6].append(c)
+                    cards.append(c)
                     flag = True
                 if flag == True:    break;
-            return pattern
+            return (pattern,cards)
 
         ##2_1_1_1
         if len(num2point[2]) == 1:
             pattern = AllCardsPattern["2_1_1_1"]
             p2 = num2point[2][0]
-            pattern[6] = pointrank2cards[p2][0:2]
+            cards = pointrank2cards[p2][0:2]
             num = 0
             for p in range(len(sorted_point) - 1, -1, -1):
                 p1 = sorted_point[p]
                 if p1 != p2:
-                    pattern[6].append(pointrank2cards[p1][0])
+                    cards.append(pointrank2cards[p1][0])
                 if num == 3:    break
-            return pattern
+            return (pattern,cards)
 
         ##1_1_1_1_1
         pattern = AllCardsPattern["1_1_1_1_1"]
         count = 0
+        cards = []
         for i in range(len(sorted_point) - 1, -1, -1):
             p = sorted_point[i]
             for c in pointrank2cards[p]:
-                pattern[6].append(c)
+                cards.append(c)
                 count += 1
                 if count == 5: break
             if count == 5: break
-        return pattern
+        return (pattern,cards)
 
     @classmethod
     def compare_handcards(cls, hand_card0, hand_card1, keep_cards):
@@ -701,14 +712,22 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         Returns:
 
         """
-        pattern0 = TexasHoldemEnv.cards2pattern(hand_card0, keep_cards)
-        pattern1 = TexasHoldemEnv.cards2pattern(hand_card1, keep_cards)
+        pattern0 = TexasHoldemEnv.cards2pattern_cards(hand_card0, keep_cards)
+        pattern1 = TexasHoldemEnv.cards2pattern_cards(hand_card1, keep_cards)
 
-        diff = cls.compare_patterns(pattern0, pattern1)
+        diff = cls.compare_patterns_cards(pattern0, pattern1)
         return diff
 
     @classmethod
-    def compare_patterns(cls, p1, p2):
+    def compute_rank_pattern_cards(cls, pattern_cards):
+        rank = pattern_cards[0][5] * 1000
+        for i in range(5):
+            rank *= 1000
+            rank += pattern_cards[1][i].point_rank
+        return rank
+
+    @classmethod
+    def compare_patterns_cards(cls, p1, p2):
         """
 
         Args:
@@ -718,13 +737,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         Returns:
 
         """
-        if p1[5] != p2[5]:
-            return p1[5] - p2[5]
-        else:
-            for i in range(5):
-                if p1[6][i] != p2[6][i]:
-                    return p1[6][i] - p2[6][i]
-            return 0
+        return cls.compute_rank_pattern_cards(p1) - cls.compute_rank_pattern_cards(p2)
 
     @classmethod
     def available_actions(cls, public_state, person_state):
@@ -769,7 +782,7 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
         ## for raise
         #if pu.bets[turn] != pu.max_bet_sofar and \
         if pu.chips[turn] > pu.max_bet_sofar - pu.bets[turn] + pu.raise_account:
-            num = (pu.chips[turn] - (pu.max_bet_sofar - pu.bets[turn])) / pu.raise_account
+            num = int((pu.chips[turn] - (pu.max_bet_sofar - pu.bets[turn])) / pu.raise_account)
             for i in range(1, num + 1):
                 price = pu.max_bet_sofar - pu.bets[turn] + pu.raise_account * i
                 if price == pu.chips[pu.turn]:  continue

@@ -24,7 +24,7 @@ class FiveCardStudRandomPlayer(roomai.common.AbstractPlayer):
         Returns:
 
         """
-        actions = FiveCardStudEnv.available_actions(self.public_state, self.person_state).values()
+        actions = list(FiveCardStudEnv.available_actions(self.public_state, self.person_state).values())
         idx     = int(random.random() * len(actions))
         return actions[idx]
 

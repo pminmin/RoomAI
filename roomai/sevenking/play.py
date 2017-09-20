@@ -90,14 +90,14 @@ if __name__ == "__main__":
 
     while public_state.is_terminal == False:
         turn = public_state.turn
-        print "turn = %d, stage = %d"%(public_state.turn,public_state.stage)
+        print ("turn = %d, stage = %d"%(public_state.turn,public_state.stage))
         action = players[turn].take_action()
-        print "%d player take an action (%s)"%(turn,action.key)
+        print ("%d player take an action (%s)"%(turn,action.key))
         infos, public_state, person_states, private_state = env.forward(action)
         for i in range(env.num_players):
             players[i].receive_info(infos[i])
             show(infos[i])
         print (public_state.is_fold)
-        print "\n"
+        print ("\n")
 
     print (public_state.scores)

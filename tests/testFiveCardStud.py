@@ -55,12 +55,12 @@ class FiveCardStudTester(unittest.TestCase):
         infos, pu, pe, pr = env.forward(FiveCardStudAction(showhand_act_key))
 
         assert(env.public_state.is_terminal == True)
-        print pu.scores
-        print pu.floor_bet
+        print (pu.scores)
+        print (pu.floor_bet)
         assert(max(pu.scores) == 2000/pu.floor_bet)
         assert(min(pu.scores) == -1000/pu.floor_bet)
-        print infos[0].public_state.round
-        print infos[0].person_state.fifth_hand_card.key
+        print (infos[0].public_state.round)
+        print (infos[0].person_state.fifth_hand_card.key)
 
     def testRandomPlayer(self):
         """
@@ -111,7 +111,7 @@ class FiveCardStudTester(unittest.TestCase):
         env     = FiveCardStudEnv()
         players = [FiveCardStudRandomPlayer() for i in range(5)]
         scores  = FiveCardStudEnv.compete(env, players)
-        print scores
+        print (scores)
         assert(abs(sum(scores)) < 1e-9 )
 
 if __name__ == "__main__":

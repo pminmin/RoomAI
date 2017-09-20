@@ -12,4 +12,4 @@ if __name__ == "__main__":
     for i in range(5):
         env.compete(env, random_players)
     end = time.time()
-    print end-start
+    print (end-start)

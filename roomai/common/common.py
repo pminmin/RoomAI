@@ -387,7 +387,7 @@ class PokerCard(object):
         self.__suit_str   = suit_rank_to_str[suit1]
         self.__point_rank = point1
         self.__suit_rank  = suit1
-        self.__key = "%s_%s" % (self.__point_str, self.__suit_str)
+        self.__key        = "%s_%s" % (self.__point_str, self.__suit_str)
 
     @property
     def point_str(self):
@@ -462,6 +462,7 @@ class PokerCard(object):
         """
         return suit_str_to_rank[self.suit_str]
     '''
+
 
     @classmethod
     def compare(cls, pokercard1, pokercard2):

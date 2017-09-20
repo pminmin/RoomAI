@@ -22,7 +22,7 @@ class SevenKingRandomPlayer(roomai.common.AbstractPlayer):
 
         """
         idx = int(random.random() * len(self.available_actions))
-        return self.available_actions.values()[idx]
+        return list(self.available_actions.values())[idx]
 
     #@overide
     def reset(self):

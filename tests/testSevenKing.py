@@ -25,7 +25,7 @@ class AlwaysFoldPlayer(roomai.common.AbstractPlayer):
                         card = a.hand_card[0]
                         if SevenKingPokerCard.compare(card, min_card) < 0 : min_card = card
             if min_card is None:
-                return self.available_actions.values()[0]
+                return list(self.available_actions.values())[0]
             else:
                 return SevenKingAction.lookup(min_card.key)
         else:

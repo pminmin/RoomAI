@@ -32,15 +32,15 @@ class KuhnTester(unittest.TestCase):
         env = roomai.kuhn.KuhnPokerEnv()
         env.init({"record_history":True})
         infos, public_state, person_states, private_state = env.forward(roomai.kuhn.KuhnPokerAction("bet"))
-        print public_state.action_list,person_states[public_state.turn].id
+        print (public_state.action_list,person_states[public_state.turn].id)
         assert(len(public_state.action_list) == 1)
 
         infos, public_state, person_states, private_state = env.forward(roomai.kuhn.KuhnPokerAction("bet"))
-        print public_state.action_list,person_states[public_state.turn].id
+        print (public_state.action_list,person_states[public_state.turn].id)
         assert(len(public_state.action_list) == 2)
 
         infos, public_state, person_states, private_state = env.backward()
-        print public_state.action_list,person_states[public_state.turn].id
+        print (public_state.action_list,person_states[public_state.turn].id)
         assert(len(public_state.action_list) == 1)
 
 

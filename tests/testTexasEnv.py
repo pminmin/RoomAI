@@ -73,11 +73,11 @@ class TexasEnvTester(unittest.TestCase):
         # chips:0,   90, 80
         # bets :100, 10, 20
         # state:all,  q,  n
-        print env.public_state.bets
-        print env.public_state.is_allin
-        print env.public_state.is_fold
-        print env.public_state.chips
-        print env.public_state.turn
+        print (env.public_state.bets)
+        print (env.public_state.is_allin)
+        print (env.public_state.is_fold)
+        print (env.public_state.chips)
+        print (env.public_state.turn)
         self.assertTrue(public_state.is_terminal)
         self.assertEqual(public_state.scores[0], 30.0/public_state.big_blind_bet)
         self.assertEqual(public_state.scores[1], -10.0/public_state.big_blind_bet)
@@ -118,7 +118,7 @@ class TexasEnvTester(unittest.TestCase):
 
         action = TexasHoldemAction("Raise_60")
         infos,public_state, person_states, private_state  = env.forward(action)
-        print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
+        print (env.public_state.num_needed_to_action, env.public_state.is_needed_to_action)
         self.assertEqual(env.public_state.turn, 1)
         self.assertTrue("Raise_60" not in infos[1].person_state.available_actions)
         self.assertTrue("Raise_80" not in infos[1].person_state.available_actions)
@@ -138,11 +138,11 @@ class TexasEnvTester(unittest.TestCase):
         action = TexasHoldemAction("Call_50")
         infos,public_state, person_states, private_state  = env.forward(action)
         assert(public_state.stage == StageSpace.firstStage)
-        print env.public_state.num_needed_to_action, env.public_state.is_needed_to_action
-        print public_state.stage
-        print public_state.chips
-        print public_state.bets
-        print public_state.dealer_id
+        print (env.public_state.num_needed_to_action, env.public_state.is_needed_to_action)
+        print (public_state.stage)
+        print (public_state.chips)
+        print (public_state.bets)
+        print (public_state.dealer_id)
         # dealer_id = 0
         # turn  = 2
         # stage = 1
@@ -154,10 +154,10 @@ class TexasEnvTester(unittest.TestCase):
 
         action = TexasHoldemAction("Call_40")
         infos,public_state, person_states, private_state  = env.forward(action)
-        print "\n\n"
-        print "stage",public_state.stage
-        print "dealer_id+1", (public_state.dealer_id+1)%public_state.num_players
-        print "is_needed_to_action", public_state.is_needed_to_action
+        print ("\n\n")
+        print ("stage",public_state.stage)
+        print ("dealer_id+1", (public_state.dealer_id+1)%public_state.num_players)
+        print ("is_needed_to_action", public_state.is_needed_to_action)
         self.assertEqual(infos[0].public_state.stage,StageSpace.secondStage)
         self.assertEqual(env.public_state.chips[1],440)
         self.assertEqual(env.public_state.turn, 1)
@@ -170,7 +170,7 @@ class TexasEnvTester(unittest.TestCase):
         # raise_account: 40
 
 
-        action = TexasHoldemAction("Call_0")
+        action = TexasHoldemAction("Check_0")
         infos,public_state, person_states, private_state  = env.forward(action)
         infos,public_state, person_states, private_state  = env.forward(action)
         infos,public_state, person_states, private_state  = env.forward(action)
@@ -181,7 +181,7 @@ class TexasEnvTester(unittest.TestCase):
         self.assertEqual(env.public_state.raise_account, 40)
         self.assertEqual(env.public_state.stage, 3)
         self.assertEqual(env.public_state.turn, 1)
-        print "1",infos[1].person_state.available_actions.keys()
+        print ("1",infos[1].person_state.available_actions.keys())
         # dealer_id = 0
         # turn  = 1
         # stage = 3
@@ -194,7 +194,7 @@ class TexasEnvTester(unittest.TestCase):
         action = TexasHoldemAction("Allin_440")
         infos,public_state, person_states, private_state  = env.forward(action)
         self.assertEqual(infos[0].public_state.max_bet_sofar, 500)
-        print "2", infos[2].person_state.available_actions.keys()
+        print ("2", infos[2].person_state.available_actions.keys())
         self.assertEqual(env.public_state.is_allin[1],True)
         self.assertEqual(infos[0].public_state.stage, 3)
         # dealer_id = 0
@@ -281,5 +281,5 @@ class TexasEnvTester(unittest.TestCase):
         env = TexasHoldemEnv()
 
         scores = TexasHoldemEnv.compete(env, players)
-        print scores
+        print (scores)
 

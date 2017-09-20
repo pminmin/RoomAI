@@ -43,7 +43,7 @@ class TexasHoldemRandomPlayer(roomai.common.AbstractPlayer):
         '''
 
         idx  = int(random.random() * len(self.available_actions))
-        keys = self.available_actions.keys()
+        keys = list(self.available_actions.keys())
         '''
         print idx, len(keys)
         print keys
