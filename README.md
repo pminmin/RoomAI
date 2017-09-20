@@ -1,5 +1,9 @@
 # RoomAI
 
+[![Build Status](https://travis-ci.org/roomai/RoomAI.svg?branch=master)](https://travis-ci.org/roomai/RoomAI.svg?branch=master)
+[![Join the chat at https://gitter.im/roomai](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/roomai?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![PyPI version](https://badge.fury.io/py/roomai.svg)](https://pypi.python.org/pypi/roomai)
+
 RoomAI is a toolkit for developing and comparing AI-bots of imperfect information games.
 
 
