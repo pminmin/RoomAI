@@ -17,7 +17,7 @@ class TexasUtilsTester(unittest.TestCase):
 
         handcards1 =[roomai.common.PokerCard(0, 0), roomai.common.PokerCard(1, 1)]
         keepcards  =[roomai.common.PokerCard(2, 2), roomai.common.PokerCard(3, 3), roomai.common.PokerCard(4, 0), roomai.common.PokerCard(5, 1), roomai.common.PokerCard(6, 2)]
-        pattern    = TexasHoldemEnv.cards2pattern_cards(handcards1, keepcards)
+        pattern    = TexasHoldemEnv.__cards2pattern_cards__(handcards1, keepcards)
 
     
     def test_cards1(self):
@@ -27,8 +27,8 @@ class TexasUtilsTester(unittest.TestCase):
         handcards1 = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
         handcards2 = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(3, 2)]
         keepcards  = [roomai.common.PokerCard(0, 2), roomai.common.PokerCard(0, 3), roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1), roomai.common.PokerCard(3, 3)]
-        pattern = TexasHoldemEnv.cards2pattern_cards(handcards2, keepcards)[0]
-        cards   = TexasHoldemEnv.cards2pattern_cards(handcards2, keepcards)[1]
+        pattern = TexasHoldemEnv.__cards2pattern_cards__(handcards2, keepcards)[0]
+        cards   = TexasHoldemEnv.__cards2pattern_cards__(handcards2, keepcards)[1]
 
         self.assertEqual(pattern[0],'3_2')
         self.assertEqual(pattern[1],False)
@@ -55,7 +55,7 @@ class TexasUtilsTester(unittest.TestCase):
 
         h1     = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
         keep   = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(4, 2), roomai.common.PokerCard(5, 3), roomai.common.PokerCard(6, 0), roomai.common.PokerCard(7, 2)]
-        pattern = TexasHoldemEnv.cards2pattern_cards(h1, keep)[0]
+        pattern = TexasHoldemEnv.__cards2pattern_cards__(h1, keep)[0]
         self.assertEqual(pattern[0],"3_1_1")
 
 
@@ -66,8 +66,8 @@ class TexasUtilsTester(unittest.TestCase):
         handcards1 = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
         handcards2 = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(3, 2)]
         keepcards  = [roomai.common.PokerCard(0, 2), roomai.common.PokerCard(0, 3), roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1), roomai.common.PokerCard(3, 3)]
-        pattern = TexasHoldemEnv.cards2pattern_cards(handcards1, keepcards)[0]
-        cards   = TexasHoldemEnv.cards2pattern_cards(handcards1, keepcards)[1]
+        pattern = TexasHoldemEnv.__cards2pattern_cards__(handcards1, keepcards)[0]
+        cards   = TexasHoldemEnv.__cards2pattern_cards__(handcards1, keepcards)[1]
         self.assertEqual(pattern[0],'4_1')
         self.assertEqual(pattern[1],False)
         self.assertEqual(pattern[2],True)
@@ -87,10 +87,10 @@ class TexasUtilsTester(unittest.TestCase):
         self.assertEqual(cards[4].suit_rank, 3)
 
 
-        pattern1 = TexasHoldemEnv.cards2pattern_cards(handcards1, keepcards)
-        pattern2 = TexasHoldemEnv.cards2pattern_cards(handcards2, keepcards)
+        pattern1 = TexasHoldemEnv.__cards2pattern_cards__(handcards1, keepcards)
+        pattern2 = TexasHoldemEnv.__cards2pattern_cards__(handcards2, keepcards)
 
-        diff = TexasHoldemEnv.compare_handcards(handcards1, handcards2, keepcards)
+        diff = TexasHoldemEnv.__compare_handcards__(handcards1, handcards2, keepcards)
         self.assertTrue(diff > 0)
 
 
@@ -128,7 +128,7 @@ class TexasUtilsTester(unittest.TestCase):
 
         print (TexasHoldemAction.AllIn)
         action = TexasHoldemAction("Allin_1000")
-        print (action.key)
+        print (action.key())
         self.assertTrue(env.is_action_valid(action, env.public_state, env.person_states[env.public_state.turn]))
 
 
@@ -141,6 +141,6 @@ class TexasUtilsTester(unittest.TestCase):
         h3 = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]
         k  = [roomai.common.PokerCard(3, 1), roomai.common.PokerCard(4, 2), roomai.common.PokerCard(5, 3), roomai.common.PokerCard(6, 0), roomai.common.PokerCard(7, 2)]
 
-        p1 = TexasHoldemEnv.cards2pattern_cards(h1, k)
-        p2 = TexasHoldemEnv.cards2pattern_cards(h2, k)
-        p3 = TexasHoldemEnv.cards2pattern_cards(h3, k)
+        p1 = TexasHoldemEnv.__cards2pattern_cards__(h1, k)
+        p2 = TexasHoldemEnv.__cards2pattern_cards__(h2, k)
+        p3 = TexasHoldemEnv.__cards2pattern_cards__(h3, k)

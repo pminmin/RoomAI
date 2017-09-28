@@ -4,12 +4,10 @@ import roomai.common
 import copy
 
 class TexasHoldemPublicState(roomai.common.AbstractPublicState):
-    """
-    """
+    '''
+    The public state of the TexasHoldem Poker game
+    '''
     def __init__(self):
-        """
-
-        """
         self.stage              = None
         self.num_players        = None
         self.dealer_id          = None
@@ -42,15 +40,7 @@ class TexasHoldemPublicState(roomai.common.AbstractPublicState):
         self.previous_id        = None
         self.previous_action    = None
 
-    def __deepcopy__(self, memodict={}):
-            """
-
-            Args:
-                memodict:
-
-            Returns:
-
-            """
+    def __deepcopy__(self, memodict={}, newinstance=None):
             copyinstance = TexasHoldemPublicState()
 
             copyinstance.stage         = self.stage
@@ -117,16 +107,13 @@ class TexasHoldemPublicState(roomai.common.AbstractPublicState):
 
 
 class TexasHoldemPrivateState(roomai.common.AbstractPrivateState):
-    """
-    """
-    keep_cards = []
+    '''
+    The private state of the TexasHoldem Poker game
+    '''
+    def __init__(self):
+        self.keep_cards = []
 
     def __deepcopy__(self, memodict={}):
-        """
-
-        Args:
-            memodict:
-        """
         copy = TexasHoldemPrivateState()
         if self.keep_cards is None:
             copy.keep_cards = None
@@ -136,23 +123,17 @@ class TexasHoldemPrivateState(roomai.common.AbstractPrivateState):
 
 
 class TexasHoldemPersonState(roomai.common.AbstractPersonState):
-    """
-    """
-    id                =    0
-    hand_cards        =    []
-    available_actions =    dict()
+    '''
+    The person state of the TexasHoldem Poker game    
+    '''
 
+    def __init__(self):
+        self.id = 0
+        self.hand_cards = []
+        self.available_actions = dict()
 
 
     def __deepcopy__(self, memodict={}):
-        """
-
-        Args:
-            memodict:
-
-        Returns:
-
-        """
         copyinstance    = TexasHoldemPersonState()
         copyinstance.id = self.id
         if self.hand_cards is not None:
