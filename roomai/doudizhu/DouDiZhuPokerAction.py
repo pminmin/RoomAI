@@ -216,27 +216,10 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
 ############## read data ################
 AllPatterns = dict()
 AllActions = dict()
-import zipfile
-def get_file(path):
-    """
+from roomai.doudizhu import doudizhu_action_data
+from roomai.doudizhu import doudizhu_pattern_data
 
-    Args:
-        path:
-
-    Returns:
-
-    """
-    if ".zip" in path:
-        lines = path.split(".zip")
-        zip1 = zipfile.ZipFile(lines[0] + ".zip")
-        len1 = len(lines[1])
-        path = lines[1][1:len1]
-        return zip1.open(path)
-    else:
-        return open(path)
-path = os.path.split(os.path.realpath(__file__))[0]
-pattern_file = get_file(path + "/patterns.py")
-for line in pattern_file:
+for line in doudizhu_pattern_data:
     line = line.replace(" ", "").strip()
     line = line.split("#")[0]
     if len(line) == 0 or len(line[0].strip()) == 0:
@@ -245,12 +228,9 @@ for line in pattern_file:
     for i in range(1, len(lines)):
         lines[i] = int(lines[i])
     AllPatterns[lines[0]] = lines
-pattern_file.close()
 
 
-
-action_file = get_file(path + "/actions.py")
-for line in action_file:
+for line in doudizhu_action_data:
     line = line.replace(" ", "").strip()
     lines = line.split("\t")
 
@@ -263,12 +243,11 @@ for line in action_file:
         s = [int(str1) for str1 in lines[2].split(",")]
     action = DouDiZhuPokerAction(m, s)
     if action.key != lines[0] or action.pattern[0] != lines[3]:
-        print (lines)
         raise ValueError("%s is wrong. The generated action has key(%s) and pattern(%s)"%(line, action.key,action.pattern[0]))
 
 
     AllActions[action.key] = action
-action_file.close()
+
 
 
 

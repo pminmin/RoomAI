@@ -4,8 +4,19 @@ import roomai.common
 
 
 class FiveCardStudAction(roomai.common.AbstractAction):
-    """
-    """
+    '''
+    In Five Card Stud, the action has two parts: option (action type) and price (count of chips). The option has six types: Fold, Check, Call, Raise, Bet
+    and Showhand. The prices for Fold must be zero. The basic usage is as follows:
+    <pre>
+    >> action = roomai.fivecardstud.FiveCardStudAction.lookup("Fold_0")
+    >> action.option
+    "Fold"
+    >> action.price
+    0
+    >> action.key()
+    "Fold_0"
+    </pre>
+    '''
 
     # 弃牌
     Fold        = "Fold"
