@@ -18,16 +18,20 @@ point_rank_to_str  = {14:'7', 13:'R', 12:'r',  11:'5', 10:'2',  9:'3',  8:'A',  
 suit_str_to_rank   = {'Spade':3, 'Heart':2, 'Diamond':1, 'Club':0,  'ForKing':4}
 suit_rank_to_str   = {3:'Spade', 2: 'Heart', 1: 'Diamond', 0:'Club', 4:'ForKing'}
 
-class SevenKingPokerCard(roomai.common.PokerCard):
-    """
-    """
-    def __init__(self, point, suit = None):
-        """
+point_str_to_rank  = {'2':0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8':6, '9':7, 'T':8, 'J':9, 'Q':10, 'K':11, 'A':12, 'r':13,'R':14}
+point_rank_to_str  = {0: '2', 1: '3', 2: '4', 3: '5', 4: '6', 5: '7', 6: '8', 7: '9', 8: 'T', 9: 'J', 10: 'Q', 11: 'K', 12: 'A', 13:'r',14:'R'}
+suit_str_to_rank   = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0,'ForKing':4}
+suit_rank_to_str   = {3:'Spade', 2:'Heart', 1:'Club', 0:'Diamond',4:'ForKing'}
 
-        Args:
-            point:
-            suit:
-        """
+class SevenKingPokerCard(roomai.common.PokerCard):
+    '''
+    A poker card used in SevenKing game
+    The difference in the common poker card(roomai.common.PokerCard) and the SevenKing poker card(roomai.SevenKing.SevenKingPokerCard) is: they have different suit rank
+    The common poker card: 'Spade': 'Spade':0, 'Heart':1, 'Diamond':2, 'Club':3,  'ForKing':4
+    The SevenKing poker card:'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0, 'ForKing':4
+    '''
+
+    def __init__(self, point, suit = None):
         point1 = 0
         suit1  = 0
         if suit is None:
@@ -42,78 +46,26 @@ class SevenKingPokerCard(roomai.common.PokerCard):
             if isinstance(suit, str):
                 suit1 = suit_str_to_rank[suit]
 
-        self.__point_str  = point_rank_to_str[point1]
-        self.__suit_str   = suit_rank_to_str[suit1]
-        self.__point_rank = point1
-        self.__suit_rank  = suit1
-        self.__key        = "%s_%s" % (self.__point_str, self.__suit_str)
-
-    @property
-    def key(self):
-        return self.__key
+        self.__point_str__  = point_rank_to_str[point1]
+        self.__suit_str__   = suit_rank_to_str[suit1]
+        self.__point_rank__ = point1
+        self.__suit_rank__  = suit1
+        self.__key__        = "%s_%s" % (self.__point_str__, self.__suit_str__)
 
 
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        return AllSevenKingPokerCards[self.key]
 
-    @property
-    def point_str(self):
-        return self.__point_str
-
-    @property
-    def suit_str(self):
-        return self.__suit_str
-
-    @property
-    def point_rank(self):
-        """
-
-        Returns:
-
-        """
-        return self.__point_rank
-    @property
-    def suit_rank(self):
-        """
-
-        Returns:
-
-        """
-        return self.__suit_rank
+    @classmethod
     def lookup(cls, key):
-        """
-
-        Args:
-            key:
-
-        Returns:
-
-        """
         return AllSevenKingPokerCards[key]
-    def __deepcopy__(self,  memodict={}, newinstance = None):
-        """
 
-        Args:
-            memodict:
-            newinstance:
-
-        Returns:
-
-        """
-
-        if self.key in AllSevenKingPokerCards:
-            return AllSevenKingPokerCards[self.key]
-
-        if newinstance is None:
-            newinstance = AllSevenKingPokerCards[self.__key]
-        else:
-            newinstance = super(SevenKingPokerCard, self).__deepcopy__(newinstance = newinstance)
-
-        return newinstance
 
 AllSevenKingPokerCards = dict()
-for point in point_str_to_rank:
-    if point != "r" and point != "R":
-        for suit in suit_str_to_rank:
-            if suit != "ForKing":
-                AllSevenKingPokerCards["%s_%s" % (point, suit)] = SevenKingPokerCard("%s_%s" % (point, suit))
-AllSevenKingPokerCards["R_ForKing"] = SevenKingPokerCard("R_ForKing")
+for point_str in roomai.common.common.point_str_to_rank:
+    if point_str != 'r' and point_str != "R":
+        for suit_str in roomai.common.common.suit_str_to_rank:
+            if suit_str != "ForKing":
+                AllSevenKingPokerCards["%s_%s" % (point_str, suit_str)] = SevenKingPokerCard("%s_%s" % (point_str, suit_str))
 AllSevenKingPokerCards["r_ForKing"] = SevenKingPokerCard("r_ForKing")
+AllSevenKingPokerCards["R_ForKing"] = SevenKingPokerCard("R_ForKing")

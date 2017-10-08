@@ -26,9 +26,6 @@ class KuhnTester(unittest.TestCase):
                     players[i].receive_info(infos[i])
 
     def testKuhnEnvBackward(self):
-        """
-
-        """
         env = roomai.kuhn.KuhnPokerEnv()
         env.init({"record_history":True})
         infos, public_state, person_states, private_state = env.forward(roomai.kuhn.KuhnPokerAction("bet"))

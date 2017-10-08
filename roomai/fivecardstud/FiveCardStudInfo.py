@@ -63,14 +63,6 @@ class FiveCardStudPublicState(roomai.common.AbstractPublicState):
     scores                 = None
 
     def __deepcopy__(self,memodict={}):
-        """
-
-        Args:
-            memodict:
-
-        Returns:
-
-        """
         copyinstance = FiveCardStudPublicState()
 
         if self.first_hand_cards is None:

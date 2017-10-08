@@ -4,8 +4,17 @@ import roomai.common
 
 
 class FiveCardStudAction(roomai.common.AbstractAction):
-    """
-    """
+    '''
+    The FiveCardStudAction. The action consists of two parts, namely option and price.
+    The option is ["Fold","Check","Call","Raise","Bet", "Showhand"], and the price is the chips used by this action.
+    The FiveCardStudAction has a key "%s_%d"%(option, price) as its identification. Examples of usages:
+    >> import roomai.fivecardstud
+    >> a = roomai.fivecardstud.FiveCardStudAction.lookup("Fold_0") # We strongly recommend you to get a FiveCardStudAction using the lookup function
+    >> a.option 
+    "Fold"
+    >> a.price
+     0
+    '''
 
     # 弃牌
     Fold        = "Fold"
@@ -21,11 +30,6 @@ class FiveCardStudAction(roomai.common.AbstractAction):
     Showhand    = "Showhand"
 
     def __init__(self,key):
-            """
-
-            Args:
-                key:
-            """
             super(FiveCardStudAction,self).__init__(key)
             opt_price = key.strip().split("_")
             if  opt_price[0] != self.Fold    and opt_price[0] != self.Call  and \
@@ -42,53 +46,23 @@ class FiveCardStudAction(roomai.common.AbstractAction):
             if int(opt_price[1]) < 0:
                 raise  ValueError("%s is an invalid key.]"%key)
 
-            self._roomai_option = opt_price[0]
-            self._roomai_price  = int(opt_price[1])
+            self.__option__ = opt_price[0]
+            self.__price__  = int(opt_price[1])
 
 
 
-    @property
-    def option(self):
-        """
+    def __get_option__(self): return self.__option__
+    option = property(__get_option__, doc = "The option of the action")
 
-        Returns:
-
-        """
-        return self._roomai_option
-    @property
-    def price(self):
-        """
-
-        Returns:
-
-        """
-        return self._roomai_price
+    def __get_price__(self): return self.__price__
+    price = property(__get_price__, doc = "The price of the action (chips used by this action)")
 
     @classmethod
     def lookup(cls,key):
-        """
-
-        Args:
-            key:
-
-        Returns:
-
-        """
         return AllFiveCardStudActions[key]
 
     def __deepcopy__(self, memodict={}, newinstance = None):
-        """
-
-        Args:
-            memodict:
-            newinstance:
-
-        Returns:
-
-        """
-        if newinstance is None:
-            newinstance        = AllFiveCardStudActions[self.key]
-        return newinstance
+        return self.lookup(self.key)
 
 AllFiveCardStudActions = dict()
 options = ["Fold", "Check","Call","Raise","Bet","Showhand"]

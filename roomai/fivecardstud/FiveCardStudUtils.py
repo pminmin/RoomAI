@@ -14,66 +14,47 @@ FiveCardStudAllCardsPattern["2_2_1"]             = ["2_2_1", False, False, True,
 FiveCardStudAllCardsPattern["2_1_1_1"]           = ["2_1_1_1", False, False, True, [2, 1, 1, 1], 92]
 FiveCardStudAllCardsPattern["1_1_1_1_1"]         = ["1_1_1_1_1", False, False, True, [1, 1, 1, 1, 1], 91]
 
+point_str_to_rank  = {'2':0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8':6, '9':7, 'T':8, 'J':9, 'Q':10, 'K':11, 'A':12}
+point_rank_to_str  = {0: '2', 1: '3', 2: '4', 3: '5', 4: '6', 5: '7', 6: '8', 7: '9', 8: 'T', 9: 'J', 10: 'Q', 11: 'K', 12: 'A'}
+suit_str_to_rank   = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0}
+suit_rank_to_str   = {3:'Spade', 2:'Heart', 1:'Club', 0:'Diamond'}
 
 class FiveCardStudPokerCard(roomai.common.PokerCard):
-    """
-    """
+    '''
+    A poker card used in FiveCardStud game
+    The difference in the common poker card(roomai.common.PokerCard) and the fivecardstud poker card(roomai.fivecardstud.FiveCardStudPokerCard) is: they have different suit rank
+    The common poker card: 'Spade': 'Spade':0, 'Heart':1, 'Diamond':2, 'Club':3,  'ForKing':4
+    The FiveCardStud poker card:'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0
+    Besides, there aren't r and R in FiveCardStud
+    '''
 
-    def get_suit_rank(self):
-        """
-
-        Returns:
-
-        """
-        suit_str_to_rank = {'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0}
-        return suit_str_to_rank[self.suit_str]
-
-
-    @classmethod
-    def compare(cls, pokercard1, pokercard2):
-        """
-
-        Args:
-            pokercard1:
-            pokercard2:
-
-        Returns:
-
-        """
-        pr1 = pokercard1.point_rank
-        pr2 = pokercard2.point_rank
-        if pr1 != pr2:
-            return pr1-pr2
+    def __init__(self, point, suit = None):
+        point1 = 0
+        suit1  = 0
+        if suit is None:
+            kv = point.split("_")
+            point1 = point_str_to_rank[kv[0]]
+            suit1  = suit_str_to_rank[kv[1]]
         else:
-            return pokercard1.get_suit_rank() - pokercard2.get_suit_rank()
+            point1 = point
+            if isinstance(point, str):
+                point1 = point_str_to_rank[point]
+            suit1  = suit
+            if isinstance(suit, str):
+                suit1 = suit_str_to_rank[suit]
 
-
+        self.__point_str__  = point_rank_to_str[point1]
+        self.__suit_str__   = suit_rank_to_str[suit1]
+        self.__point_rank__ = point1
+        self.__suit_rank__  = suit1
+        self.__key__        = "%s_%s" % (self.__point_str__, self.__suit_str__)
 
 
     def __deepcopy__(self, memodict={}, newinstance = None):
-        """
-
-        Args:
-            memodict:
-            newinstance:
-
-        Returns:
-
-        """
-        if newinstance is None:
-            newinstance = FiveCardStudAllPokerCards[self.key]
-        return newinstance
+        return FiveCardStudAllPokerCards[self.key]
 
     @classmethod
     def lookup(cls, key):
-        """
-
-        Args:
-            key:
-
-        Returns:
-
-        """
         return FiveCardStudAllPokerCards[key]
 
 
@@ -83,5 +64,5 @@ for point_str in roomai.common.common.point_str_to_rank:
         for suit_str in roomai.common.common.suit_str_to_rank:
             if suit_str != "ForKing":
                 FiveCardStudAllPokerCards["%s_%s"%(point_str,suit_str)] = FiveCardStudPokerCard("%s_%s"%(point_str,suit_str))
-FiveCardStudAllPokerCards["r_ForKing"] = (FiveCardStudPokerCard("r_ForKing"))
-FiveCardStudAllPokerCards["R_ForKing"] = (FiveCardStudPokerCard("R_ForKing"))
+#FiveCardStudAllPokerCards["r_ForKing"] = (FiveCardStudPokerCard("r_ForKing"))
+#FiveCardStudAllPokerCards["R_ForKing"] = (FiveCardStudPokerCard("R_ForKing"))

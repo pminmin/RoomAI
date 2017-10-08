@@ -5,8 +5,6 @@ import roomai.common
 import copy
 
 class StageSpace:
-    """
-    """
     firstStage  = 1
     secondStage = 2
     thirdStage  = 3

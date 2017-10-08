@@ -4,169 +4,209 @@ import roomai.common
 import copy
 
 class TexasHoldemPublicState(roomai.common.AbstractPublicState):
-    """
-    """
+    '''
+    The public state of TexasHoldem
+    '''
     def __init__(self):
-        """
-
-        """
-        self.stage              = None
-        self.num_players        = None
-        self.dealer_id          = None
-        self.public_cards       = None
-        self.num_players        = None
-        self.big_blind_bet      = None
+        self.__stage__              = None
+        self.__num_players__        = None
+        self.__dealer_id__          = None
+        self.__public_cards__       = None
+        self.__big_blind_bet__      = None
 
         #state of players
-        self.is_fold                        = None
-        self.num_quit                       = None
-        self.is_allin                       = None
-        self.num_allin                      = None
-        self.is_needed_to_action            = None
-        self.num_needed_to_action           = None
+        self.__is_fold__                        = None
+        self.__num_fold__                       = None
+        self.__is_allin__                       = None
+        self.__num_allin__                      = None
+        self.__is_needed_to_action__            = None
+        self.__num_needed_to_action__           = None
 
-        # who is expected to take a action
-        self.turn               = None
 
         #chips is array which contains the chips of all players
-        self.chips              = None
+        self.__chips__              = None
 
         #bets is array which contains the bets from all players
-        self.bets               = None
+        self.__bets__               = None
 
         #max_bet = max(self.bets)
-        self.max_bet_sofar      = None
+        self.__max_bet_sofar__      = None
         #the raise acount
-        self.raise_account      = None
+        self.__raise_account__      = None
 
-        self.previous_id        = None
-        self.previous_action    = None
+    def __get_num_players__(self):  return self.__num_players__
+    num_players = property(__get_num_players__, doc = "The number of players in this game")
 
-    def __deepcopy__(self, memodict={}):
-            """
+    def __get_max_bet_sofar__(self):    return self.__max_bet_sofar__
+    max_bet_sofar = property(__get_max_bet_sofar__, doc="The max bet used by one player so far")
 
-            Args:
-                memodict:
+    def __get_raise_account__(self):   return self.__raise_account__
+    raise_account = property(__get_raise_account__, doc="The raise account. If a player want to raise, the price must be max_bet_sofar + raise_account * N. The raise account will increases as the game goes forward")
 
-            Returns:
+    def __get_chips__(self):
+        if self.__chips__ is None:
+            return None
+        else:
+            return tuple(self.__chips__)
+    chips = property(__get_chips__, doc = "chips is an array of the chips of all players. For example, chips=[50,50,50]")
 
-            """
-            copyinstance = TexasHoldemPublicState()
+    def __get_bets__(self):
+        if self.__bets__ is None:
+            return None
+        else:
+            return tuple(self.__bets__)
+    bets = property(__get_bets__, doc = "bets is an array which contains the bets from all players. For example, bets=[50,25,25]")
 
-            copyinstance.stage         = self.stage
-            copyinstance.num_players   = self.num_players
-            copyinstance.dealer_id     = self.dealer_id
-            copyinstance.big_blind_bet = self.big_blind_bet
+    def __get_big_blind_bet__(self):    return self.__big_blind_bet__
+    big_blind_bet = property(__get_big_blind_bet__, doc="The big blind bet")
+
+    def __get_is_fold__(self):
+        if self.__is_fold__ is None:    return None
+        else:   return tuple(self.__is_fold__)
+    is_fold = property(__get_is_fold__, doc="is_fold is an array of which player has take the fold action. For example, is_fold = [true,true,false] denotes the player0 and player1 have taken the fold action")
+
+    def __get_num_fold__(self):
+        return self.__num_fold__
+    num_fold = property(__get_num_fold__, doc = "The number of players who has taken the fold action")
+
+    def __get_is_allin__(self):
+        if self.__is_allin__ is None:    return None
+        else:   return tuple(self.__is_allin__)
+    is_allin = property(__get_is_allin__, doc="is_allin is an array of which player has take the allin action. For example, is_allin = [true,true,false] denotes the player0 and player1 have taken the allin action")
+
+    def __get_num_allin__(self):
+        return self.__num_allin__
+    num_allin = property(__get_num_allin__, doc = "The number of players who has taken the allin action")
+
+
+    def __get_is_needed_to_action__(self):
+        if self.__is_needed_to_action__ is None:    return None
+        else:   return tuple(self.__is_needed_to_action__)
+    is_needed_to_action = property(__get_is_needed_to_action__, doc="is_needed_to_action is an array of which player has take the needed_to_action action. For example, is_needed_to_action = [true,true,false] denotes the player0 and player1 have taken the needed_to_action action")
+
+    def __get_num_needed_to_action__(self):
+        return self.__num_needed_to_action__
+    num_needed_to_action = property(__get_num_needed_to_action__, doc = "The number of players who has taken the needed_to_action action")
+
+    def __get_public_cards__(self):
+        if self.__public_cards__ is None:
+            return None
+        else:
+            return tuple(self.__public_cards__)
+    public_cards = property(__get_public_cards__, doc="The public cards of this game. For example, public_cards = [roomai.common.PokerCards.lookup(\"A_Spade\"), roomai.common.PokerCards.lookup(\"A_Heart\")]")
+
+    def __get_stage__(self):
+        return self.__stage__
+    stage = property(__get_stage__, doc="stage in [1,2,3,4]")
+
+
+    def __get_dealer_id__(self):    return self.__dealer_id__
+    dealer_id = property(__get_dealer_id__, doc="The player id of the dealer. The next player after the dealer is the small blind. The next player after the small blind is the big blind.")
+
+
+    def __deepcopy__(self, memodict={}, newinstance = None):
+            if newinstance is None:
+                newinstance = TexasHoldemPublicState()
+            newinstance.stage         = self.stage
+            newinstance.num_players   = self.num_players
+            newinstance.dealer_id     = self.dealer_id
+            newinstance.big_blind_bet = self.big_blind_bet
 
             if self.public_cards is None:
-                copyinstance.public_cards = None
+                newinstance.public_cards = None
             else:
-                copyinstance.public_cards = [self.public_cards[i].__deepcopy__() for i in range(len(self.public_cards))]
+                newinstance.public_cards = [self.public_cards[i].__deepcopy__() for i in range(len(self.public_cards))]
 
 
             ######## quit, allin , needed_to_action
             copy.num_quit = self.num_quit
             if self.is_fold is None:
-                copyinstance.is_fold = None
+                newinstance.is_fold = None
             else:
-                copyinstance.is_fold = [self.is_fold[i] for i in range(len(self.is_fold))]
+                newinstance.is_fold = [self.is_fold[i] for i in range(len(self.is_fold))]
 
-            copyinstance.num_allin = self.num_allin
+            newinstance.num_allin = self.num_allin
             if self.is_allin is None:
-                copyinstance.is_allin = None
+                newinstance.is_allin = None
             else:
-                copyinstance.is_allin = [self.is_allin[i] for i in range(len(self.is_allin))]
+                newinstance.is_allin = [self.is_allin[i] for i in range(len(self.is_allin))]
 
-            copyinstance.num_needed_to_action = self.num_needed_to_action
+            newinstance.num_needed_to_action = self.num_needed_to_action
             if self.is_needed_to_action is None:
-                copyinstance.is_needed_to_action = None
+                newinstance.is_needed_to_action = None
             else:
-                copyinstance.is_needed_to_action = [self.is_needed_to_action[i] for i in
+                newinstance.is_needed_to_action = [self.is_needed_to_action[i] for i in
                                                     range(len(self.is_needed_to_action))]
 
             # chips is array which contains the chips of all players
             if self.chips is None:
-                copyinstance.chips = None
+                newinstance.chips = None
             else:
-                copyinstance.chips = [self.chips[i] for i in range(len(self.chips))]
+                newinstance.chips = [self.chips[i] for i in range(len(self.chips))]
 
             # bets is array which contains the bets from all players
             if self.bets is None:
-                copyinstance.bets = None
+                newinstance.bets = None
             else:
-                copyinstance.bets = [self.bets[i] for i in range(len(self.bets))]
+                newinstance.bets = [self.bets[i] for i in range(len(self.bets))]
 
-            copyinstance.max_bet_sofar = self.max_bet_sofar
-            copyinstance.raise_account = self.raise_account
-            copyinstance.turn = self.turn
+            newinstance.max_bet_sofar = self.max_bet_sofar
+            newinstance.raise_account = self.raise_account
+            newinstance.turn = self.turn
 
-            copyinstance.previous_id = self.previous_id
+            newinstance.previous_id = self.previous_id
             if self.previous_action is None:
-                copyinstance.previous_action = None
+                newinstance.previous_action = None
             else:
-                copyinstance.previous_action = self.previous_action.__deepcopy__()
+                newinstance.previous_action = self.previous_action.__deepcopy__()
 
             ### isterminal, scores
-            copyinstance.is_terminal = self.is_terminal
+            newinstance.is_terminal = self.is_terminal
             if self.scores is None:
-                copyinstance.scores = None
+                newinstance.scores = None
             else:
-                copyinstance.scores = [self.scores[i] for i in range(len(self.scores))]
+                newinstance.scores = [self.scores[i] for i in range(len(self.scores))]
 
-            return copyinstance
+            return newinstance
 
 
 class TexasHoldemPrivateState(roomai.common.AbstractPrivateState):
-    """
-    """
-    keep_cards = []
+    '''
+    The private state of TexasHoldem
+    '''
+    __keep_cards__ = []
 
-    def __deepcopy__(self, memodict={}):
-        """
+    def __get_keep_cards__(self):   return tuple(self.__keep_cards__)
+    keep_cards = property(__get_keep_cards__, doc="the keep cards")
 
-        Args:
-            memodict:
-        """
-        copy = TexasHoldemPrivateState()
+
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        if newinstance is None:
+            newinstance = TexasHoldemPrivateState()
         if self.keep_cards is None:
-            copy.keep_cards = None
+            newinstance.__keep_cards__ = None
         else:
-            copy.keep_cards = [self.keep_cards[i].__deepcopy__() for i in range(len(self.keep_cards))]
-
+            newinstance.__keep_cards__ = [self.keep_cards[i].__deepcopy__() for i in range(len(self.keep_cards))]
+        return newinstance
 
 
 class TexasHoldemPersonState(roomai.common.AbstractPersonState):
-    """
-    """
-    id                =    0
-    hand_cards        =    []
-    available_actions =    dict()
 
 
+    def __init__(self):
+        super(TexasHoldemPersonState, self).__init__()
+        self.__hand_cards__  =    []
 
-    def __deepcopy__(self, memodict={}):
-        """
+    def __get_hand_cards__(self):   return tuple(self.__hand_cards__)
+    hand_cards = property(__get_hand_cards__, doc="The hand cards of the corresponding player. It contains two poker cards. For example, hand_cards=[roomai.coomon.PokerCard.lookup(\"A_Spade\"),roomai.coomon.PokerCard.lookup(\"A_Heart\")]")
 
-        Args:
-            memodict:
+    def __deepcopy__(self, memodict={}, newinstance = None):
+        if newinstance is None:
+            newinstance    = TexasHoldemPersonState()
+        newinstance = super(TexasHoldemPersonState, self).__deepcopy__(newinstance=newinstance)
+        newinstance.__hand_cards__ = [c.__deepcopy__() for c in self.hand_cards]
+        return  newinstance
 
-        Returns:
-
-        """
-        copyinstance    = TexasHoldemPersonState()
-        copyinstance.id = self.id
-        if self.hand_cards is not None:
-            copyinstance.hand_cards = [self.hand_cards[i].__deepcopy__() for i in range(len(self.hand_cards))]
-        else:
-            copyinstance.hand_cards = None
-
-        if self.available_actions is not None:
-            copyinstance.available_actions = dict()
-            for key in self.available_actions:
-                copyinstance.available_actions[key] = self.available_actions[key].__deepcopy__()
-        else:
-            copyinstance.available_actions = None
-        return copyinstance
 
 
 AllCardsPattern = dict()

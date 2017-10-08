@@ -25,10 +25,10 @@ class TexasEnvTester(unittest.TestCase):
 
         infos,public_state, person_states, private_state  = env.init(params)
         self.assertEqual(infos[0].person_state.id,0)
-        env.person_states[0].hand_cards = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
-        env.person_states[0].hand_cards = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
-        env.person_states[0].hand_cards = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
-        env.private_state.keep_cards    = [roomai.common.PokerCard(3,0),  roomai.common.PokerCard(4,0),roomai.common.PokerCard(5,0),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,0)]
+        env.person_states[0].__hand_cards__ = [roomai.common.PokerCard(0, 0), roomai.common.PokerCard(0, 1)]
+        env.person_states[0].__hand_cards__ = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
+        env.person_states[0].__hand_cards__ = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
+        env.private_state.__keep_cards__    = [roomai.common.PokerCard(3,0),  roomai.common.PokerCard(4,0),roomai.common.PokerCard(5,0),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,0)]
 
         self.assertEqual(env.public_state.turn, 0)
         self.assertNotEqual(len(infos[0].person_state.available_actions), 0)
@@ -46,8 +46,8 @@ class TexasEnvTester(unittest.TestCase):
         self.assertNotEqual(len(infos[1].person_state.available_actions), 0)
         self.assertTrue("Allin_90" in infos[1].person_state.available_actions.keys())
         self.assertEqual(env.public_state.turn, 1)
-        self.assertEqual(env.chips[0],0)
-        self.assertEqual(env.chips[1],90)
+        self.assertEqual(env.public_state.chips[0],0)
+        self.assertEqual(env.public_state.chips[1],90)
         self.assertEqual(env.public_state.stage, StageSpace.firstStage)
         # dealer_id = 0
         # turn = 1
@@ -99,10 +99,10 @@ class TexasEnvTester(unittest.TestCase):
 
         infos,public_state, person_states, private_state = env.init(params)
         self.assertEqual(infos[0].person_state.id,0)
-        env.person_states[0].hand_cards = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
-        env.person_states[1].hand_cards = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
-        env.person_states[2].hand_cards = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]
-        env.private_state.keep_cards    = [roomai.common.PokerCard(3,1),roomai.common.PokerCard(4,2),roomai.common.PokerCard(5,3),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,3)]
+        env.person_states[0].__hand_cards__ = [roomai.common.PokerCard(7, 0), roomai.common.PokerCard(7, 1)]
+        env.person_states[1].__hand_cards__ = [roomai.common.PokerCard(2, 0), roomai.common.PokerCard(2, 1)]
+        env.person_states[2].__hand_cards__ = [roomai.common.PokerCard(2, 2), roomai.common.PokerCard(2, 3)]
+        env.private_state.__keep_cards__    = [roomai.common.PokerCard(3,1),roomai.common.PokerCard(4,2),roomai.common.PokerCard(5,3),roomai.common.PokerCard(6,0),roomai.common.PokerCard(7,3)]
         self.assertEqual(env.public_state.turn, 0)
         self.assertNotEqual(len(infos[0].person_state.available_actions), 0)
         self.assertTrue("Raise_60" in infos[0].person_state.available_actions.keys())
