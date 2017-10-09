@@ -81,7 +81,7 @@ class Utils:
                 continue
 
             if "i_cheat" == pattern[0]:
-                key, action = cls.lookup_action([DouDiZhuActionElement.cheat], [])
+                key, action = cls.lookup_action([DouDiZhuActionElement.str_to_rank["x"]], [])
                 if cls.is_action_valid(hand_cards, public_state, action) == True:
                     actions[key] = action
                 continue

@@ -5,15 +5,16 @@ import roomai.common
 
 class FiveCardStudAction(roomai.common.AbstractAction):
     '''
-    The FiveCardStudAction. The action consists of two parts, namely option and price.
-    The option is ["Fold","Check","Call","Raise","Bet", "Showhand"], and the price is the chips used by this action.
-    The FiveCardStudAction has a key "%s_%d"%(option, price) as its identification. Examples of usages:
-    >> import roomai.fivecardstud
-    >> a = roomai.fivecardstud.FiveCardStudAction.lookup("Fold_0") # We strongly recommend you to get a FiveCardStudAction using the lookup function
-    >> a.option 
-    "Fold"
-    >> a.price
-     0
+    The FiveCardStudAction. The action consists of two parts, namely option and price.\n
+    The option is ["Fold","Check","Call","Raise","Bet", "Showhand"], and the price is the chips used by this action.\n
+    The FiveCardStudAction has a key "%s_%d"%(option, price) as its identification. Examples of usages:\n
+    >> import roomai.fivecardstud\n
+    >> a = roomai.fivecardstud.FiveCardStudAction.lookup("Fold_0") \n
+    >> # We strongly recommend you to get a FiveCardStudAction using the lookup function\n
+    >> a.option \n
+    Fold\n
+    >> a.price\n
+    0\n
     '''
 
     # 弃牌

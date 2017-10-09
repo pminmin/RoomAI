@@ -15,23 +15,6 @@ class DouDiZhuActionElement:
     str_to_rank  = {'3':0, '4':1, '5':2, '6':3, '7':4, '8':5, '9':6, 'T':7, 'J':8, 'Q':9, 'K':10, 'A':11, '2':12, 'r':13, 'R':14, 'x':15, 'b':16}
     # x means check, b means bid
     rank_to_str  = {0: '3', 1: '4', 2: '5', 3: '6', 4: '7', 5: '8', 6: '9', 7: 'T', 8: 'J', 9: 'Q', 10: 'K', 11: 'A', 12: '2', 13: 'r', 14: 'R', 15: 'x', 16: 'b'}
-    three       = 0;
-    four        = 1;
-    five        = 2;
-    six         = 3;
-    seven       = 4;
-    eight       = 5;
-    night       = 6;
-    ten         = 7;
-    J           = 8;
-    Q           = 9;
-    K           = 10;
-    A           = 11;
-    two         = 12;
-    r           = 13;
-    R           = 14;
-    cheat       = 15;
-    bid         = 16;
 
     total_normal_cards = 15
 
@@ -112,7 +95,7 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
         self.__isMasterStraight__ = 0
         num = 0
         for v in self.__masterPoints2Count__:
-            if (v + 1) in self.__masterPoints2Count__ and (v + 1) < DouDiZhuActionElement.two:
+            if (v + 1) in self.__masterPoints2Count__ and (v + 1) < DouDiZhuActionElement.str_to_rank["2"]:
                 num += 1
         if num == len(self.__masterPoints2Count__) - 1 and len(self.__masterPoints2Count__) != 1:
             self.__isMasterStraight__ = 1
@@ -133,21 +116,21 @@ class DouDiZhuPokerAction(roomai.common.AbstractAction):
         # is cheat?
         if len(self.__masterCards__) == 1 \
                 and len(self.__slaveCards__) == 0 \
-                and self.__masterCards__[0] == DouDiZhuActionElement.cheat:
+                and self.__masterCards__[0] == DouDiZhuActionElement.str_to_rank["x"]:
             self.__pattern__ = AllPatterns["i_cheat"]
 
         # is roblord
         elif len(self.__masterCards__) == 1 \
                 and len(self.__slaveCards__) == 0 \
-                and self.__masterCards__[0] == DouDiZhuActionElement.bid:
+                and self.__masterCards__[0] == DouDiZhuActionElement.str_to_rank["b"]:
             self.__pattern__ = AllPatterns["i_bid"]
 
         # is twoKings
         elif len(self.__masterCards__) == 2 \
                 and len(self.__masterPoints2Count__) == 2 \
                 and len(self.__slaveCards__) == 0 \
-                and self.__masterCards__[0] in [DouDiZhuActionElement.r, DouDiZhuActionElement.R] \
-                and self.__masterCards__[1] in [DouDiZhuActionElement.r, DouDiZhuActionElement.R]:
+                and self.__masterCards__[0] in [DouDiZhuActionElement.str_to_rank["r"], DouDiZhuActionElement.str_to_rank["R"]] \
+                and self.__masterCards__[1] in [DouDiZhuActionElement.str_to_rank["r"], DouDiZhuActionElement.str_to_rank["R"]]:
             self.__pattern__ = AllPatterns["x_rocket"]
 
         else:

@@ -21,13 +21,13 @@ class DouDiZhuPokerUtilTester(unittest.TestCase):
         a = DouDiZhuPokerAction([1, 1, 1, 1, 1], [2])
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = DouDiZhuPokerAction([DouDiZhuActionElement.cheat], [2])
+        a = DouDiZhuPokerAction([DouDiZhuActionElement.str_to_rank["x"]], [2])
         self.assertEqual(a.pattern[0], "i_invalid")
 
-        a = DouDiZhuPokerAction([DouDiZhuActionElement.cheat], [])
+        a = DouDiZhuPokerAction([DouDiZhuActionElement.str_to_rank["x"]], [])
         self.assertEqual(a.pattern[0], "i_cheat")
         
-        a = DouDiZhuPokerAction([DouDiZhuActionElement.R, DouDiZhuActionElement.r], [])
+        a = DouDiZhuPokerAction([DouDiZhuActionElement.str_to_rank["R"], DouDiZhuActionElement.str_to_rank["r"]], [])
         self.assertEqual(a.pattern[0], "x_rocket")
         
 

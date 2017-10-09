@@ -1,7 +1,7 @@
 #!/bin/python
 from roomai.sevenking import SevenKingEnv
 from roomai.sevenking import SevenKingAction
-from roomai.sevenking import SevenKingRandomPlayer
+from roomai.common import RandomPlayer
 from roomai.sevenking import SevenKingPokerCard
 import roomai.common
 import unittest
@@ -112,7 +112,7 @@ class testSevenKing(unittest.TestCase):
         """
         env = SevenKingEnv()
         env.num_players = 2
-        players = [SevenKingRandomPlayer() for i in range(2)]
+        players = [RandomPlayer() for i in range(2)]
 
         for i in range(100):
             SevenKingEnv.compete(env, players)

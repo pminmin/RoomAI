@@ -2,7 +2,6 @@
 from roomai.fivecardstud import FiveCardStudEnv
 from roomai.fivecardstud import FiveCardStudPokerCard
 from roomai.fivecardstud import FiveCardStudAction
-from roomai.fivecardstud import FiveCardStudRandomPlayer
 import unittest
 import roomai
 import roomai.fivecardstud
@@ -68,7 +67,8 @@ class FiveCardStudTester(unittest.TestCase):
         """
 
         for i in range(100):
-            players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in range(3)]
+            import roomai.common
+            players = [roomai.common.RandomPlayer() for i in range(3)]
             env     = roomai.fivecardstud.FiveCardStudEnv()
             num_players = 3
             chips       = [1000,1000,1000]
@@ -86,7 +86,8 @@ class FiveCardStudTester(unittest.TestCase):
                     players[i].receive_info(infos[i])
 
         for i in range(100):
-            players = [roomai.fivecardstud.FiveCardStudRandomPlayer() for i in range(2)]
+            import roomai.common
+            players = [roomai.common.RandomPlayer() for i in range(2)]
             env     = roomai.fivecardstud.FiveCardStudEnv()
             num_players = 2
             chips       = [1000,1000]
@@ -105,16 +106,15 @@ class FiveCardStudTester(unittest.TestCase):
 
 
     def testCompete(self):
-        """
-
-        """
+        import roomai.common
         env     = FiveCardStudEnv()
-        players = [FiveCardStudRandomPlayer() for i in range(5)]
+        players = [roomai.common.RandomPlayer() for i in range(5)]
         scores  = FiveCardStudEnv.compete(env, players)
         print (scores)
         assert(abs(sum(scores)) < 1e-9 )
 
 if __name__ == "__main__":
+    import roomai.common
     env = FiveCardStudEnv()
-    players = [FiveCardStudRandomPlayer() for i in range(5)]
+    players = [roomai.common.RandomPlayer() for i in range(5)]
     scores = FiveCardStudEnv.compete(env, players)

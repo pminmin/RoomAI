@@ -633,8 +633,8 @@ class FiveCardStudEnv(roomai.common.AbstractEnv):
     @classmethod
     def is_nextround(self, public_state):
         '''
-        :return: 
-        A boolean variable indicates whether is it time to enter the next stage
+        
+        :return: A boolean variable indicates whether is it time to enter the next stage
         '''
         return public_state.num_needed_to_action == 0
 

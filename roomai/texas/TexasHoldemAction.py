@@ -10,9 +10,9 @@ class TexasHoldemAction(roomai.common.AbstractAction):
     >> import roomai.TexasHoldem
     >> a = roomai.TexasHoldem.TexasHoldemAction.lookup("Fold_0") # We strongly recommend you to get a TexasHoldemAction using the lookup function
     >> a.option 
-    "Fold"
+    Fold
     >> a.price
-     0
+    0
     '''
     
     

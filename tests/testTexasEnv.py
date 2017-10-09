@@ -5,6 +5,7 @@ import logging
 from roomai.texas import *
 import roomai
 import random
+from roomai.common import RandomPlayer
 
 class TexasEnvTester(unittest.TestCase):
     """
@@ -20,7 +21,7 @@ class TexasEnvTester(unittest.TestCase):
         chips         = [100,100,100]
         big_blind_bet = 20
         params  = {"num_players":num_players, "dealer_id":dealer_id, "chips":chips, "big_blind_bet":big_blind_bet}
-        players =  [TexasHoldemRandomPlayer() for i in range(3)]
+        players =  [RandomPlayer() for i in range(3)]
 
 
         infos,public_state, person_states, private_state  = env.init(params)
@@ -94,7 +95,7 @@ class TexasEnvTester(unittest.TestCase):
         chips         = [100, 500,1000]
         big_blind_bet = 20
         params  = {"num_players":num_players, "dealer_id":dealer_id, "chips":chips, "big_blind_bet":big_blind_bet}
-        players =  [TexasHoldemRandomPlayer() for i in range(3)]
+        players =  [RandomPlayer() for i in range(3)]
 
 
         infos,public_state, person_states, private_state = env.init(params)
@@ -235,7 +236,7 @@ class TexasEnvTester(unittest.TestCase):
         random.seed(0)
 
         for i in range(100):
-            players = [TexasHoldemRandomPlayer() for i in range(3)]
+            players = [RandomPlayer() for i in range(3)]
 
             env = TexasHoldemEnv()
             num_players = 3
@@ -254,7 +255,7 @@ class TexasEnvTester(unittest.TestCase):
 
 
         for i in range(100):
-            players = [TexasHoldemRandomPlayer() for i in range(2)]
+            players = [RandomPlayer() for i in range(2)]
 
             env = TexasHoldemEnv()
             num_players = 2
@@ -277,7 +278,7 @@ class TexasEnvTester(unittest.TestCase):
         """
         import random
         random.seed(100)
-        players = [TexasHoldemRandomPlayer() for i in range(5)]
+        players = [RandomPlayer() for i in range(5)]
         env = TexasHoldemEnv()
 
         scores = TexasHoldemEnv.compete(env, players)

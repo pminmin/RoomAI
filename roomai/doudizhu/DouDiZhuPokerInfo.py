@@ -33,7 +33,7 @@ class DouDiZhuPokerHandCards:
     def __get_card_pointrank_count__(self): return tuple(self.__card_pointrank_count__)
     card_pointrank_count = property(__get_card_pointrank_count__,
                                     doc="The card_pointrank_count is an array of counts for different card point\n" +
-                                        "cardpoint_to_rank  = {'3':0, '4':1, '5':2, '6':3, '7':4, '8':5, '9':6, 'T':7, 'J':8, 'Q':9, 'K':10, 'A':11, '2':12, 'r':13, 'R':14}\n" +
+                                        "cardpoint_to_rank  = {'3':0, '4':1, '5':2, '6':3, '7':4, '8':5, '9':6, 'T':7, 'J':8, 'Q':9, 'K':10, 'A':11, '2':12, 'r':13, 'R':14}.\n" +
                                         "If key = \"33rR\", card_pointrank_count = [2,0,...,0,1,1], len(card_pointrank_count) = 15")
 
     def __get_num_card__(self): return self.__num_card__
