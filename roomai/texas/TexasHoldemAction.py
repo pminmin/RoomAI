@@ -4,15 +4,16 @@ import roomai.common
 
 class TexasHoldemAction(roomai.common.AbstractAction):
     '''
-    The TexasHoldemAction. The action consists of two parts, namely option and price.
-    The option is ["Fold","Check","Call","Raise","AllIn"], and the price is the chips used by this action.
-    The TexasHoldemAction has a key "%s_%d"%(option, price) as its identification. Examples of usages:
-    >> import roomai.TexasHoldem
-    >> a = roomai.TexasHoldem.TexasHoldemAction.lookup("Fold_0") # We strongly recommend you to get a TexasHoldemAction using the lookup function
-    >> a.option 
-    Fold
-    >> a.price
-    0
+    The TexasHoldemAction. The action consists of two parts, namely option and price.\n
+    The option is ["Fold","Check","Call","Raise","AllIn"], and the price is the chips used by this action.\n
+    The TexasHoldemAction has a key "%s_%d"%(option, price) as its identification. Examples of usages:\n
+    >> import roomai.TexasHoldem\n
+    >> a = roomai.TexasHoldem.TexasHoldemAction.lookup("Fold_0")\n
+    >> ## We strongly recommend you to get a TexasHoldemAction using the lookup function\n
+    >> a.option \n
+    "Fold"\n
+    >> a.price\n
+    0\n
     '''
     
     

@@ -19,12 +19,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
     '''
     def init(self, params = dict()):
         '''
-        Initialize the SevenKing game environment with the initialization params.
-        The initialization is a dict with some options
-        1) allcards: the order of all poker cards appearing
-        2) record_history: whether to record all history states. if you need call the backward function, please set it to True. default False
-        3) num_players: how many players are in the game  
-        An example of the initialization param is {"num_players":2,"record_history":True}
+        Initialize the SevenKing game environment with the initialization params.\n
+        The initialization is a dict with some options\n
+        1) allcards: the order of all poker cards appearing\n
+        2) record_history: whether to record all history states. if you need call the backward function, please set it to True. default False\n
+        3) num_players: how many players are in the game  \n
+        An example of the initialization param is {"num_players":2,"record_history":True}\n
 
         :param params: the initialization params
         :return: infos, public_state, person_states, private_state

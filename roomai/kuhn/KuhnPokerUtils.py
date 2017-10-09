@@ -5,14 +5,14 @@ import copy
 
 class KuhnPokerAction(roomai.common.AbstractAction):
     '''
-    The KuhnPoker action. There are only two actions: bet and check. Examples of usages:
-    >> import roomai.kuhn
-    >> action = roomai.kuhn.KuhnPokerAction.lookup("bet")
-    >> action.key
-    "bet"
-    >> action = roomai.kuhn.KuhnPokerAction.lookup("check")
-    >> action.key
-    "check"
+    The KuhnPoker action. There are only two actions: bet and check. Examples of usages: \n
+    >> import roomai.kuhn\n
+    >> action = roomai.kuhn.KuhnPokerAction.lookup("bet")\n
+    >> action.key\n
+    "bet"\n
+    >> action = roomai.kuhn.KuhnPokerAction.lookup("check")\n
+    >> action.key\n
+    "check"\n
     '''
     def __init__(self, key):
         super(KuhnPokerAction,self).__init__(key)

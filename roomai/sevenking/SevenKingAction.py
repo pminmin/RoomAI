@@ -7,17 +7,18 @@ from functools import cmp_to_key
 
 class SevenKingAction(roomai.common.AbstractAction):
     '''
-    The SevenKing action. The SevenKing action contains some cards. Examples of usages:
-    >> import roomai.sevenking
-    >> action = roomai.sevenking.SevenKingAction.lookup("A_Spade,A_Heart") ## We strongly recommend you to get an action with the lookup function.
-    >> action.key 
-    A_Heart, A_Spade
+    The SevenKing action. The SevenKing action contains some cards. Examples of usages:\n
+    >> import roomai.sevenking\n
+    >> action = roomai.sevenking.SevenKingAction.lookup("A_Spade,A_Heart") \n
+    >> ## We strongly recommend you to get an action with the lookup function.\n
+    >> action.key \n
+    "A_Heart, A_Spade"\n
     >> action.cards[0].point
-    A
+    "A"\n
     >> action.cards[0].suit
-    Heart
-    >> action.pattern
-    p_2 # 2 cards in this action
+    "Heart"\n
+    >> action.pattern\n
+    p_2 # 2 cards in this action\n
     '''
 
     def __init__(self, key):

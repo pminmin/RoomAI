@@ -33,14 +33,14 @@ class TexasHoldemEnv(roomai.common.AbstractEnv):
     #@override
     def init(self, params = dict()):
         '''
-        Initialize the TexasHoldem game environment with the initialization params.
-        The initialization is a dict with some options
-        1) allcards: the order of all poker cards appearing
-        2) record_history: whether to record all history states. if you need call the backward function, please set it to True. default False
-        3) num_players: how many players are in the game, default 3
-        4) dealer_id: the player id of the dealer, default random
-        5) chips: the initialization chips, default [1000,1000,...]
-        6) big_blind_bet: the number of chips for the big blind bet, default 10
+        Initialize the TexasHoldem game environment with the initialization params.\n
+        The initialization is a dict with some options\n
+        1) allcards: the order of all poker cards appearing\n
+        2) record_history: whether to record all history states. if you need call the backward function, please set it to True. default False\n
+        3) num_players: how many players are in the game, default 3\n
+        4) dealer_id: the player id of the dealer, default random\n
+        5) chips: the initialization chips, default [1000,1000,...]\n
+        6) big_blind_bet: the number of chips for the big blind bet, default 10\n
         An example of the initialization param is {"num_players":2,"record_history":True}
 
         :param params: the initialization params

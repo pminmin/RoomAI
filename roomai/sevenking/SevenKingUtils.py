@@ -25,10 +25,10 @@ suit_rank_to_str   = {3:'Spade', 2:'Heart', 1:'Club', 0:'Diamond',4:'ForKing'}
 
 class SevenKingPokerCard(roomai.common.PokerCard):
     '''
-    A poker card used in SevenKing game
-    The difference in the common poker card(roomai.common.PokerCard) and the SevenKing poker card(roomai.SevenKing.SevenKingPokerCard) is: they have different suit rank
-    The common poker card: 'Spade': 'Spade':0, 'Heart':1, 'Diamond':2, 'Club':3,  'ForKing':4
-    The SevenKing poker card:'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0, 'ForKing':4
+    A poker card used in SevenKing game\n
+    The suit ranks in the common poker card(roomai.common.PokerCard) and the SevenKing poker card(roomai.SevenKing.SevenKingPokerCard) are different: \n
+    The common poker card: 'Spade': 'Spade':0, 'Heart':1, 'Diamond':2, 'Club':3,  'ForKing':4\n
+    The SevenKing poker card:'Spade': 3, 'Heart': 2, 'Club': 1, 'Diamond':0, 'ForKing':4\n
     '''
 
     def __init__(self, point, suit = None):
