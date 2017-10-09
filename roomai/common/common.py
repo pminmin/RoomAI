@@ -176,7 +176,7 @@ class RandomPlayer(AbstractPlayer):
     def take_action(self):
         import random
         idx = int(random.random() * len(self.available_actions))
-        return self.available_actions.values()[idx]
+        return list(self.available_actions.values())[idx]
 
     def reset(self):
         pass
