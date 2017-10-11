@@ -1,0 +1,436 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.sevenking package &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="roomai.texas package" href="roomai.texas.html" />
+    <link rel="prev" title="roomai.kuhn package" href="roomai.kuhn.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="roomai-sevenking-package">
+<h1>roomai.sevenking package<a class="headerlink" href="#roomai-sevenking-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.sevenking.SevenKingAction">
+<span id="roomai-sevenking-sevenkingaction-module"></span><h2>roomai.sevenking.SevenKingAction module<a class="headerlink" href="#module-roomai.sevenking.SevenKingAction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.sevenking.SevenKingAction.SevenKingAction">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.SevenKingAction.</code><code class="descname">SevenKingAction</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingAction.html#SevenKingAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingAction.SevenKingAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractAction" title="roomai.common.common.AbstractAction"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractAction</span></code></a></p>
+<p>The SevenKing action. The SevenKing action contains some cards. Examples of usages:</p>
+<p>&gt;&gt; import roomai.sevenking</p>
+<p>&gt;&gt; action = roomai.sevenking.SevenKingAction.lookup(“A_Spade,A_Heart”)</p>
+<p>&gt;&gt; ## We strongly recommend you to get an action with the lookup function.</p>
+<p>&gt;&gt; action.key</p>
+<p>“A_Heart, A_Spade”</p>
+<p>&gt;&gt; action.cards[0].point
+“A”</p>
+<p>&gt;&gt; action.cards[0].suit
+“Heart”</p>
+<p>&gt;&gt; action.pattern</p>
+<p>p_2 # 2 cards in this action</p>
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingAction.SevenKingAction.cards">
+<code class="descname">cards</code><a class="headerlink" href="#roomai.sevenking.SevenKingAction.SevenKingAction.cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The cards in this action. For example, cards=[roomai.sevenking.SevenKingPokerCards.lookup(“A_Spade”)]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingAction.SevenKingAction.key">
+<code class="descname">key</code><a class="headerlink" href="#roomai.sevenking.SevenKingAction.SevenKingAction.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key of this action. For example, key = “3_Heart,3_Spade”. The check action’s key = “”</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.sevenking.SevenKingAction.SevenKingAction.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingAction.html#SevenKingAction.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingAction.SevenKingAction.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>lookup a SevenKing action with the specified key</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – The specified key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The action</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingAction.SevenKingAction.pattern">
+<code class="descname">pattern</code><a class="headerlink" href="#roomai.sevenking.SevenKingAction.SevenKingAction.pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pattern of the action</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.sevenking.SevenKingEnv">
+<span id="roomai-sevenking-sevenkingenv-module"></span><h2>roomai.sevenking.SevenKingEnv module<a class="headerlink" href="#module-roomai.sevenking.SevenKingEnv" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.sevenking.SevenKingEnv.SevenKingEnv">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.SevenKingEnv.</code><code class="descname">SevenKingEnv</code><a class="reference internal" href="_modules/roomai/sevenking/SevenKingEnv.html#SevenKingEnv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingEnv.SevenKingEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractEnv" title="roomai.common.common.AbstractEnv"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractEnv</span></code></a></p>
+<p>The SevenKing game environment</p>
+<dl class="classmethod">
+<dt id="roomai.sevenking.SevenKingEnv.SevenKingEnv.available_actions">
+<em class="property">classmethod </em><code class="descname">available_actions</code><span class="sig-paren">(</span><em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingEnv.html#SevenKingEnv.available_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingEnv.SevenKingEnv.available_actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.sevenking.SevenKingEnv.SevenKingEnv.compete">
+<em class="property">classmethod </em><code class="descname">compete</code><span class="sig-paren">(</span><em>env</em>, <em>players</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingEnv.html#SevenKingEnv.compete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingEnv.SevenKingEnv.compete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the game environment to hold a compete for the players</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>env</strong> – The game environment</li>
+<li><strong>players</strong> – The players</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">scores for the players</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.sevenking.SevenKingEnv.SevenKingEnv.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingEnv.html#SevenKingEnv.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingEnv.SevenKingEnv.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SevenKing game environment steps with the action taken by the current player</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>action</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.sevenking.SevenKingEnv.SevenKingEnv.init">
+<code class="descname">init</code><span class="sig-paren">(</span><em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingEnv.html#SevenKingEnv.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingEnv.SevenKingEnv.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the SevenKing game environment with the initialization params.</p>
+<p>The initialization is a dict with some options</p>
+<ol class="arabic simple">
+<li>allcards: the order of all poker cards appearing</li>
+<li>record_history: whether to record all history states. if you need call the backward function, please set it to True. default False</li>
+<li>num_players: how many players are in the game</li>
+</ol>
+<p>An example of the initialization param is {“num_players”:2,”record_history”:True}</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> – the initialization params</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">infos, public_state, person_states, private_state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.sevenking.SevenKingEnv.SevenKingEnv.is_action_valid">
+<em class="property">classmethod </em><code class="descname">is_action_valid</code><span class="sig-paren">(</span><em>action</em>, <em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingEnv.html#SevenKingEnv.is_action_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingEnv.SevenKingEnv.is_action_valid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.sevenking.SevenKingInfo">
+<span id="roomai-sevenking-sevenkinginfo-module"></span><h2>roomai.sevenking.SevenKingInfo module<a class="headerlink" href="#module-roomai.sevenking.SevenKingInfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPersonState">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.SevenKingInfo.</code><code class="descname">SevenKingPersonState</code><a class="reference internal" href="_modules/roomai/sevenking/SevenKingInfo.html#SevenKingPersonState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPersonState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPersonState" title="roomai.common.common.AbstractPersonState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPersonState</span></code></a></p>
+<p>The person state of SevenKing</p>
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPersonState.hand_cards">
+<code class="descname">hand_cards</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPersonState.hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hand cards of the person state. For example, hand_cards = [roomai.sevenking.SevenKingPokerCard.lookup(“A_Spade”)]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPersonState.hand_cards_key">
+<code class="descname">hand_cards_key</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPersonState.hand_cards_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hand cards key of the person state. For example, hand_cards_key  = “3_Spade,A_Spade”</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPersonState.hand_cards_keyset">
+<code class="descname">hand_cards_keyset</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPersonState.hand_cards_keyset" title="Permalink to this definition">¶</a></dt>
+<dd><p>The set of the poker cards’ key in the hand cards. For example, hand_cards_keyset={“A_Spade”}</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPrivateState">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.SevenKingInfo.</code><code class="descname">SevenKingPrivateState</code><a class="reference internal" href="_modules/roomai/sevenking/SevenKingInfo.html#SevenKingPrivateState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPrivateState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPrivateState" title="roomai.common.common.AbstractPrivateState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPrivateState</span></code></a></p>
+<p>The private state of SevenKing</p>
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPrivateState.keep_cards">
+<code class="descname">keep_cards</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPrivateState.keep_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The keep cards</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.SevenKingInfo.</code><code class="descname">SevenKingPublicState</code><a class="reference internal" href="_modules/roomai/sevenking/SevenKingInfo.html#SevenKingPublicState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPublicState" title="roomai.common.common.AbstractPublicState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPublicState</span></code></a></p>
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.is_fold">
+<code class="descname">is_fold</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.is_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>is_fold is an array of which player has take the fold action. For example, is_fold = [true,true,false] denotes the player0 and player1 have taken the fold action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.license_action">
+<code class="descname">license_action</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.license_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generally, the player need takes an action with the same pattern as the license action. Unless the player takes an action at the beginning of a round</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_fold">
+<code class="descname">num_fold</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of players who has taken the fold action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_hand_cards">
+<code class="descname">num_hand_cards</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of cards in different players. For example, num_hand_cards = [3,5,2] denotes the player0 has 3 poker cards, the player1 has 5 poker cards and the player2 has 2 poker cards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_players">
+<code class="descname">num_players</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_players" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of players in this game</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_showed_cards">
+<code class="descname">num_showed_cards</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.num_showed_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of showed poker cards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.showed_cards">
+<code class="descname">showed_cards</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.showed_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The poker cards have been thrown by the players and are public to all now.For example, showed_cards = [roomai.sevenking.SevenKingPokerCards.lookup(“A_Spade”),roomai.sevenking.SevenKingPokerCards.lookup(“3_Heart”)]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.sevenking.SevenKingInfo.SevenKingPublicState.stage">
+<code class="descname">stage</code><a class="headerlink" href="#roomai.sevenking.SevenKingInfo.SevenKingPublicState.stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>There are two stages in SevenKing. In the first stage(stage = 0), the player gets the same number of the poker cards after he takes an action (throws some cards).In the second stage (stage=1), the player doesn’t get the supplement. The player who firstly throws all his hand cards is the winner.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.sevenking.SevenKingUtils">
+<span id="roomai-sevenking-sevenkingutils-module"></span><h2>roomai.sevenking.SevenKingUtils module<a class="headerlink" href="#module-roomai.sevenking.SevenKingUtils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.sevenking.SevenKingUtils.SevenKingPokerCard">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.SevenKingUtils.</code><code class="descname">SevenKingPokerCard</code><span class="sig-paren">(</span><em>point</em>, <em>suit=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingUtils.html#SevenKingPokerCard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingUtils.SevenKingPokerCard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.PokerCard" title="roomai.common.common.PokerCard"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.PokerCard</span></code></a></p>
+<p>A poker card used in SevenKing game</p>
+<p>The suit ranks in the common poker card(roomai.common.PokerCard) and the SevenKing poker card(roomai.SevenKing.SevenKingPokerCard) are different:</p>
+<p>The common poker card: ‘Spade’: ‘Spade’:0, ‘Heart’:1, ‘Diamond’:2, ‘Club’:3,  ‘ForKing’:4</p>
+<p>The SevenKing poker card:’Spade’: 3, ‘Heart’: 2, ‘Club’: 1, ‘Diamond’:0, ‘ForKing’:4</p>
+<dl class="classmethod">
+<dt id="roomai.sevenking.SevenKingUtils.SevenKingPokerCard.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/SevenKingUtils.html#SevenKingPokerCard.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.SevenKingUtils.SevenKingPokerCard.lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.sevenking.play">
+<span id="roomai-sevenking-play-module"></span><h2>roomai.sevenking.play module<a class="headerlink" href="#module-roomai.sevenking.play" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.sevenking.play.HumanInputPlayer">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.play.</code><code class="descname">HumanInputPlayer</code><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="roomai.sevenking.play.HumanInputPlayer.receive_info">
+<code class="descname">receive_info</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer.receive_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer.receive_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.sevenking.play.HumanInputPlayer.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.sevenking.play.HumanInputPlayer.take_action">
+<code class="descname">take_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.sevenking.play.HumanInputPlayer1">
+<em class="property">class </em><code class="descclassname">roomai.sevenking.play.</code><code class="descname">HumanInputPlayer1</code><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="roomai.sevenking.play.HumanInputPlayer1.receive_info">
+<code class="descname">receive_info</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer1.receive_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer1.receive_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.sevenking.play.HumanInputPlayer1.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer1.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer1.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.sevenking.play.HumanInputPlayer1.take_action">
+<code class="descname">take_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/play.html#HumanInputPlayer1.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.HumanInputPlayer1.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="roomai.sevenking.play.show">
+<code class="descclassname">roomai.sevenking.play.</code><code class="descname">show</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/sevenking/play.html#show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.sevenking.play.show" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-roomai.sevenking">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-roomai.sevenking" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="roomai.html">roomai package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="roomai.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="roomai.common.html">roomai.common package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.doudizhu.html">roomai.doudizhu package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.fivecardstud.html">roomai.fivecardstud package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.kuhn.html">roomai.kuhn package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">roomai.sevenking package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.sevenking.SevenKingAction">roomai.sevenking.SevenKingAction module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.sevenking.SevenKingEnv">roomai.sevenking.SevenKingEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.sevenking.SevenKingInfo">roomai.sevenking.SevenKingInfo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.sevenking.SevenKingUtils">roomai.sevenking.SevenKingUtils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.sevenking.play">roomai.sevenking.play module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.sevenking">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.texas.html">roomai.texas package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai.RoomAILogger">roomai.RoomAILogger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="roomai.html">roomai package</a><ul>
+      <li>Previous: <a href="roomai.kuhn.html" title="previous chapter">roomai.kuhn package</a></li>
+      <li>Next: <a href="roomai.texas.html" title="next chapter">roomai.texas package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/roomai.sevenking.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,532 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.common.common &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.common.common</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="c1">#coding=utf8</span>
+
+<span class="kn">import</span> <span class="nn">roomai</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">roomai</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+
+<span class="c1">######################################################################### Basic Concepts #####################################################</span>
+<div class="viewcode-block" id="AbstractPublicState"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractPublicState">[docs]</a><span class="k">class</span> <span class="nc">AbstractPublicState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The abstract class of the public state. The information in the public state is public to every player</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__turn__</span>            <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__previous_id__</span>     <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__previous_action__</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_terminal__</span>     <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__scores__</span>          <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__get_turn__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__turn__</span>
+    <span class="n">turn</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_turn__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;players[turn] is expected to take an action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_previous_id__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__previous_id__</span>
+    <span class="n">previous_id</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_previous_id__</span><span class="p">,</span><span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;players[previous_id] took an action in the previous epoch&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_previous_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__previous_action__</span>
+    <span class="n">previous_action</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_previous_action</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;players[previous_id] took previous_action in the previous epoch&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_is_terminal__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span>  <span class="bp">self</span><span class="o">.</span><span class="n">__is_terminal__</span>
+    <span class="n">is_terminal</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_is_terminal__</span><span class="p">,</span><span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;is_terminal = true means the game is over. At this time, scores is not None, scores = [float0,float1,...] for player0, player1,..&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_scores__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scores__</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_scores__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;is_terminal = true means the game is over. At this time, scores is not None, scores = [float0,float1,...] for player0, player1,..&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">AbstractPublicState</span><span class="p">()</span>
+
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__turn__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__turn__</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__previous_id__</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__previous_id__</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__previous_action__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__previous_action__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_action</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__previous_action__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__is_terminal__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__scores__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__scores__</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+<div class="viewcode-block" id="AbstractPrivateState"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractPrivateState">[docs]</a><span class="k">class</span> <span class="nc">AbstractPrivateState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The Abstract class of the private state. The information in the private state is hidden from every player</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span>  <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AbstractPrivateState</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">newinstance</span></div>
+
+
+<div class="viewcode-block" id="AbstractPersonState"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractPersonState">[docs]</a><span class="k">class</span> <span class="nc">AbstractPersonState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The abstract class of the person state. The information in the person state is public to the corresponding player and hidden from other players</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__id__</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__available_actions__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__get_id__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id__</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_id__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The id of player w.r.t this person state&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_available_actions__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="k">return</span> <span class="n">FrozenDict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__available_actions__</span><span class="p">)</span>
+    <span class="n">available_actions</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_available_actions__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;All valid actions for the player expected to take an action. The person state w.r.t no-current player contains empty available_actions&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span>  <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">AbstractPersonState</span><span class="p">()</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__id__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id__</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__available_actions__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+<div class="viewcode-block" id="Info"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.Info">[docs]</a><span class="k">class</span> <span class="nc">Info</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The class of information sent by env to a player. The Info class contains the public state and the corresponding person state </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__public_state__</span>       <span class="o">=</span> <span class="n">AbstractPublicState</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__person_state__</span>       <span class="o">=</span> <span class="n">AbstractPersonState</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_public_state__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__public_state__</span>
+    <span class="n">public_state</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_public_state__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The public state in the information&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_person_state__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__person_state__</span>
+    <span class="n">person_state</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_person_state__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The person state in the information&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">Info</span><span class="p">()</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__public_state__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__public_state</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__public_state__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__person_state</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+<div class="viewcode-block" id="AbstractAction"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractAction">[docs]</a><span class="k">class</span> <span class="nc">AbstractAction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The abstract class of an action. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">__get_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_key__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The key of the action. Every action in RoomAI has a key as its identification.&quot;</span>
+                                    <span class="s2">&quot; We strongly recommend you to use the lookup function to get an action with the specified key&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AbstractAction.lookup"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractAction.lookup">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get an action with the specified key. </span>
+<span class="sd">        We strongly recommend you to use the lookup function to get an action with the specified key, rather than use the constructor function.</span>
+<span class="sd">        </span>
+<span class="sd">        :param key: the specified key</span>
+<span class="sd">        :return:  the action with the specified key</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not implemented&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">AbstractAction</span><span class="p">()</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+
+
+
+<div class="viewcode-block" id="AbstractPlayer"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractPlayer">[docs]</a><span class="k">class</span> <span class="nc">AbstractPlayer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The abstract class of a player</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="AbstractPlayer.receive_info"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractPlayer.receive_info">[docs]</a>    <span class="k">def</span> <span class="nf">receive_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Receive information </span>
+<span class="sd">        </span>
+<span class="sd">        :param:info: the information produced by a game environments</span>
+<span class="sd">        :raises: NotImplementedError: An error occurred when we doesn&#39;t implement this function</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The receiveInfo function hasn&#39;t been implemented&quot;</span><span class="p">)</span> </div>
+
+<div class="viewcode-block" id="AbstractPlayer.take_action"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractPlayer.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :returns: The action produced by this player</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The takeAction function hasn&#39;t been implemented&quot;</span><span class="p">)</span> </div>
+
+<div class="viewcode-block" id="AbstractPlayer.reset"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractPlayer.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        reset for a new game </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The reset function hasn&#39;t been implemented&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RandomPlayer"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.RandomPlayer">[docs]</a><span class="k">class</span> <span class="nc">RandomPlayer</span><span class="p">(</span><span class="n">AbstractPlayer</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The RandomPlayer is a player, who randomly takes an action.</span>
+<span class="sd">    The RandomPlayer is as a common baseline</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="RandomPlayer.receive_info"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.RandomPlayer.receive_info">[docs]</a>    <span class="k">def</span> <span class="nf">receive_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">person_state</span><span class="o">.</span><span class="n">available_actions</span></div>
+
+<div class="viewcode-block" id="RandomPlayer.take_action"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.RandomPlayer.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">random</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="n">idx</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RandomPlayer.reset"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.RandomPlayer.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+
+<div class="viewcode-block" id="AbstractEnv"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractEnv">[docs]</a><span class="k">class</span> <span class="nc">AbstractEnv</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The abstract class of game environment</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__infos__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__public_state_history__</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__person_states_history__</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__private_state_history__</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__gen_infos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">num_players</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__infos__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__infos__</span>  <span class="o">=</span> <span class="p">[</span><span class="n">Info</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_players</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_players</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__infos__</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__person_state__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="c1">#.__deepcopy__()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__infos__</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__public_state__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="c1">#.__deepcopy__()</span>
+
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__infos__</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__gen_history__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="s2">&quot;record_history&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;record_history&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__public_state_history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__private_state_history__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">private_state</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__person_states_history__</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">person_state</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">person_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">])</span>
+
+<div class="viewcode-block" id="AbstractEnv.init"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractEnv.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initialize the game environment </span>
+<span class="sd">        </span>
+<span class="sd">        :param params:  </span>
+<span class="sd">        :return:  infos, public_state, person_states, private_state, other_chance_actions</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">raise</span> <span class="p">(</span><span class="s2">&quot;The init function hasn&#39;t been implemented&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractEnv.forward"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractEnv.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The game environment steps with the action taken by the current player</span>
+<span class="sd">        </span>
+<span class="sd">        :param action, chance_action</span>
+<span class="sd">        :returns:infos, public_state, person_states, private_state, other_chance_actions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The forward hasn&#39;t been implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AbstractEnv.backward"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractEnv.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The game goes back to the previous states</span>
+
+<span class="sd">        :returns:infos, public_state, person_states, private_state</span>
+<span class="sd">        :raise:Env has reached the initialization state and can&#39;t go back further.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;record_history&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;record_history&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Env can&#39;t backward when params[</span><span class="se">\&quot;</span><span class="s2">record_history</span><span class="se">\&quot;</span><span class="s2">] = False. If you want to use this backward function, please env.init({</span><span class="se">\&quot;</span><span class="s2">record_history</span><span class="se">\&quot;</span><span class="s2">:true,...})&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__public_state_history__</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Env has reached the initialization state and can&#39;t go back further. &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__public_state_history__</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__private_state_history__</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__person_states_history__</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__public_state_history__</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__public_state_history__</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__private_state_history__</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">person_state</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">person_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__person_states_history__</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span>
+
+        <span class="n">infos</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span></div>
+
+    <span class="c1">### provide some util functions</span>
+<div class="viewcode-block" id="AbstractEnv.compete"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractEnv.compete">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">compete</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">players</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Use the game environment to hold a compete for the players</span>
+<span class="sd">        </span>
+<span class="sd">        :param env: The game environment</span>
+<span class="sd">        :param players: The players</span>
+<span class="sd">        :return: scores for the players</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The round function hasn&#39;t been implemented&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractEnv.is_action_valid"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractEnv.is_action_valid">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">is_action_valid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span> <span class="n">person_state</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Is the action valid given the public state and the person state</span>
+<span class="sd">        </span>
+<span class="sd">        :param action: </span>
+<span class="sd">        :param public_state: </span>
+<span class="sd">        :param person_state: </span>
+<span class="sd">        :return: A boolean variable indicating whether is the action valid </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span>  <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The is_action_valid function hasn&#39;t been implemented&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AbstractEnv.available_actions"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.AbstractEnv.available_actions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">available_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span> <span class="n">person_state</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Generate all valid actions given the public state and the person state</span>
+<span class="sd">        </span>
+<span class="sd">        :param public_state: </span>
+<span class="sd">        :param person_state: </span>
+<span class="sd">        :return: A dict(action_key, action) contains all valid actions</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The available_actions function hasn&#39;t been implemented&quot;</span><span class="p">)</span></div></div>
+
+<span class="c1">############################################################### Some Utils ############################################################################</span>
+
+<span class="n">point_str_to_rank</span>  <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;2&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;7&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;9&#39;</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;J&#39;</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">:</span><span class="mi">11</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span><span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span><span class="mi">13</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">:</span><span class="mi">14</span><span class="p">}</span>
+<span class="n">point_rank_to_str</span>  <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;J&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="mi">13</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">14</span><span class="p">:</span> <span class="s1">&#39;R&#39;</span><span class="p">}</span>
+<span class="n">suit_str_to_rank</span>   <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Spade&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Heart&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Diamond&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Club&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>  <span class="s1">&#39;ForKing&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">}</span>
+<span class="n">suit_rank_to_str</span>   <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;Spade&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Heart&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Diamond&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="s1">&#39;Club&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="s1">&#39;ForKing&#39;</span><span class="p">}</span>
+<div class="viewcode-block" id="PokerCard"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.PokerCard">[docs]</a><span class="k">class</span> <span class="nc">PokerCard</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A Poker Card. </span>
+<span class="sd">    A Poker Card has a point (2,3,4,....,K,A,r,R) and a suit (Spade, Heart, Diamond, Club, ForKing). </span>
+<span class="sd">    Different points have different ranks, for example the point 2 &#39;s rank is 0, and the point A &#39;s rank is 12. </span>
+<span class="sd">    Different suits have different ranks too.</span>
+<span class="sd">    The &quot;ForKing&quot; suit is a placeholder used for the card with the point &quot;r&quot; or &quot;R&quot;</span>
+<span class="sd">    A Poker Card has a key (point_suit). We strongly recommend you to get a poker card by using the class function lookup with the key.</span>
+<span class="sd">    Examples of the class usages:</span>
+<span class="sd">    &gt;&gt; import roomai.common</span>
+<span class="sd">    &gt;&gt; card = roomai.common.PokerCard.lookup(&quot;2_Spade&quot;)</span>
+<span class="sd">    &gt;&gt; card.point </span>
+<span class="sd">    2</span>
+<span class="sd">    &gt;&gt; card.suit</span>
+<span class="sd">    Spade</span>
+<span class="sd">    &gt;&gt; card.point_rank</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt; card.suit_rank</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt; card.key</span>
+<span class="sd">    &quot;2_Spade&quot;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">suit</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">point1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">suit1</span>  <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">suit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kv</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">point1</span> <span class="o">=</span> <span class="n">point_str_to_rank</span><span class="p">[</span><span class="n">kv</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="n">suit1</span>  <span class="o">=</span> <span class="n">suit_str_to_rank</span><span class="p">[</span><span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">point1</span> <span class="o">=</span> <span class="n">point</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">point1</span> <span class="o">=</span> <span class="n">point_str_to_rank</span><span class="p">[</span><span class="n">point</span><span class="p">]</span>
+            <span class="n">suit1</span>  <span class="o">=</span> <span class="n">suit</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">suit</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">suit1</span> <span class="o">=</span> <span class="n">suit_str_to_rank</span><span class="p">[</span><span class="n">suit</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__point_str__</span>  <span class="o">=</span> <span class="n">point_rank_to_str</span><span class="p">[</span><span class="n">point1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__suit_str__</span>   <span class="o">=</span> <span class="n">suit_rank_to_str</span><span class="p">[</span><span class="n">suit1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__point_rank__</span> <span class="o">=</span> <span class="n">point1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__suit_rank__</span>  <span class="o">=</span> <span class="n">suit1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>        <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__point_str__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__suit_str__</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_point_str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__point_str__</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_point_str__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The point of the poker card&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_suit_str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__suit_str__</span>
+    <span class="n">suit</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_suit_str__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The suit of the poker card&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_point_rank__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__point_rank__</span>
+    <span class="n">point_rank</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_point_rank__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The point rank of the poker card&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_suit_rank__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__suit_rank__</span>
+    <span class="n">suit_rank</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_suit_rank__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The suit rank of the poker card&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_key__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The key of the poker card&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PokerCard.lookup"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.PokerCard.lookup">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        lookup a PokerCard with the specified key</span>
+<span class="sd">        </span>
+<span class="sd">        :param key: The specified key</span>
+<span class="sd">        :return: The PokerCard with the specified key</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">AllPokerCards</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PokerCard.compare"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.PokerCard.compare">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pokercard1</span><span class="p">,</span> <span class="n">pokercard2</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compare two poker cards with their point ranks and suit ranks.</span>
+<span class="sd">        The poker card with the higher point rank has the higher rank.</span>
+<span class="sd">        With the same point rank, the poker card with the higher suit rank has the higher rank.</span>
+<span class="sd">        </span>
+<span class="sd">        :param pokercard1: </span>
+<span class="sd">        :param pokercard2: </span>
+<span class="sd">        :return: A number, which is &gt;0 when the poker card1 has the higher rank than the poker card2, =0 when their share the same rank, &lt;0 when the poker card1 has the lower rank than the poker card2</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">pr1</span> <span class="o">=</span> <span class="n">pokercard1</span><span class="o">.</span><span class="n">point_rank</span>
+        <span class="n">pr2</span> <span class="o">=</span> <span class="n">pokercard2</span><span class="o">.</span><span class="n">point_rank</span>
+
+        <span class="k">if</span> <span class="n">pr1</span> <span class="o">!=</span> <span class="n">pr2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pr1</span> <span class="o">-</span> <span class="n">pr2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pokercard1</span><span class="o">.</span><span class="n">suit_rank</span> <span class="o">-</span> <span class="n">pokercard2</span><span class="o">.</span><span class="n">suit_rank</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span>   <span class="n">AllPokerCards</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span></div>
+
+
+<span class="n">AllPokerCards</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">AllPokerCards_Without_King</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">point_str_to_rank</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">point</span> <span class="o">!=</span> <span class="s1">&#39;r&#39;</span> <span class="ow">and</span> <span class="n">point</span> <span class="o">!=</span> <span class="s2">&quot;R&quot;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">suit</span> <span class="ow">in</span> <span class="n">suit_str_to_rank</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">suit</span> <span class="o">!=</span> <span class="s2">&quot;ForKing&quot;</span><span class="p">:</span>
+                <span class="n">AllPokerCards</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">suit</span><span class="p">)]</span> <span class="o">=</span> <span class="n">PokerCard</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">suit</span><span class="p">))</span>
+                <span class="n">AllPokerCards_Without_King</span><span class="p">[</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">suit</span><span class="p">)]</span> <span class="o">=</span> <span class="n">PokerCard</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">suit</span><span class="p">))</span>
+<span class="n">AllPokerCards</span><span class="p">[</span><span class="s2">&quot;r_ForKing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">PokerCard</span><span class="p">(</span><span class="s2">&quot;r_ForKing&quot;</span><span class="p">))</span>
+<span class="n">AllPokerCards</span><span class="p">[</span><span class="s2">&quot;R_ForKing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">PokerCard</span><span class="p">(</span><span class="s2">&quot;R_ForKing&quot;</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="version"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.version">[docs]</a><span class="k">def</span> <span class="nf">version</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    :return: The version of RoomAI </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;roomai-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;roomai-</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">version</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FrozenDict"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.FrozenDict">[docs]</a><span class="k">class</span> <span class="nc">FrozenDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;The FrozenDict doesn&#39;t support the __setitem__ function&quot;</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

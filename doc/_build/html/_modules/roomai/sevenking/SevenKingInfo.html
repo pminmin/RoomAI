@@ -1,0 +1,320 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.sevenking.SevenKingInfo &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.sevenking.SevenKingInfo</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="kn">from</span> <span class="nn">roomai.sevenking</span> <span class="k">import</span> <span class="n">SevenKingPokerCard</span>
+
+<div class="viewcode-block" id="SevenKingPublicState"><a class="viewcode-back" href="../../../roomai.sevenking.html#roomai.sevenking.SevenKingInfo.SevenKingPublicState">[docs]</a><span class="k">class</span> <span class="nc">SevenKingPublicState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPublicState</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingPublicState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__stage__</span>            <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_players__</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__showed_cards__</span>     <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_showed_cards__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_keep_cards__</span>   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_hand_cards__</span>   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_fold__</span>          <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_fold__</span>         <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__license_action__</span>   <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__get_stage__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stage__</span>
+    <span class="n">stage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_stage__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;There are two stages in SevenKing. In the first stage(stage = 0), the player gets the same number of the poker cards after he takes an action (throws some cards).&quot;</span><span class="o">+</span>
+                                        <span class="s2">&quot;In the second stage (stage=1), the player doesn&#39;t get the supplement. The player who firstly throws all his hand cards is the winner. &quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_num_players__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_players__</span>
+    <span class="n">num_players</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_players__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The number of players in this game&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_showed_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__showed_cards__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__showed_cards__</span><span class="p">)</span>
+    <span class="n">showed_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_showed_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The poker cards have been thrown by the players and are public to all now.&quot;</span>
+                                                      <span class="s2">&quot;For example, showed_cards = [roomai.sevenking.SevenKingPokerCards.lookup(</span><span class="se">\&quot;</span><span class="s2">A_Spade</span><span class="se">\&quot;</span><span class="s2">),roomai.sevenking.SevenKingPokerCards.lookup(</span><span class="se">\&quot;</span><span class="s2">3_Heart</span><span class="se">\&quot;</span><span class="s2">)]&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_num_showed_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_showed_cards__</span>
+    <span class="n">num_showed_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_showed_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The number of showed poker cards&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_num_hand_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_hand_cards__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__num_hand_cards__</span><span class="p">)</span>
+    <span class="n">num_hand_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_hand_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The number of cards in different players. For example, num_hand_cards = [3,5,2] denotes the player0 has 3 poker cards, the player1 has 5 poker cards and the player2 has 2 poker cards&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_is_fold__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_fold__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__is_fold__</span><span class="p">)</span>
+    <span class="n">is_fold</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_is_fold__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;is_fold is an array of which player has take the fold action. For example, is_fold = [true,true,false] denotes the player0 and player1 have taken the fold action&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_num_fold__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_fold__</span>
+    <span class="n">num_fold</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_fold__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The number of players who has taken the fold action&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_license_action__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__license_action__</span>
+    <span class="n">license_action</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_license_action__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;Generally, the player need takes an action with the same pattern as the license action. Unless the player takes an action at the beginning of a round&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">if</span>  <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">SevenKingPublicState</span><span class="p">()</span>
+        <span class="n">newinstance</span>   <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingPublicState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span> <span class="o">=</span> <span class="n">newinstance</span><span class="p">)</span>
+
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__stage__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__num_players__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_players</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">showed_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__showed_cards</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__showed_cards</span> <span class="o">=</span> <span class="p">[</span><span class="n">card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">showed_cards</span><span class="p">]</span>
+
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__num_showd_cards__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_showed_cards</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__num_keep_cards__</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_keep_cards</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__num_hand_cards__</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_hand_cards</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fold</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__is_fold__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__is_fold__</span>         <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__is_fold__</span><span class="p">)</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__num_fold__</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_fold</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__license_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">self</span><span class="o">.</span><span class="n">__license_action__</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_action</span>
+
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+<div class="viewcode-block" id="SevenKingPrivateState"><a class="viewcode-back" href="../../../roomai.sevenking.html#roomai.sevenking.SevenKingInfo.SevenKingPrivateState">[docs]</a><span class="k">class</span> <span class="nc">SevenKingPrivateState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPrivateState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The private state of SevenKing</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingPrivateState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__keep_cards__</span>   <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__get_keep_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__keep_cards__</span><span class="p">)</span>
+    <span class="n">keep_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_keep_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The keep cards&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">SevenKingPrivateState</span><span class="p">()</span>
+        <span class="n">newinstance</span>                <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingPrivateState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span> <span class="o">=</span> <span class="n">newinstance</span><span class="p">)</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span>  <span class="p">[</span><span class="n">card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_cards</span>   <span class="p">]</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+
+<div class="viewcode-block" id="SevenKingPersonState"><a class="viewcode-back" href="../../../roomai.sevenking.html#roomai.sevenking.SevenKingInfo.SevenKingPersonState">[docs]</a><span class="k">class</span> <span class="nc">SevenKingPersonState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPersonState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The person state of SevenKing </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingPersonState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span>         <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span>  <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span>     <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__get_hand_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">)</span>
+    <span class="n">hand_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_hand_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The hand cards of the person state. For example, hand_cards = [roomai.sevenking.SevenKingPokerCard.lookup(</span><span class="se">\&quot;</span><span class="s2">A_Spade</span><span class="se">\&quot;</span><span class="s2">)] &quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_hand_cards_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span>
+    <span class="n">hand_cards_key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_hand_cards_key__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The hand cards key of the person state. For example, hand_cards_key  = </span><span class="se">\&quot;</span><span class="s2">3_Spade,A_Spade</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_hand_cards_keyset__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span><span class="p">)</span>
+    <span class="n">hand_cards_keyset</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_hand_cards_keyset__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The set of the poker cards&#39; key in the hand cards. For example, hand_cards_keyset={</span><span class="se">\&quot;</span><span class="s2">A_Spade</span><span class="se">\&quot;</span><span class="s2">}&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__add_card__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">SevenKingPokerCard</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__add_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cards</span><span class="p">):</span>
+        <span class="n">len1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cards</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">len2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">)</span>
+
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">len1</span><span class="p">,</span><span class="n">len2</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">SevenKingPokerCard</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">tmp</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+
+        <span class="c1">#self.__hand_cards.sort(cmp=SevenKingPokerCard.compare)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">])</span>
+
+
+
+    <span class="k">def</span> <span class="nf">__del_card__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards</span><span class="p">])</span>
+
+
+    <span class="k">def</span> <span class="nf">__del_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cards</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cards</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__gen_pointrank2cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span> <span class="ow">in</span> <span class="n">AllPointRank2Cards</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AllPointRank2Cards</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">point2cards</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">:</span>
+                <span class="n">pointrank</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">point_rank</span>
+                <span class="k">if</span> <span class="n">pointrank</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">point2cards</span><span class="p">:</span>
+                    <span class="n">point2cards</span><span class="p">[</span><span class="n">pointrank</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">point2cards</span><span class="p">[</span><span class="n">pointrank</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="c1">#for p in point2cards:</span>
+            <span class="c1">#    point2cards[p].sort(cmp=SevenKingPokerCard.compare)</span>
+
+            <span class="n">AllPointRank2Cards</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span><span class="p">]</span> <span class="o">=</span> <span class="n">point2cards</span>
+            <span class="k">return</span> <span class="n">point2cards</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span>          <span class="o">=</span> <span class="n">SevenKingPersonState</span><span class="p">()</span>
+        <span class="n">newinstance</span>      <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingPersonState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span><span class="o">=</span> <span class="n">newinstance</span><span class="p">)</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__hand_cards__</span>           <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">))</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__hand_cards_set__</span>       <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_keyset__</span><span class="p">)</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__hand_cards_key__</span>       <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards_key__</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+
+
+<span class="n">AllPointRank2Cards</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

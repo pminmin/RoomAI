@@ -1,0 +1,184 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.sevenking.SevenKingAction &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.sevenking.SevenKingAction</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="kn">import</span> <span class="nn">roomai.sevenking</span>
+<span class="kn">from</span> <span class="nn">roomai.sevenking</span> <span class="k">import</span> <span class="n">AllSevenKingPatterns</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">cmp_to_key</span>
+
+<div class="viewcode-block" id="SevenKingAction"><a class="viewcode-back" href="../../../roomai.sevenking.html#roomai.sevenking.SevenKingAction.SevenKingAction">[docs]</a><span class="k">class</span> <span class="nc">SevenKingAction</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractAction</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The SevenKing action. The SevenKing action contains some cards. Examples of usages:\n</span>
+<span class="sd">    &gt;&gt; import roomai.sevenking\n</span>
+<span class="sd">    &gt;&gt; action = roomai.sevenking.SevenKingAction.lookup(&quot;A_Spade,A_Heart&quot;) \n</span>
+<span class="sd">    &gt;&gt; ## We strongly recommend you to get an action with the lookup function.\n</span>
+<span class="sd">    &gt;&gt; action.key \n</span>
+<span class="sd">    &quot;A_Heart, A_Spade&quot;\n</span>
+<span class="sd">    &gt;&gt; action.cards[0].point</span>
+<span class="sd">    &quot;A&quot;\n</span>
+<span class="sd">    &gt;&gt; action.cards[0].suit</span>
+<span class="sd">    &quot;Heart&quot;\n</span>
+<span class="sd">    &gt;&gt; action.pattern\n</span>
+<span class="sd">    p_2 # 2 cards in this action\n</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The key for SevenKingAction is an str, not </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)))</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingAction</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>         <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span>       <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">sevenking</span><span class="o">.</span><span class="n">SevenKingPokerCard</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span> <span class="o">=</span> <span class="n">cmp_to_key</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">sevenking</span><span class="o">.</span><span class="n">SevenKingPokerCard</span><span class="o">.</span><span class="n">compare</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pattern__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__action2pattern__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__action2pattern__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">num_cards</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">AllSevenKingPatterns</span><span class="p">[</span><span class="s2">&quot;p_</span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">num_cards</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">__get_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_key__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The key of this action. For example, key = </span><span class="se">\&quot;</span><span class="s2">3_Heart,3_Spade</span><span class="se">\&quot;</span><span class="s2">. The check action&#39;s key = </span><span class="se">\&quot;\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span><span class="p">)</span>
+    <span class="n">cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The cards in this action. For example, cards=[roomai.sevenking.SevenKingPokerCards.lookup(</span><span class="se">\&quot;</span><span class="s2">A_Spade</span><span class="se">\&quot;</span><span class="s2">)]&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_pattern__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pattern__</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_pattern__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The pattern of the action&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SevenKingAction.lookup"><a class="viewcode-back" href="../../../roomai.sevenking.html#roomai.sevenking.SevenKingAction.SevenKingAction.lookup">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        lookup a SevenKing action with the specified key</span>
+<span class="sd">        </span>
+<span class="sd">        :param key: The specified key</span>
+<span class="sd">        :return: The action</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">AllSevenKingActions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AllSevenKingActions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">AllSevenKingActions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">SevenKingAction</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">AllSevenKingActions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="ow">in</span> <span class="n">AllSevenKingActions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">AllSevenKingActions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__key__</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">SevenKingAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">newinstance</span>             <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingAction</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span> <span class="o">=</span> <span class="n">newinstance</span><span class="p">)</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__key__</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__cards__</span>   <span class="o">=</span> <span class="p">[</span><span class="n">card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span><span class="p">]</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__pattern__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pattern</span>
+        <span class="n">AllSevenKingActions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__key__</span><span class="p">]</span> <span class="o">=</span> <span class="n">newinstance</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+<span class="n">AllSevenKingActions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

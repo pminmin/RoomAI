@@ -1,0 +1,309 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.fivecardstud.FiveCardStudInfo &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.fivecardstud.FiveCardStudInfo</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+
+<div class="viewcode-block" id="FiveCardStudPrivateState"><a class="viewcode-back" href="../../../roomai.fivecardstud.html#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPrivateState">[docs]</a><span class="k">class</span> <span class="nc">FiveCardStudPrivateState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPrivateState</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_hand_cards</span>    <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            memodict:</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copyinstance</span> <span class="o">=</span> <span class="n">FiveCardStudPrivateState</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_hand_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">all_hand_cards</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">all_hand_cards</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">all_hand_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_hand_cards</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">copyinstance</span></div>
+
+
+<div class="viewcode-block" id="FiveCardStudPublicState"><a class="viewcode-back" href="../../../roomai.fivecardstud.html#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState">[docs]</a><span class="k">class</span> <span class="nc">FiveCardStudPublicState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPublicState</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">first_hand_cards</span>      <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">second_hand_cards</span>     <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">third_hand_cards</span>      <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fourth_hand_cards</span>     <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fifth_hand_cards</span>      <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">is_quit</span>               <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">num_quit</span>              <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">is_raise</span>              <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">num_raise</span>             <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">is_needed_to_action</span>   <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">num_needed_to_action</span>  <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># chips is array which contains the chips of all players</span>
+    <span class="n">chips</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># bets is array which contains the bets from all players</span>
+    <span class="n">bets</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">upper_bet</span>              <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">floor_bet</span>              <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_bet_sofar</span>          <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">turn</span>                   <span class="o">=</span> <span class="kc">None</span>
+    <span class="nb">round</span>                  <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">num_players</span>            <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">previous_id</span>            <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">previous_action</span>        <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">previous_round</span>         <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">is_terminal</span>            <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">scores</span>                 <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">memodict</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="n">copyinstance</span> <span class="o">=</span> <span class="n">FiveCardStudPublicState</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_hand_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">first_hand_cards</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">first_hand_cards</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">first_hand_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">first_hand_cards</span><span class="p">))]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_hand_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">second_hand_cards</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">second_hand_cards</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">second_hand_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">second_hand_cards</span><span class="p">))]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_hand_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">third_hand_cards</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">third_hand_cards</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">third_hand_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">third_hand_cards</span><span class="p">))]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fourth_hand_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fourth_hand_cards</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fourth_hand_cards</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fourth_hand_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fourth_hand_cards</span><span class="p">))]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fifth_hand_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fifth_hand_cards</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fifth_hand_cards</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fifth_hand_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fifth_hand_cards</span><span class="p">))]</span>
+
+        <span class="n">copy</span><span class="o">.</span><span class="n">num_quit</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quit</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_quit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">is_quit</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">is_quit</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_quit</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_quit</span><span class="p">))]</span>
+
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">num_raise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_raise</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_raise</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">is_raise</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">is_raise</span>  <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_raise</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_raise</span><span class="p">))]</span>
+
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">num_needed_to_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_needed_to_action</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_needed_to_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">is_needed_to_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">is_needed_to_action</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_needed_to_action</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_needed_to_action</span><span class="p">))]</span>
+
+        <span class="c1"># chips is array which contains the chips of all players</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chips</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">chips</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">chips</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chips</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chips</span><span class="p">))]</span>
+
+
+        <span class="c1"># bets is array which contains the bets from all players</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">bets</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">bets</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bets</span><span class="p">))]</span>
+
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">upper_bet</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upper_bet</span>
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">floor_bet</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor_bet</span>
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">max_bet_sofar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bet_sofar</span>
+
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">turn</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span>
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">round</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">round</span>
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">num_players</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_players</span>
+
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">previous_id</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_id</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">previous_action</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">previous_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_action</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">previous_round</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_round</span>
+
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">))]</span>
+
+        <span class="k">return</span> <span class="n">copyinstance</span></div>
+
+
+<div class="viewcode-block" id="FiveCardStudPersonState"><a class="viewcode-back" href="../../../roomai.fivecardstud.html#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState">[docs]</a><span class="k">class</span> <span class="nc">FiveCardStudPersonState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPersonState</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span>                <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">available_actions</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">first_hand_card</span>   <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">second_hand_card</span>  <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">third_hand_card</span>   <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fourth_hand_card</span>  <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">fifth_hand_card</span>   <span class="o">=</span> <span class="kc">None</span>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            memodict:</span>
+<span class="sd">            newinstance:</span>
+
+<span class="sd">        Returns:</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copyinstance</span>    <span class="o">=</span> <span class="n">FiveCardStudPersonState</span><span class="p">()</span>
+        <span class="n">copyinstance</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">available_actions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="p">:</span>
+                <span class="n">copyinstance</span><span class="o">.</span><span class="n">available_actions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">available_actions</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_hand_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">first_hand_card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_hand_card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">first_hand_card</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_hand_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">second_hand_card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">second_hand_card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">second_hand_card</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_hand_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">third_hand_card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">third_hand_card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">third_hand_card</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fourth_hand_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fourth_hand_card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fourth_hand_card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fourth_hand_card</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fifth_hand_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fifth_hand_card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fifth_hand_card</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">copyinstance</span><span class="o">.</span><span class="n">fifth_hand_card</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+        <span class="k">return</span> <span class="n">copyinstance</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,522 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.common package &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="roomai.doudizhu package" href="roomai.doudizhu.html" />
+    <link rel="prev" title="roomai package" href="roomai.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="roomai-common-package">
+<h1>roomai.common package<a class="headerlink" href="#roomai-common-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.common.common">
+<span id="roomai-common-common-module"></span><h2>roomai.common.common module<a class="headerlink" href="#module-roomai.common.common" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.common.common.AbstractAction">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">AbstractAction</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The abstract class of an action.</p>
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractAction.key">
+<code class="descname">key</code><a class="headerlink" href="#roomai.common.common.AbstractAction.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key of the action. Every action in RoomAI has a key as its identification. We strongly recommend you to use the lookup function to get an action with the specified key</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.common.common.AbstractAction.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractAction.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractAction.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an action with the specified key. 
+We strongly recommend you to use the lookup function to get an action with the specified key, rather than use the constructor function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – the specified key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the action with the specified key</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.AbstractEnv">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">AbstractEnv</code><a class="reference internal" href="_modules/roomai/common/common.html#AbstractEnv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The abstract class of game environment</p>
+<dl class="classmethod">
+<dt id="roomai.common.common.AbstractEnv.available_actions">
+<em class="property">classmethod </em><code class="descname">available_actions</code><span class="sig-paren">(</span><em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractEnv.available_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractEnv.available_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate all valid actions given the public state and the person state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>public_state</strong> – </li>
+<li><strong>person_state</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dict(action_key, action) contains all valid actions</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.common.common.AbstractEnv.backward">
+<code class="descname">backward</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractEnv.backward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractEnv.backward" title="Permalink to this definition">¶</a></dt>
+<dd><p>The game goes back to the previous states</p>
+<p>:returns:infos, public_state, person_states, private_state
+:raise:Env has reached the initialization state and can’t go back further.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.common.common.AbstractEnv.compete">
+<em class="property">classmethod </em><code class="descname">compete</code><span class="sig-paren">(</span><em>env</em>, <em>players</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractEnv.compete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractEnv.compete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the game environment to hold a compete for the players</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>env</strong> – The game environment</li>
+<li><strong>players</strong> – The players</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">scores for the players</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.common.common.AbstractEnv.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractEnv.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractEnv.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>The game environment steps with the action taken by the current player</p>
+<p>:param action, chance_action
+:returns:infos, public_state, person_states, private_state, other_chance_actions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.common.common.AbstractEnv.init">
+<code class="descname">init</code><span class="sig-paren">(</span><em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractEnv.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractEnv.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the game environment</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">infos, public_state, person_states, private_state, other_chance_actions</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.common.common.AbstractEnv.is_action_valid">
+<em class="property">classmethod </em><code class="descname">is_action_valid</code><span class="sig-paren">(</span><em>action</em>, <em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractEnv.is_action_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractEnv.is_action_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the action valid given the public state and the person state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>action</strong> – </li>
+<li><strong>public_state</strong> – </li>
+<li><strong>person_state</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A boolean variable indicating whether is the action valid</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.AbstractPersonState">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">AbstractPersonState</code><a class="reference internal" href="_modules/roomai/common/common.html#AbstractPersonState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractPersonState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The abstract class of the person state. The information in the person state is public to the corresponding player and hidden from other players</p>
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractPersonState.available_actions">
+<code class="descname">available_actions</code><a class="headerlink" href="#roomai.common.common.AbstractPersonState.available_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>All valid actions for the player expected to take an action. The person state w.r.t no-current player contains empty available_actions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractPersonState.id">
+<code class="descname">id</code><a class="headerlink" href="#roomai.common.common.AbstractPersonState.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The id of player w.r.t this person state</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.AbstractPlayer">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">AbstractPlayer</code><a class="reference internal" href="_modules/roomai/common/common.html#AbstractPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractPlayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The abstract class of a player</p>
+<dl class="method">
+<dt id="roomai.common.common.AbstractPlayer.receive_info">
+<code class="descname">receive_info</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractPlayer.receive_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractPlayer.receive_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive information</p>
+<p>:param:info: the information produced by a game environments
+:raises: NotImplementedError: An error occurred when we doesn’t implement this function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.common.common.AbstractPlayer.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractPlayer.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractPlayer.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>reset for a new game</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.common.common.AbstractPlayer.take_action">
+<code class="descname">take_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#AbstractPlayer.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractPlayer.take_action" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The action produced by this player</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.AbstractPrivateState">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">AbstractPrivateState</code><a class="reference internal" href="_modules/roomai/common/common.html#AbstractPrivateState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractPrivateState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The Abstract class of the private state. The information in the private state is hidden from every player</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.AbstractPublicState">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">AbstractPublicState</code><a class="reference internal" href="_modules/roomai/common/common.html#AbstractPublicState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.AbstractPublicState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The abstract class of the public state. The information in the public state is public to every player</p>
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractPublicState.is_terminal">
+<code class="descname">is_terminal</code><a class="headerlink" href="#roomai.common.common.AbstractPublicState.is_terminal" title="Permalink to this definition">¶</a></dt>
+<dd><p>is_terminal = true means the game is over. At this time, scores is not None, scores = [float0,float1,…] for player0, player1,..</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractPublicState.previous_action">
+<code class="descname">previous_action</code><a class="headerlink" href="#roomai.common.common.AbstractPublicState.previous_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>players[previous_id] took previous_action in the previous epoch</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractPublicState.previous_id">
+<code class="descname">previous_id</code><a class="headerlink" href="#roomai.common.common.AbstractPublicState.previous_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>players[previous_id] took an action in the previous epoch</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractPublicState.scores">
+<code class="descname">scores</code><a class="headerlink" href="#roomai.common.common.AbstractPublicState.scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>is_terminal = true means the game is over. At this time, scores is not None, scores = [float0,float1,…] for player0, player1,..</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.AbstractPublicState.turn">
+<code class="descname">turn</code><a class="headerlink" href="#roomai.common.common.AbstractPublicState.turn" title="Permalink to this definition">¶</a></dt>
+<dd><p>players[turn] is expected to take an action</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.FrozenDict">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">FrozenDict</code><a class="reference internal" href="_modules/roomai/common/common.html#FrozenDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.FrozenDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.Info">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">Info</code><a class="reference internal" href="_modules/roomai/common/common.html#Info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.Info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>The class of information sent by env to a player. The Info class contains the public state and the corresponding person state</p>
+<dl class="attribute">
+<dt id="roomai.common.common.Info.person_state">
+<code class="descname">person_state</code><a class="headerlink" href="#roomai.common.common.Info.person_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The person state in the information</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.Info.public_state">
+<code class="descname">public_state</code><a class="headerlink" href="#roomai.common.common.Info.public_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>The public state in the information</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.PokerCard">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">PokerCard</code><span class="sig-paren">(</span><em>point</em>, <em>suit=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#PokerCard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.PokerCard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A Poker Card. 
+A Poker Card has a point (2,3,4,….,K,A,r,R) and a suit (Spade, Heart, Diamond, Club, ForKing). 
+Different points have different ranks, for example the point 2 ‘s rank is 0, and the point A ‘s rank is 12. 
+Different suits have different ranks too.
+The “ForKing” suit is a placeholder used for the card with the point “r” or “R”
+A Poker Card has a key (point_suit). We strongly recommend you to get a poker card by using the class function lookup with the key.
+Examples of the class usages:
+&gt;&gt; import roomai.common
+&gt;&gt; card = roomai.common.PokerCard.lookup(“2_Spade”)
+&gt;&gt; card.point 
+2
+&gt;&gt; card.suit
+Spade
+&gt;&gt; card.point_rank
+0
+&gt;&gt; card.suit_rank
+0
+&gt;&gt; card.key
+“2_Spade”</p>
+<dl class="classmethod">
+<dt id="roomai.common.common.PokerCard.compare">
+<em class="property">classmethod </em><code class="descname">compare</code><span class="sig-paren">(</span><em>pokercard1</em>, <em>pokercard2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#PokerCard.compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.PokerCard.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare two poker cards with their point ranks and suit ranks.
+The poker card with the higher point rank has the higher rank.
+With the same point rank, the poker card with the higher suit rank has the higher rank.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pokercard1</strong> – </li>
+<li><strong>pokercard2</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A number, which is &gt;0 when the poker card1 has the higher rank than the poker card2, =0 when their share the same rank, &lt;0 when the poker card1 has the lower rank than the poker card2</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.PokerCard.key">
+<code class="descname">key</code><a class="headerlink" href="#roomai.common.common.PokerCard.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key of the poker card</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.common.common.PokerCard.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#PokerCard.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.PokerCard.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>lookup a PokerCard with the specified key</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – The specified key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The PokerCard with the specified key</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.PokerCard.point">
+<code class="descname">point</code><a class="headerlink" href="#roomai.common.common.PokerCard.point" title="Permalink to this definition">¶</a></dt>
+<dd><p>The point of the poker card</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.PokerCard.point_rank">
+<code class="descname">point_rank</code><a class="headerlink" href="#roomai.common.common.PokerCard.point_rank" title="Permalink to this definition">¶</a></dt>
+<dd><p>The point rank of the poker card</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.PokerCard.suit">
+<code class="descname">suit</code><a class="headerlink" href="#roomai.common.common.PokerCard.suit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The suit of the poker card</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.common.common.PokerCard.suit_rank">
+<code class="descname">suit_rank</code><a class="headerlink" href="#roomai.common.common.PokerCard.suit_rank" title="Permalink to this definition">¶</a></dt>
+<dd><p>The suit rank of the poker card</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.common.common.RandomPlayer">
+<em class="property">class </em><code class="descclassname">roomai.common.common.</code><code class="descname">RandomPlayer</code><a class="reference internal" href="_modules/roomai/common/common.html#RandomPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.RandomPlayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#roomai.common.common.AbstractPlayer" title="roomai.common.common.AbstractPlayer"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPlayer</span></code></a></p>
+<p>The RandomPlayer is a player, who randomly takes an action.
+The RandomPlayer is as a common baseline</p>
+<dl class="method">
+<dt id="roomai.common.common.RandomPlayer.receive_info">
+<code class="descname">receive_info</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#RandomPlayer.receive_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.RandomPlayer.receive_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.common.common.RandomPlayer.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#RandomPlayer.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.RandomPlayer.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.common.common.RandomPlayer.take_action">
+<code class="descname">take_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#RandomPlayer.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.RandomPlayer.take_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="roomai.common.common.version">
+<code class="descclassname">roomai.common.common.</code><code class="descname">version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/common/common.html#version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.common.common.version" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The version of RoomAI</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.common">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-roomai.common" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="roomai.html">roomai package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="roomai.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">roomai.common package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.common.common">roomai.common.common module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.common">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.doudizhu.html">roomai.doudizhu package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.fivecardstud.html">roomai.fivecardstud package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.kuhn.html">roomai.kuhn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.sevenking.html">roomai.sevenking package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.texas.html">roomai.texas package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai.RoomAILogger">roomai.RoomAILogger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="roomai.html">roomai package</a><ul>
+      <li>Previous: <a href="roomai.html" title="previous chapter">roomai package</a></li>
+      <li>Next: <a href="roomai.doudizhu.html" title="next chapter">roomai.doudizhu package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/roomai.common.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

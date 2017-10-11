@@ -1,0 +1,726 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.doudizhu.DouDiZhuPokerEnv &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.doudizhu.DouDiZhuPokerEnv</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="c1">#coding:utf-8</span>
+
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">roomai.doudizhu.DouDiZhuPokerInfo</span>   <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">roomai.doudizhu.DouDiZhuPokerAction</span> <span class="k">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="DouDiZhuPokerEnv"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv">[docs]</a><span class="k">class</span> <span class="nc">DouDiZhuPokerEnv</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractEnv</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The DouDiZhuPoker game environment</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DouDiZhuPokerEnv</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span>  <span class="o">=</span> <span class="n">DouDiZhuPublicState</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span> <span class="o">=</span> <span class="n">DouDiZhuPrivateState</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">DouDiZhuPersonState</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+
+
+
+    <span class="k">def</span> <span class="nf">__update_license__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;i_cheat&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__license_playerid__</span> <span class="o">=</span> <span class="n">turn</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__license_action__</span>   <span class="o">=</span> <span class="n">action</span>
+            
+
+    <span class="k">def</span> <span class="nf">__update_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">__remove_action__</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__update_phase_bid2play__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__phase__</span>                 <span class="o">=</span> <span class="mi">1</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__landlord_id__</span>           <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">landlord_candidate_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__license_playerid__</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__continuous_cheat_num__</span>  <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_response__</span>           <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">landlord_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">landlord_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="n">DouDiZhuPokerHandCards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">private_state</span><span class="o">.</span><span class="n">keep_cards</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">landlord_id</span><span class="p">]</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">__add_cards__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">private_state</span><span class="o">.</span><span class="n">keep_cards</span><span class="p">)</span>
+
+
+    <span class="c1">#@Overide</span>
+<div class="viewcode-block" id="DouDiZhuPokerEnv.init"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initialize the DouDiZhuPoker game environment with the initialization params.\n</span>
+<span class="sd">        The initialization is a dict with some options\n</span>
+<span class="sd">        1) allcards: the order of all poker cards appearing\n</span>
+<span class="sd">        2) record_history: whether to record all history states. if you need call the backward function, please set it to True. default False\n</span>
+<span class="sd">        3) start_turn: players[start_turn] is first to take an action\n</span>
+<span class="sd">        An example of the initialization param is {&quot;start_turn&quot;:2,&quot;record_history&quot;:True}\n</span>
+
+<span class="sd">        :param params: the initialization params</span>
+<span class="sd">        :return: infos, public_state, person_states, private_state</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="s2">&quot;allcards&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">allcards</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;allcards&quot;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cards</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">13</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="mi">13</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="mi">14</span><span class="p">])</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;record_history&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record_history</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;record_history&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record_history</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="s2">&quot;start_turn&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_turn</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;start_turn&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_turn</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">17</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">17</span><span class="p">]</span>
+            <span class="n">tmp</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__hand_cards__</span> <span class="o">=</span> <span class="n">DouDiZhuPokerHandCards</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__id__</span>         <span class="o">=</span> <span class="n">i</span>
+
+        <span class="n">keep_cards</span> <span class="o">=</span> <span class="n">DouDiZhuPokerHandCards</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">cards</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span>  <span class="n">keep_cards</span><span class="p">;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__first_player__</span>        <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__turn__</span>                <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">first_player</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__phase__</span>               <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__epoch__</span>               <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__landlord_id</span>           <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__license_playerid__</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__license_action__</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_terminal__</span>         <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span>              <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">turn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">__available_actions__</span> <span class="o">=</span> <span class="n">DouDiZhuPokerEnv</span><span class="o">.</span><span class="n">available_actions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">turn</span><span class="p">])</span>
+
+        <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span></div>
+
+
+    <span class="c1">## we need ensure the action is valid</span>
+    <span class="c1">#@Overide</span>
+<div class="viewcode-block" id="DouDiZhuPokerEnv.forward"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        The game environment steps with the action taken by the current player</span>
+<span class="sd">        </span>
+<span class="sd">        :param action: The action taken by the current player</span>
+<span class="sd">        :return: infos, public_state, person_states, private_state</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_action_valid</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">raise</span>  <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> action is invalid&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+
+        <span class="n">turn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_bid&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__landlord_candidate_id__</span> <span class="o">=</span> <span class="n">turn</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">epoch</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">landlord_candidate_id</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_terminal__</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span>      <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+                <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">epoch</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">landlord_candidate_id</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>\
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">epoch</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__update_phase_bid2play__</span><span class="p">()</span>
+
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__previous_id__</span> <span class="o">=</span> <span class="n">turn</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__previous_action__</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__epoch__</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">__available_actions__</span> <span class="o">=</span>\
+                    <span class="n">DouDiZhuPokerEnv</span><span class="o">.</span><span class="n">available_actions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+                <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+
+                <span class="k">return</span> <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span>
+
+
+        <span class="k">else</span><span class="p">:</span> <span class="c1">#phase == play</span>
+
+            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;i_cheat&quot;</span><span class="p">:</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">__update_cards__</span><span class="p">(</span><span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__update_license__</span><span class="p">(</span><span class="n">turn</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__continuous_cheat_num__</span> <span class="o">=</span> <span class="mi">0</span>
+    
+                <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">num_card</span>
+                <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__previous_id__</span> <span class="o">=</span> <span class="n">turn</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__previous_action__</span> <span class="o">=</span> <span class="n">action</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__epoch__</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">turn</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">landlord_id</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_terminal__</span>                           <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span>                                <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">landlord_id</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_terminal__</span>                           <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span>                                <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">landlord_id</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+                    <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__continuous_cheat_num__</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__turn__</span>   <span class="o">=</span> <span class="p">(</span><span class="n">turn</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">3</span>
+
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">continuous_cheat_num</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_response__</span>          <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__continuous_cheat_num__</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_response__</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__previous_id__</span>         <span class="o">=</span> <span class="n">turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__previous_action__</span>     <span class="o">=</span> <span class="n">action</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__epoch__</span>              <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">__available_actions__</span>\
+            <span class="o">=</span> <span class="n">DouDiZhuPokerEnv</span><span class="o">.</span><span class="n">available_actions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">])</span>
+         
+        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+        <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span></div>
+
+
+    <span class="c1">#@override</span>
+<div class="viewcode-block" id="DouDiZhuPokerEnv.compete"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.compete">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">compete</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">players</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Use the game environment to hold a compete for the players</span>
+
+<span class="sd">        :param env: The game environment</span>
+<span class="sd">        :param players: The players</span>
+<span class="sd">        :return: scores for the players</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">infos</span> <span class="p">,</span><span class="n">public_state</span><span class="p">,</span> <span class="n">person_states</span><span class="p">,</span> <span class="n">private_state</span><span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">players</span><span class="p">)):</span>
+            <span class="n">players</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">receive_info</span><span class="p">(</span><span class="n">infos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">while</span> <span class="n">public_state</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">turn</span> <span class="o">=</span> <span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">players</span><span class="p">[</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">take_action</span><span class="p">()</span>
+            <span class="n">infos</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span> <span class="n">person_states</span><span class="p">,</span> <span class="n">private_state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">players</span><span class="p">)):</span>
+                <span class="n">players</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">receive_info</span><span class="p">(</span><span class="n">infos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">public_state</span><span class="o">.</span><span class="n">scores</span></div>
+
+
+
+<div class="viewcode-block" id="DouDiZhuPokerEnv.available_actions"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.available_actions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">available_actions</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span> <span class="n">person_state</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Generate all valid action given the public state and the person state</span>
+<span class="sd">        </span>
+<span class="sd">        :param public_state: </span>
+<span class="sd">        :param person_state: </span>
+<span class="sd">        :return: A dict(action_key, action) contains all valid actions</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">patterns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;i_cheat&quot;</span><span class="p">])</span>
+            <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;i_bid&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">is_response</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">AllPatterns</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">p</span> <span class="o">!=</span> <span class="s2">&quot;i_cheat&quot;</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">!=</span> <span class="s2">&quot;i_invalid&quot;</span><span class="p">:</span>
+                        <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="n">p</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;p_4_1_0_0_0&quot;</span><span class="p">])</span>  <span class="c1"># rank = 10</span>
+                    <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;x_rocket&quot;</span><span class="p">])</span>  <span class="c1"># rank = 100</span>
+                <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
+                    <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;x_rocket&quot;</span><span class="p">])</span>  <span class="c1"># rank = 100</span>
+                <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;i_cheat&quot;</span><span class="p">])</span>
+
+        <span class="n">is_response</span> <span class="o">=</span> <span class="n">public_state</span><span class="o">.</span><span class="n">is_response</span>
+        <span class="n">license_act</span> <span class="o">=</span> <span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+            <span class="n">numMaster</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">numMasterPoint</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">isStraight</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">numSlave</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">MasterCount</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">SlaveCount</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">numMaster</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">MasterCount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numMaster</span> <span class="o">/</span> <span class="n">numMasterPoint</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;i_invalid&quot;</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="s2">&quot;i_cheat&quot;</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">action_key</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                <span class="n">action</span>     <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">action_key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_action_valid</span><span class="p">(</span><span class="n">action</span><span class="p">,</span><span class="n">public_state</span><span class="p">,</span> <span class="n">person_state</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="s2">&quot;i_bid&quot;</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">action_key</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                <span class="n">action</span>     <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">action_key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_action_valid</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span><span class="n">person_state</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;x_rocket&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> \
+                                <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">action_key</span>  <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> <span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                    <span class="n">action</span>      <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">action_key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_action_valid</span><span class="p">(</span><span class="n">action</span><span class="p">,</span><span class="n">public_state</span><span class="p">,</span><span class="n">person_state</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">num_card</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">sum1</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MasterCount</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">sum1</span> <span class="o">+=</span> <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">count2num</span><span class="p">[</span><span class="n">count</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sum1</span> <span class="o">&lt;</span> <span class="n">numMasterPoint</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1">### action with cards</span>
+            <span class="n">mCardss</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">mCardss</span> <span class="o">=</span> <span class="n">DouDiZhuPokerEnv</span><span class="o">.</span><span class="n">__extractMasterCards__</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">mCards</span> <span class="ow">in</span> <span class="n">mCardss</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">numSlave</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">action_key</span>   <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">(</span><span class="n">mCards</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="n">action</span>       <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">action_key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_action_valid</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span><span class="n">person_state</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                    <span class="k">continue</span>
+
+                <span class="n">sCardss</span> <span class="o">=</span> <span class="n">DouDiZhuPokerEnv</span><span class="o">.</span><span class="n">__extractSlaveCards__</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">,</span> <span class="n">mCards</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">sCards</span> <span class="ow">in</span> <span class="n">sCardss</span><span class="p">:</span>
+
+                    <span class="n">action_key</span>  <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">(</span><span class="n">mCards</span><span class="p">,</span> <span class="n">sCards</span><span class="p">)</span>
+                    <span class="n">action</span>      <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">action_key</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_action_valid</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span><span class="n">person_state</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+        <span class="k">return</span> <span class="n">actions</span></div>
+
+
+
+<div class="viewcode-block" id="DouDiZhuPokerEnv.is_action_valid"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.is_action_valid">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">is_action_valid</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span><span class="n">action</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span> <span class="n">person_state</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Is the action is valid given the public state and the person state</span>
+<span class="sd">        </span>
+<span class="sd">        :param action: </span>
+<span class="sd">        :param public_state: </span>
+<span class="sd">        :param person_state: </span>
+<span class="sd">        :return: An boolean variable</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_invalid&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__is_action_from_handcards__</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">,</span> <span class="n">action</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">turn</span>        <span class="o">=</span> <span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+        <span class="n">license_id</span>  <span class="o">=</span> <span class="n">public_state</span><span class="o">.</span><span class="n">license_playerid</span>
+        <span class="n">license_act</span> <span class="o">=</span> <span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span>
+        <span class="n">phase</span>       <span class="o">=</span> <span class="n">public_state</span><span class="o">.</span><span class="n">phase</span>
+
+        <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;i_cheat&quot;</span><span class="p">,</span> <span class="s2">&quot;i_bid&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_bid&quot;</span><span class="p">:</span>    <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">is_response</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_cheat&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># response</span>
+                <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_cheat&quot;</span><span class="p">:</span>  <span class="k">return</span> <span class="kc">True</span>
+                <span class="c1">## not_cheat</span>
+                <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">license_act</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">license_act</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">elif</span> <span class="n">action</span><span class="o">.</span><span class="n">maxMasterPoint</span> <span class="o">-</span> <span class="n">license_act</span><span class="o">.</span><span class="n">maxMasterPoint</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__is_action_from_handcards__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hand_cards</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_cheat&quot;</span><span class="p">:</span>  <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_bid&quot;</span><span class="p">:</span>    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;i_invalid&quot;</span><span class="p">:</span>    <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">masterPoints2Count</span><span class="p">:</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="n">flag</span> <span class="ow">and</span> <span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">masterPoints2Count</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">a</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">action</span><span class="o">.</span><span class="n">slavePoints2Count</span><span class="p">:</span>
+            <span class="n">flag</span> <span class="o">=</span> <span class="n">flag</span> <span class="ow">and</span> <span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">slavePoints2Count</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">a</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">flag</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__extractMasterCards__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hand_cards</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="n">is_straight</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">cardss</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">numPoint</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">numPoint</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cardss</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">numPoint</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_straight</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">count</span><span class="p">:</span>
+                    <span class="n">c</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">if</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="n">numPoint</span><span class="p">:</span>
+                    <span class="n">ss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">numPoint</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">count</span><span class="p">:</span>
+                    <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">numPoint</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            <span class="n">ss</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">numPoint</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">set1</span> <span class="ow">in</span> <span class="n">ss</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">set1</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                    <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="n">cardss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cardss</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__extractSlaveCards__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hand_cards</span><span class="p">,</span> <span class="n">used_cards</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="n">used</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">used_cards</span><span class="p">:</span>
+            <span class="n">used</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">numMaster</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">numMasterPoint</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">numSlave</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">res1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">numMaster</span> <span class="o">/</span> <span class="n">numMasterPoint</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">numSlave</span> <span class="o">/</span> <span class="n">numMasterPoint</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># single</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">]):</span>
+                        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">numSlave</span><span class="p">:</span>
+                    <span class="n">res1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">numSlave</span><span class="p">))))</span>
+                <span class="k">for</span> <span class="n">sCard</span> <span class="ow">in</span> <span class="n">res1</span><span class="p">:</span>  <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sCard</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="n">numSlave</span> <span class="o">/</span> <span class="n">numMasterPoint</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># pair</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span> <span class="p">:</span>
+                        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">numSlave</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">res1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">numSlave</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))))</span>
+                <span class="k">for</span> <span class="n">sCard</span> <span class="ow">in</span> <span class="n">res1</span><span class="p">:</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sCard</span><span class="p">]</span>
+                    <span class="n">tmp</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sCard</span><span class="p">])</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">numMaster</span> <span class="o">/</span> <span class="n">numMasterPoint</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">numSlave</span> <span class="o">/</span> <span class="n">numMasterPoint</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># single</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">]):</span>
+                        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">numSlave</span><span class="p">:</span>
+                    <span class="n">res1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">numSlave</span><span class="p">))))</span>
+                <span class="k">for</span> <span class="n">sCard</span> <span class="ow">in</span> <span class="n">res1</span><span class="p">:</span>  <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sCard</span><span class="p">])</span>
+
+
+            <span class="k">elif</span> <span class="n">numSlave</span> <span class="o">/</span> <span class="n">numMasterPoint</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>  <span class="c1"># pair</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-</span> <span class="n">used</span><span class="p">[</span><span class="n">c</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)):</span>
+                        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">numSlave</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">res1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">numSlave</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))))</span>
+                <span class="k">for</span> <span class="n">sCard</span> <span class="ow">in</span> <span class="n">res1</span><span class="p">:</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sCard</span><span class="p">]</span>
+                    <span class="n">tmp</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sCard</span><span class="p">])</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__action_priority__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">action1</span><span class="p">,</span> <span class="n">action2</span><span class="p">):</span>
+        <span class="n">count1</span> <span class="o">=</span> <span class="n">action1</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">action1</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">count2</span> <span class="o">=</span> <span class="n">action2</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">action2</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">count1</span> <span class="o">!=</span> <span class="n">count2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">count1</span> <span class="o">-</span> <span class="n">count2</span>
+
+        <span class="n">numMaster1</span> <span class="o">=</span> <span class="n">action1</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">numMaster2</span> <span class="o">=</span> <span class="n">action2</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">numMaster1</span> <span class="o">!=</span> <span class="n">numMaster2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">numMaster1</span>  <span class="o">-</span> <span class="n">numMaster2</span>
+
+        <span class="k">if</span> <span class="n">action1</span><span class="o">.</span><span class="n">maxMasterPoint</span> <span class="o">!=</span> <span class="n">action2</span><span class="o">.</span><span class="n">maxMasterPoint</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">action1</span><span class="o">.</span><span class="n">maxMasterPoint</span> <span class="o">-</span> <span class="n">action2</span><span class="o">.</span><span class="n">maxMasterPoint</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can&#39;t compare priorities of </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2"> &quot;</span><span class="o">%</span><span class="p">(</span><span class="n">action1</span><span class="o">.</span><span class="n">key</span><span class="p">,</span><span class="n">action2</span><span class="p">))</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__available_actions_generate_all__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">public_state</span> <span class="o">=</span> <span class="n">DouDiZhuPublicState</span><span class="p">()</span>
+        <span class="n">person_state</span> <span class="o">=</span> <span class="n">DouDiZhuPersonState</span><span class="p">()</span>
+        <span class="n">public_state</span><span class="o">.</span><span class="n">__is_response__</span>    <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">person_state</span><span class="o">.</span><span class="n">__hand_cards__</span>     <span class="o">=</span> <span class="n">DouDiZhuPokerHandCards</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">13</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+                <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">__add_cards__</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">__add_cards__</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]])</span>
+        <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">__add_cards__</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">]])</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+
+        <span class="n">patterns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">phase</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;i_cheat&quot;</span><span class="p">])</span>
+            <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;i_bid&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">is_response</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">AllPatterns</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">p</span> <span class="o">!=</span> <span class="s2">&quot;i_cheat&quot;</span> <span class="ow">and</span> <span class="n">p</span> <span class="o">!=</span> <span class="s2">&quot;i_invalid&quot;</span><span class="p">:</span>
+                        <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="n">p</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span><span class="o">.</span><span class="n">pattern</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;p_4_1_0_0_0&quot;</span><span class="p">])</span>  <span class="c1"># rank = 10</span>
+                    <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;x_rocket&quot;</span><span class="p">])</span>  <span class="c1"># rank = 100</span>
+                <span class="k">if</span> <span class="n">public_state</span><span class="o">.</span><span class="n">license_action</span><span class="o">.</span><span class="n">pattern</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
+                    <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;x_rocket&quot;</span><span class="p">])</span>  <span class="c1"># rank = 100</span>
+                <span class="n">patterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AllPatterns</span><span class="p">[</span><span class="s2">&quot;i_cheat&quot;</span><span class="p">])</span>
+
+
+        <span class="n">actions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+            <span class="n">numMaster</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">numMasterPoint</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">isStraight</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">numSlave</span> <span class="o">=</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="n">MasterCount</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">SlaveCount</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">numMaster</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">MasterCount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numMaster</span> <span class="o">/</span> <span class="n">numMasterPoint</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;i_invalid&quot;</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="s2">&quot;i_cheat&quot;</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">action_key</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                <span class="n">action</span>     <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                <span class="k">if</span> <span class="n">action_key</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__action_priority__</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="s2">&quot;i_bid&quot;</span> <span class="o">==</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">action_key</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                <span class="n">action</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                <span class="k">if</span> <span class="n">action_key</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__action_priority__</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;x_rocket&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> \
+                                <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">action_key</span>  <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> <span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                    <span class="n">action</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="p">([</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> <span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">]],</span> <span class="p">[])</span>
+                    <span class="k">if</span> <span class="n">action_key</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__action_priority__</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pattern</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">num_card</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">sum1</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MasterCount</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">sum1</span> <span class="o">+=</span> <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">count2num</span><span class="p">[</span><span class="n">count</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sum1</span> <span class="o">&lt;</span> <span class="n">numMasterPoint</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1">### action with cards</span>
+            <span class="n">mCardss</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">mCardss</span> <span class="o">=</span> <span class="n">DouDiZhuPokerEnv</span><span class="o">.</span><span class="n">__extractMasterCards__</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">mCards</span> <span class="ow">in</span> <span class="n">mCardss</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">numSlave</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">action_key</span>   <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">(</span><span class="n">mCards</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="n">action</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="p">(</span><span class="n">mCards</span><span class="p">,</span> <span class="p">[])</span>
+                    <span class="k">if</span> <span class="n">action_key</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__action_priority__</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                    <span class="k">continue</span>
+
+                <span class="n">sCardss</span> <span class="o">=</span> <span class="n">DouDiZhuPokerEnv</span><span class="o">.</span><span class="n">__extractSlaveCards__</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">,</span> <span class="n">mCards</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">sCards</span> <span class="ow">in</span> <span class="n">sCardss</span><span class="p">:</span>
+                    <span class="n">action_key</span>  <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="o">.</span><span class="n">__master_slave_cards_to_key__</span><span class="p">(</span><span class="n">mCards</span><span class="p">,</span> <span class="n">sCards</span><span class="p">)</span>
+                    <span class="n">action</span> <span class="o">=</span> <span class="n">DouDiZhuPokerAction</span><span class="p">(</span><span class="n">mCards</span><span class="p">,</span> <span class="n">sCards</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">action_key</span> <span class="ow">in</span> <span class="n">actions</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__action_priority__</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">actions</span><span class="p">[</span><span class="n">action_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">action</span>
+        <span class="k">return</span> <span class="n">actions</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

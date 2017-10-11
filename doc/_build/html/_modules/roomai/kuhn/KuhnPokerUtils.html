@@ -1,0 +1,186 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.kuhn.KuhnPokerUtils &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.kuhn.KuhnPokerUtils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+
+<div class="viewcode-block" id="KuhnPokerAction"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerUtils.KuhnPokerAction">[docs]</a><span class="k">class</span> <span class="nc">KuhnPokerAction</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractAction</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The KuhnPoker action. There are only two actions: bet and check. Examples of usages: \n</span>
+<span class="sd">    &gt;&gt; import roomai.kuhn\n</span>
+<span class="sd">    &gt;&gt; action = roomai.kuhn.KuhnPokerAction.lookup(&quot;bet&quot;)\n</span>
+<span class="sd">    &gt;&gt; action.key\n</span>
+<span class="sd">    &quot;bet&quot;\n</span>
+<span class="sd">    &gt;&gt; action = roomai.kuhn.KuhnPokerAction.lookup(&quot;check&quot;)\n</span>
+<span class="sd">    &gt;&gt; action.key\n</span>
+<span class="sd">    &quot;check&quot;\n</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">KuhnPokerAction</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="o">=</span> <span class="n">key</span>
+
+    <span class="k">def</span> <span class="nf">__get_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_key__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The key of the KuhnPoker action, </span><span class="se">\&quot;</span><span class="s2">bet</span><span class="se">\&quot;</span><span class="s2"> or </span><span class="se">\&quot;</span><span class="s2">check</span><span class="se">\&quot;</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="KuhnPokerAction.lookup"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerUtils.KuhnPokerAction.lookup">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AllKuhnActions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">KuhnPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div>
+
+<span class="n">AllKuhnActions</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bet&quot;</span><span class="p">:</span><span class="n">KuhnPokerAction</span><span class="p">(</span><span class="s2">&quot;bet&quot;</span><span class="p">),</span><span class="s2">&quot;check&quot;</span><span class="p">:</span><span class="n">KuhnPokerAction</span><span class="p">(</span><span class="s2">&quot;check&quot;</span><span class="p">)}</span>
+
+<div class="viewcode-block" id="KuhnPokerPublicState"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerUtils.KuhnPokerPublicState">[docs]</a><span class="k">class</span> <span class="nc">KuhnPokerPublicState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPublicState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The public state class of the KuhnPoker game</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">KuhnPokerPublicState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__first__</span>                      <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__epoch__</span>                      <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__action_list__</span>                <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__get_first__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__first__</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_first__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;players[first] is expected to take an action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__epoch__</span>
+    <span class="n">epoch</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_epoch</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_action_list__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__action_list__</span><span class="p">)</span>
+    <span class="n">action_list</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_action_list__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;the action history taken by the players&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">KuhnPokerPublicState</span><span class="p">()</span>
+        <span class="n">newinstance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">KuhnPokerPublicState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span><span class="o">=</span><span class="n">newinstance</span><span class="p">)</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__first__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__epoch__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_list</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__action_list__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+<div class="viewcode-block" id="KuhnPokerPrivateState"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerUtils.KuhnPokerPrivateState">[docs]</a><span class="k">class</span> <span class="nc">KuhnPokerPrivateState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPrivateState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The private state class of KuhnPoker</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AKuhnPokerPrivateState</span></div>
+<span class="n">AKuhnPokerPrivateState</span> <span class="o">=</span> <span class="n">KuhnPokerPrivateState</span><span class="p">()</span>
+
+<div class="viewcode-block" id="KuhnPokerPersonState"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerUtils.KuhnPokerPersonState">[docs]</a><span class="k">class</span> <span class="nc">KuhnPokerPersonState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPersonState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The person state of KuhnPoker</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">KuhnPokerPersonState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__number__</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__get_number__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__number__</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_number__</span><span class="p">,</span><span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The number given by the game enviroment. The value of this number is in {0,1,2}. The larger number, the higher win rate&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+           <span class="n">newinstance</span> <span class="o">=</span> <span class="n">KuhnPokerPersonState</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">KuhnPokerPersonState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

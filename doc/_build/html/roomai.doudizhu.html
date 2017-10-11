@@ -1,0 +1,482 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.doudizhu package &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="roomai.fivecardstud package" href="roomai.fivecardstud.html" />
+    <link rel="prev" title="roomai.common package" href="roomai.common.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="roomai-doudizhu-package">
+<h1>roomai.doudizhu package<a class="headerlink" href="#roomai-doudizhu-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.doudizhu.DouDiZhuPokerAction">
+<span id="roomai-doudizhu-doudizhupokeraction-module"></span><h2>roomai.doudizhu.DouDiZhuPokerAction module<a class="headerlink" href="#module-roomai.doudizhu.DouDiZhuPokerAction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement">
+<em class="property">class </em><code class="descclassname">roomai.doudizhu.DouDiZhuPokerAction.</code><code class="descname">DouDiZhuActionElement</code><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerAction.html#DouDiZhuActionElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement.rank_to_str">
+<code class="descname">rank_to_str</code><em class="property"> = {0: '3', 1: '4', 2: '5', 3: '6', 4: '7', 5: '8', 6: '9', 7: 'T', 8: 'J', 9: 'Q', 10: 'K', 11: 'A', 12: '2', 13: 'r', 14: 'R', 15: 'x', 16: 'b'}</em><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement.rank_to_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement.str_to_rank">
+<code class="descname">str_to_rank</code><em class="property"> = {'A': 11, 'x': 15, 'b': 16, 'K': 10, 'J': 8, 'Q': 9, '3': 0, '2': 12, '5': 2, '4': 1, '7': 4, '6': 3, '9': 6, '8': 5, 'R': 14, 'r': 13, 'T': 7}</em><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement.str_to_rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement.total_normal_cards">
+<code class="descname">total_normal_cards</code><em class="property"> = 15</em><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuActionElement.total_normal_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction">
+<em class="property">class </em><code class="descclassname">roomai.doudizhu.DouDiZhuPokerAction.</code><code class="descname">DouDiZhuPokerAction</code><span class="sig-paren">(</span><em>masterCards</em>, <em>slaveCards</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerAction.html#DouDiZhuPokerAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractAction" title="roomai.common.common.AbstractAction"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractAction</span></code></a></p>
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.isMasterStraight">
+<code class="descname">isMasterStraight</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.isMasterStraight" title="Permalink to this definition">¶</a></dt>
+<dd><p>The master cards are straight</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.key">
+<code class="descname">key</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key of DouDiZhu Action</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerAction.html#DouDiZhuPokerAction.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.masterCards">
+<code class="descname">masterCards</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.masterCards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The cards act as the master cards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.masterPoints2Count">
+<code class="descname">masterPoints2Count</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.masterPoints2Count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The count of different points in the masterCards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.maxMasterPoint">
+<code class="descname">maxMasterPoint</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.maxMasterPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>The max point in the master cards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.minMasterPoint">
+<code class="descname">minMasterPoint</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.minMasterPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>The min point in the master cards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.pattern">
+<code class="descname">pattern</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.pattern" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pattern of the action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.slaveCards">
+<code class="descname">slaveCards</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.slaveCards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The cards act as the slave cards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.slavePoints2Count">
+<code class="descname">slavePoints2Count</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerAction.DouDiZhuPokerAction.slavePoints2Count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The count of different points in the slaveCards</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.doudizhu.DouDiZhuPokerEnv">
+<span id="roomai-doudizhu-doudizhupokerenv-module"></span><h2>roomai.doudizhu.DouDiZhuPokerEnv module<a class="headerlink" href="#module-roomai.doudizhu.DouDiZhuPokerEnv" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv">
+<em class="property">class </em><code class="descclassname">roomai.doudizhu.DouDiZhuPokerEnv.</code><code class="descname">DouDiZhuPokerEnv</code><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerEnv.html#DouDiZhuPokerEnv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractEnv" title="roomai.common.common.AbstractEnv"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractEnv</span></code></a></p>
+<p>The DouDiZhuPoker game environment</p>
+<dl class="classmethod">
+<dt id="roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.available_actions">
+<em class="property">classmethod </em><code class="descname">available_actions</code><span class="sig-paren">(</span><em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerEnv.html#DouDiZhuPokerEnv.available_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.available_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate all valid action given the public state and the person state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>public_state</strong> – </li>
+<li><strong>person_state</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dict(action_key, action) contains all valid actions</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.compete">
+<em class="property">classmethod </em><code class="descname">compete</code><span class="sig-paren">(</span><em>env</em>, <em>players</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerEnv.html#DouDiZhuPokerEnv.compete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.compete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the game environment to hold a compete for the players</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>env</strong> – The game environment</li>
+<li><strong>players</strong> – The players</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">scores for the players</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerEnv.html#DouDiZhuPokerEnv.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>The game environment steps with the action taken by the current player</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>action</strong> – The action taken by the current player</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">infos, public_state, person_states, private_state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.init">
+<code class="descname">init</code><span class="sig-paren">(</span><em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerEnv.html#DouDiZhuPokerEnv.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the DouDiZhuPoker game environment with the initialization params.</p>
+<p>The initialization is a dict with some options</p>
+<ol class="arabic simple">
+<li>allcards: the order of all poker cards appearing</li>
+<li>record_history: whether to record all history states. if you need call the backward function, please set it to True. default False</li>
+<li>start_turn: players[start_turn] is first to take an action</li>
+</ol>
+<p>An example of the initialization param is {“start_turn”:2,”record_history”:True}</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> – the initialization params</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">infos, public_state, person_states, private_state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.is_action_valid">
+<em class="property">classmethod </em><code class="descname">is_action_valid</code><span class="sig-paren">(</span><em>action</em>, <em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerEnv.html#DouDiZhuPokerEnv.is_action_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerEnv.DouDiZhuPokerEnv.is_action_valid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the action is valid given the public state and the person state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>action</strong> – </li>
+<li><strong>public_state</strong> – </li>
+<li><strong>person_state</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An boolean variable</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.doudizhu.DouDiZhuPokerInfo">
+<span id="roomai-doudizhu-doudizhupokerinfo-module"></span><h2>roomai.doudizhu.DouDiZhuPokerInfo module<a class="headerlink" href="#module-roomai.doudizhu.DouDiZhuPokerInfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPersonState">
+<em class="property">class </em><code class="descclassname">roomai.doudizhu.DouDiZhuPokerInfo.</code><code class="descname">DouDiZhuPersonState</code><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerInfo.html#DouDiZhuPersonState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPersonState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPersonState" title="roomai.common.common.AbstractPersonState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPersonState</span></code></a></p>
+<p>The person state of DouDiZhu game environment</p>
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPersonState.hand_cards">
+<code class="descname">hand_cards</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPersonState.hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The cards in the hand of the corresponding player</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards">
+<em class="property">class </em><code class="descclassname">roomai.doudizhu.DouDiZhuPokerInfo.</code><code class="descname">DouDiZhuPokerHandCards</code><span class="sig-paren">(</span><em>cardstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerInfo.html#DouDiZhuPokerHandCards"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hand cards in the DouDiZhuPoker game.</p>
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.card_pointrank_count">
+<code class="descname">card_pointrank_count</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.card_pointrank_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The card_pointrank_count is an array of counts for different card point
+cardpoint_to_rank  = {‘3’:0, ‘4’:1, ‘5’:2, ‘6’:3, ‘7’:4, ‘8’:5, ‘9’:6, ‘T’:7, ‘J’:8, ‘Q’:9, ‘K’:10, ‘A’:11, ‘2’:12, ‘r’:13, ‘R’:14}.
+If key = “33rR”, card_pointrank_count = [2,0,…,0,1,1], len(card_pointrank_count) = 15</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.count2num">
+<code class="descname">count2num</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.count2num" title="Permalink to this definition">¶</a></dt>
+<dd><p>The count2num is an array of the number of the different counts.
+For example, key = “333rR”, count2num = [0,2,0,1,0]. count2num[1] = 2 denotes that two cards (r and R) appear onces. count2num[3] = 1 that one card(3) appears three times</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.key">
+<code class="descname">key</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key of HandCards. For example, key = “33rR”.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.num_card">
+<code class="descname">num_card</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards.num_card" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of cards in HandCards. For example, key = “33rR”, num_card = 4</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPrivateState">
+<em class="property">class </em><code class="descclassname">roomai.doudizhu.DouDiZhuPokerInfo.</code><code class="descname">DouDiZhuPrivateState</code><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerInfo.html#DouDiZhuPrivateState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPrivateState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPrivateState" title="roomai.common.common.AbstractPrivateState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPrivateState</span></code></a></p>
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPrivateState.keep_cards">
+<code class="descname">keep_cards</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPrivateState.keep_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>A DouDiZhuPokerHandCards class about the keep cards</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState">
+<em class="property">class </em><code class="descclassname">roomai.doudizhu.DouDiZhuPokerInfo.</code><code class="descname">DouDiZhuPublicState</code><a class="reference internal" href="_modules/roomai/doudizhu/DouDiZhuPokerInfo.html#DouDiZhuPublicState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPublicState" title="roomai.common.common.AbstractPublicState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPublicState</span></code></a></p>
+<p>The public state of DouDiZhuPoker</p>
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.continuous_cheat_num">
+<code class="descname">continuous_cheat_num</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.continuous_cheat_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of the continuous cheat actions.During the “playing” phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn’t response the license action and can take any valid action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.epoch">
+<code class="descname">epoch</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.epoch" title="Permalink to this definition">¶</a></dt>
+<dd><p>The epoch denotes the count about a player takes an action.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.first_player">
+<code class="descname">first_player</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.first_player" title="Permalink to this definition">¶</a></dt>
+<dd><p>The players[first_player] is first to take an action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.is_response">
+<code class="descname">is_response</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.is_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>is_response.  During the “playing” phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn’t response the license action and can take any valid action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.keep_cards">
+<code class="descname">keep_cards</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.keep_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The keep cards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.landlord_candidate_id">
+<code class="descname">landlord_candidate_id</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.landlord_candidate_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The candiate landlord player id during the betting_for_be_landlord phase</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.landlord_id">
+<code class="descname">landlord_id</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.landlord_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The landlord player id.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.license_action">
+<code class="descname">license_action</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.license_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>The license action.  During the “playing” phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn’t response the license action and can take any valid action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.license_playerid">
+<code class="descname">license_playerid</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.license_playerid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The license player id. During the “playing” phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn’t response the license action and can take any valid action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.phase">
+<code class="descname">phase</code><a class="headerlink" href="#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState.phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>There are two stages in DouDiZhu, namely 0) betting for being the landlord and 1) playing the game.
+0 denotes the betting for being the landlord phase, 1 denotes the playing the game phase.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.doudizhu.DouDiZhuPokerUtils">
+<span id="roomai-doudizhu-doudizhupokerutils-module"></span><h2>roomai.doudizhu.DouDiZhuPokerUtils module<a class="headerlink" href="#module-roomai.doudizhu.DouDiZhuPokerUtils" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.doudizhu.actions">
+<span id="roomai-doudizhu-actions-module"></span><h2>roomai.doudizhu.actions module<a class="headerlink" href="#module-roomai.doudizhu.actions" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.doudizhu.doudizhu_gen_all_actions">
+<span id="roomai-doudizhu-doudizhu-gen-all-actions-module"></span><h2>roomai.doudizhu.doudizhu_gen_all_actions module<a class="headerlink" href="#module-roomai.doudizhu.doudizhu_gen_all_actions" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.doudizhu.patterns">
+<span id="roomai-doudizhu-patterns-module"></span><h2>roomai.doudizhu.patterns module<a class="headerlink" href="#module-roomai.doudizhu.patterns" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.doudizhu">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-roomai.doudizhu" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="roomai.html">roomai package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="roomai.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="roomai.common.html">roomai.common package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">roomai.doudizhu package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu.DouDiZhuPokerAction">roomai.doudizhu.DouDiZhuPokerAction module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu.DouDiZhuPokerEnv">roomai.doudizhu.DouDiZhuPokerEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu.DouDiZhuPokerInfo">roomai.doudizhu.DouDiZhuPokerInfo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu.DouDiZhuPokerUtils">roomai.doudizhu.DouDiZhuPokerUtils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu.actions">roomai.doudizhu.actions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu.doudizhu_gen_all_actions">roomai.doudizhu.doudizhu_gen_all_actions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu.patterns">roomai.doudizhu.patterns module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.doudizhu">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.fivecardstud.html">roomai.fivecardstud package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.kuhn.html">roomai.kuhn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.sevenking.html">roomai.sevenking package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.texas.html">roomai.texas package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai.RoomAILogger">roomai.RoomAILogger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="roomai.html">roomai package</a><ul>
+      <li>Previous: <a href="roomai.common.html" title="previous chapter">roomai.common package</a></li>
+      <li>Next: <a href="roomai.fivecardstud.html" title="next chapter">roomai.fivecardstud package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/roomai.doudizhu.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

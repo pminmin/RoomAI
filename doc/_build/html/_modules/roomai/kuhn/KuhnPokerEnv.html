@@ -1,0 +1,301 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.kuhn.KuhnPokerEnv &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.kuhn.KuhnPokerEnv</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">roomai.kuhn.KuhnPokerUtils</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">roomai</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+
+<div class="viewcode-block" id="KuhnPokerEnv"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerEnv.KuhnPokerEnv">[docs]</a><span class="k">class</span> <span class="nc">KuhnPokerEnv</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractEnv</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The KuhnPoker game environment</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+
+    <span class="c1">#@override</span>
+<div class="viewcode-block" id="KuhnPokerEnv.init"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerEnv.KuhnPokerEnv.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">()):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initialize the KuhnPoker game environment</span>
+<span class="sd">        </span>
+<span class="sd">        :param params: the initialization params</span>
+<span class="sd">        :return: infos, public_state, person_states, private_state </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;record_history&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;record_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;record_history&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;record_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="s2">&quot;start_turn&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;start_turn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;start_turn&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;start_turn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;num_players&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+        <span class="k">if</span> <span class="s2">&quot;num_players&quot;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;KuhnPoker is a game of two players and the number of players always be 2. Ingores the </span><span class="se">\&quot;</span><span class="s2">num_players</span><span class="se">\&quot;</span><span class="s2"> option&quot;</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_action</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_action</span><span class="p">[</span><span class="n">roomai</span><span class="o">.</span><span class="n">kuhn</span><span class="o">.</span><span class="n">KuhnPokerUtils</span><span class="o">.</span><span class="n">KuhnPokerAction</span><span class="p">(</span><span class="s2">&quot;check&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">roomai</span><span class="o">.</span><span class="n">kuhn</span><span class="o">.</span><span class="n">KuhnPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;check&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">available_action</span><span class="p">[</span><span class="n">roomai</span><span class="o">.</span><span class="n">kuhn</span><span class="o">.</span><span class="n">KuhnPokerUtils</span><span class="o">.</span><span class="n">KuhnPokerAction</span><span class="p">(</span><span class="s2">&quot;bet&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">key</span><span class="p">]</span>   <span class="o">=</span> <span class="n">roomai</span><span class="o">.</span><span class="n">kuhn</span><span class="o">.</span><span class="n">KuhnPokerAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;bet&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span> <span class="o">=</span> <span class="n">roomai</span><span class="o">.</span><span class="n">kuhn</span><span class="o">.</span><span class="n">KuhnPokerUtils</span><span class="o">.</span><span class="n">KuhnPokerPrivateState</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span>  <span class="o">=</span> <span class="n">roomai</span><span class="o">.</span><span class="n">kuhn</span><span class="o">.</span><span class="n">KuhnPokerUtils</span><span class="o">.</span><span class="n">KuhnPokerPublicState</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">roomai</span><span class="o">.</span><span class="n">kuhn</span><span class="o">.</span><span class="n">KuhnPokerUtils</span><span class="o">.</span><span class="n">KuhnPokerPersonState</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+
+
+        <span class="n">card0</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">card1</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">card0</span> <span class="o">==</span> <span class="n">card1</span><span class="p">:</span>
+            <span class="n">card0</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__turn__</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__params__</span><span class="p">[</span><span class="s2">&quot;start_turn&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__first__</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__epoch__</span>         <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__action_list__</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_terminal__</span>   <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span>        <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">__id__</span>          <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">__number__</span>      <span class="o">=</span> <span class="n">card0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">__id__</span>          <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">__number__</span>      <span class="o">=</span> <span class="n">card1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">__available_actions__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_action</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+        <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+
+        
+        <span class="k">return</span>  <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span></div>
+
+    <span class="c1">#@override</span>
+<div class="viewcode-block" id="KuhnPokerEnv.forward"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerEnv.KuhnPokerEnv.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The KuhnPoker game environment steps with the action taken by the current player</span>
+
+<span class="sd">        :param action</span>
+<span class="sd">        :returns:infos, public_state, person_states, private_state</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">__available_actions__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__epoch__</span>                                     <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__turn__</span>                                       <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__action_list__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">epoch</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_terminal__</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span>      <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">__available_actions__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_action</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+            <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">infos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">epoch</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evalute_two_round__</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__is_terminal__</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">__scores__</span>      <span class="o">=</span> <span class="n">scores</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+                <span class="n">infos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">infos</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">scores</span>      <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">available_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_action</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+                <span class="n">infos</span>                         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">infos</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">epoch</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">scores</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evalute_three_round__</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">__gen_history__</span><span class="p">()</span>
+            <span class="n">infos</span>                         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__gen_infos__</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">infos</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_state</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;KuhnPoker has 3 turns at most&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1">#@Overide</span>
+<div class="viewcode-block" id="KuhnPokerEnv.compete"><a class="viewcode-back" href="../../../roomai.kuhn.html#roomai.kuhn.KuhnPokerEnv.KuhnPokerEnv.compete">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">compete</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">players</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Use the game environment to hold a compete for the players</span>
+
+<span class="sd">        :param env: The game environment</span>
+<span class="sd">        :param players: The players</span>
+<span class="sd">        :return: scores for the players</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">infos</span><span class="p">,</span> <span class="n">public_state</span><span class="p">,</span> <span class="n">person_state</span><span class="p">,</span> <span class="n">private_state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">players</span><span class="p">)):</span>
+            <span class="n">players</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">receive_info</span><span class="p">(</span><span class="n">infos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">while</span> <span class="n">public_state</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">turn</span> <span class="o">=</span> <span class="n">infos</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">turn</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">players</span><span class="p">[</span><span class="n">turn</span><span class="p">]</span><span class="o">.</span><span class="n">take_action</span><span class="p">()</span>
+            <span class="n">infos</span><span class="p">,</span><span class="n">public_state</span><span class="p">,</span> <span class="n">person_state</span><span class="p">,</span> <span class="n">private_state</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">players</span><span class="p">)):</span>
+                <span class="n">players</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">receive_info</span><span class="p">(</span><span class="n">infos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">public_state</span><span class="o">.</span><span class="n">scores</span></div>
+
+
+
+    <span class="k">def</span> <span class="nf">__higher_number_player__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">number</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">person_states</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__evalute_two_round__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">win</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__higher_number_player__</span><span class="p">()</span>
+        <span class="n">first</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">first</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
+        <span class="n">actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">action_list</span>
+
+        <span class="k">if</span> <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;check&quot;</span> <span class="ow">and</span> \
+           <span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bet&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
+        <span class="k">if</span> <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> \
+           <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;check&quot;</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">win</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="n">scores</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">win</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">scores</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bet&quot;</span> <span class="ow">and</span> \
+           <span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;check&quot;</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">first</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="n">scores</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">first</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">return</span> <span class="n">scores</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">actions</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> \
+           <span class="n">actions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;bet&quot;</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">win</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">scores</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">win</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+            <span class="k">return</span> <span class="n">scores</span><span class="p">;</span>
+
+
+    <span class="k">def</span> <span class="nf">__evalute_three_round__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">first</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">first</span> 
+        <span class="n">win</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__higher_number_player__</span><span class="p">()</span>
+        <span class="n">scores</span>  <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_state</span><span class="o">.</span><span class="n">action_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;check&quot;</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">first</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">first</span><span class="p">]</span>     <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scores</span><span class="p">[</span><span class="n">win</span><span class="p">]</span>   <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+            <span class="n">scores</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">win</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="n">scores</span><span class="p">;</span></div>
+       
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

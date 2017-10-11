@@ -1,0 +1,332 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.texas.TexasHoldemInfo &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.texas.TexasHoldemInfo</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="c1">#coding:utf-8</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<div class="viewcode-block" id="TexasHoldemPublicState"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState">[docs]</a><span class="k">class</span> <span class="nc">TexasHoldemPublicState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPublicState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The public state of TexasHoldem</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__stage__</span>              <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_players__</span>        <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dealer_id__</span>          <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__public_cards__</span>       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__big_blind_bet__</span>      <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1">#state of players</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_fold__</span>                        <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_fold__</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_allin__</span>                       <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_allin__</span>                      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_needed_to_action__</span>            <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_needed_to_action__</span>           <span class="o">=</span> <span class="kc">None</span>
+
+
+        <span class="c1">#chips is array which contains the chips of all players</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__chips__</span>              <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1">#bets is array which contains the bets from all players</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bets__</span>               <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1">#max_bet = max(self.bets)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__max_bet_sofar__</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#the raise acount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__raise_account__</span>      <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__get_num_players__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_players__</span>
+    <span class="n">num_players</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_players__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The number of players in this game&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_max_bet_sofar__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__max_bet_sofar__</span>
+    <span class="n">max_bet_sofar</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_max_bet_sofar__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The max bet used by one player so far&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_raise_account__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__raise_account__</span>
+    <span class="n">raise_account</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_raise_account__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The raise account. If a player want to raise, the price must be max_bet_sofar + raise_account * N. The raise account will increases as the game goes forward&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_chips__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__chips__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__chips__</span><span class="p">)</span>
+    <span class="n">chips</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_chips__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;chips is an array of the chips of all players. For example, chips=[50,50,50]&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_bets__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bets__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__bets__</span><span class="p">)</span>
+    <span class="n">bets</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_bets__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;bets is an array which contains the bets from all players. For example, bets=[50,25,25]&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_big_blind_bet__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__big_blind_bet__</span>
+    <span class="n">big_blind_bet</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_big_blind_bet__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The big blind bet&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_is_fold__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_fold__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>    <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>   <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__is_fold__</span><span class="p">)</span>
+    <span class="n">is_fold</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_is_fold__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;is_fold is an array of which player has take the fold action. For example, is_fold = [true,true,false] denotes the player0 and player1 have taken the fold action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_num_fold__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_fold__</span>
+    <span class="n">num_fold</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_fold__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The number of players who has taken the fold action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_is_allin__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_allin__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>    <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>   <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__is_allin__</span><span class="p">)</span>
+    <span class="n">is_allin</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_is_allin__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;is_allin is an array of which player has take the allin action. For example, is_allin = [true,true,false] denotes the player0 and player1 have taken the allin action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_num_allin__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_allin__</span>
+    <span class="n">num_allin</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_allin__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The number of players who has taken the allin action&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_is_needed_to_action__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_needed_to_action__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>    <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>   <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__is_needed_to_action__</span><span class="p">)</span>
+    <span class="n">is_needed_to_action</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_is_needed_to_action__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;is_needed_to_action is an array of which player has take the needed_to_action action. For example, is_needed_to_action = [true,true,false] denotes the player0 and player1 have taken the needed_to_action action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_num_needed_to_action__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_needed_to_action__</span>
+    <span class="n">num_needed_to_action</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_needed_to_action__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The number of players who has taken the needed_to_action action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_public_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__public_cards__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__public_cards__</span><span class="p">)</span>
+    <span class="n">public_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_public_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The public cards of this game. For example, public_cards = [roomai.common.PokerCards.lookup(</span><span class="se">\&quot;</span><span class="s2">A_Spade</span><span class="se">\&quot;</span><span class="s2">), roomai.common.PokerCards.lookup(</span><span class="se">\&quot;</span><span class="s2">A_Heart</span><span class="se">\&quot;</span><span class="s2">)]&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_stage__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__stage__</span>
+    <span class="n">stage</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_stage__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;stage in [1,2,3,4]&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_dealer_id__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dealer_id__</span>
+    <span class="n">dealer_id</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_dealer_id__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The player id of the dealer. The next player after the dealer is the small blind. The next player after the small blind is the big blind.&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span> <span class="o">=</span> <span class="n">TexasHoldemPublicState</span><span class="p">()</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">stage</span>         <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stage</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">num_players</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_players</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">dealer_id</span>     <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dealer_id</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">big_blind_bet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">big_blind_bet</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">public_cards</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">public_cards</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">public_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">public_cards</span><span class="p">))]</span>
+
+
+            <span class="c1">######## quit, allin , needed_to_action</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">num_quit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_quit</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fold</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">is_fold</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">is_fold</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_fold</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_fold</span><span class="p">))]</span>
+
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">num_allin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_allin</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_allin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">is_allin</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">is_allin</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_allin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_allin</span><span class="p">))]</span>
+
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">num_needed_to_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_needed_to_action</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_needed_to_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">is_needed_to_action</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">is_needed_to_action</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">is_needed_to_action</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                                                    <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_needed_to_action</span><span class="p">))]</span>
+
+            <span class="c1"># chips is array which contains the chips of all players</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chips</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">chips</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">chips</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">chips</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chips</span><span class="p">))]</span>
+
+            <span class="c1"># bets is array which contains the bets from all players</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">bets</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">bets</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bets</span><span class="p">))]</span>
+
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">max_bet_sofar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_bet_sofar</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">raise_account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raise_account</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span>
+
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">previous_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_id</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">previous_action</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">previous_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_action</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+
+            <span class="c1">### isterminal, scores</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">is_terminal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_terminal</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newinstance</span><span class="o">.</span><span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">))]</span>
+
+            <span class="k">return</span> <span class="n">newinstance</span></div>
+
+
+<div class="viewcode-block" id="TexasHoldemPrivateState"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.TexasHoldemInfo.TexasHoldemPrivateState">[docs]</a><span class="k">class</span> <span class="nc">TexasHoldemPrivateState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPrivateState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The private state of TexasHoldem</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">__keep_cards__</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__get_keep_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__keep_cards__</span><span class="p">)</span>
+    <span class="n">keep_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_keep_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;the keep cards&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">TexasHoldemPrivateState</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">keep_cards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keep_cards</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+
+<div class="viewcode-block" id="TexasHoldemPersonState"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.TexasHoldemInfo.TexasHoldemPersonState">[docs]</a><span class="k">class</span> <span class="nc">TexasHoldemPersonState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPersonState</span><span class="p">):</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TexasHoldemPersonState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span>  <span class="o">=</span>    <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__get_hand_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span><span class="p">)</span>
+    <span class="n">hand_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_hand_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The hand cards of the corresponding player. It contains two poker cards. For example, hand_cards=[roomai.coomon.PokerCard.lookup(</span><span class="se">\&quot;</span><span class="s2">A_Spade</span><span class="se">\&quot;</span><span class="s2">),roomai.coomon.PokerCard.lookup(</span><span class="se">\&quot;</span><span class="s2">A_Heart</span><span class="se">\&quot;</span><span class="s2">)]&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span>    <span class="o">=</span> <span class="n">TexasHoldemPersonState</span><span class="p">()</span>
+        <span class="n">newinstance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">TexasHoldemPersonState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span><span class="o">=</span><span class="n">newinstance</span><span class="p">)</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__hand_cards__</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">]</span>
+        <span class="k">return</span>  <span class="n">newinstance</span></div>
+
+
+
+<span class="n">AllCardsPattern</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="c1">#0     1           2       3           4                                    5     6</span>
+<span class="c1">#name, isStraight, isPair, isSameSuit, [SizeOfPair1, SizeOfPair2,..](desc), rank, cards</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;Straight_SameSuit&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;Straight_SameSuit&quot;</span><span class="p">,</span>   <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="p">[],</span>         <span class="mi">100</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;4_1&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;4_1&quot;</span><span class="p">,</span>                 <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>      <span class="mi">98</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;3_2&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;3_2&quot;</span><span class="p">,</span>                 <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>      <span class="mi">97</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;SameSuit&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;SameSuit&quot;</span><span class="p">,</span>            <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="p">[],</span>         <span class="mi">96</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;Straight_DiffSuit&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;Straight_DiffSuit&quot;</span><span class="p">,</span>   <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">[],</span>         <span class="mi">95</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;3_1_1&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;3_1_1&quot;</span><span class="p">,</span>               <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>    <span class="mi">94</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;2_2_1&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;2_2_1&quot;</span><span class="p">,</span>               <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>    <span class="mi">93</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;2_1_1_1&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;2_1_1_1&quot;</span><span class="p">,</span>             <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>  <span class="mi">92</span><span class="p">]</span>
+<span class="n">AllCardsPattern</span><span class="p">[</span><span class="s2">&quot;1_1_1_1_1&quot;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="p">[</span><span class="s2">&quot;1_1_1_1_1&quot;</span><span class="p">,</span>           <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span>  <span class="kc">False</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="mi">91</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

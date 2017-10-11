@@ -1,0 +1,618 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.fivecardstud package &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="roomai.kuhn package" href="roomai.kuhn.html" />
+    <link rel="prev" title="roomai.doudizhu package" href="roomai.doudizhu.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="roomai-fivecardstud-package">
+<h1>roomai.fivecardstud package<a class="headerlink" href="#roomai-fivecardstud-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.fivecardstud.FiveCardStudAction">
+<span id="roomai-fivecardstud-fivecardstudaction-module"></span><h2>roomai.fivecardstud.FiveCardStudAction module<a class="headerlink" href="#module-roomai.fivecardstud.FiveCardStudAction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction">
+<em class="property">class </em><code class="descclassname">roomai.fivecardstud.FiveCardStudAction.</code><code class="descname">FiveCardStudAction</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudAction.html#FiveCardStudAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractAction" title="roomai.common.common.AbstractAction"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractAction</span></code></a></p>
+<p>The FiveCardStudAction. The action consists of two parts, namely option and price.</p>
+<p>The option is [“Fold”,”Check”,”Call”,”Raise”,”Bet”, “Showhand”], and the price is the chips used by this action.</p>
+<p>The FiveCardStudAction has a key “%s_%d”%(option, price) as its identification. Examples of usages:</p>
+<p>&gt;&gt; import roomai.fivecardstud</p>
+<p>&gt;&gt; a = roomai.fivecardstud.FiveCardStudAction.lookup(“Fold_0”)</p>
+<p>&gt;&gt; # We strongly recommend you to get a FiveCardStudAction using the lookup function</p>
+<p>&gt;&gt; a.option</p>
+<p>Fold</p>
+<p>&gt;&gt; a.price</p>
+<p>0</p>
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Bet">
+<code class="descname">Bet</code><em class="property"> = 'Bet'</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Call">
+<code class="descname">Call</code><em class="property"> = 'Call'</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Check">
+<code class="descname">Check</code><em class="property"> = 'Check'</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Fold">
+<code class="descname">Fold</code><em class="property"> = 'Fold'</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Fold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Raise">
+<code class="descname">Raise</code><em class="property"> = 'Raise'</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Raise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Showhand">
+<code class="descname">Showhand</code><em class="property"> = 'Showhand'</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.Showhand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudAction.html#FiveCardStudAction.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.option">
+<code class="descname">option</code><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.option" title="Permalink to this definition">¶</a></dt>
+<dd><p>The option of the action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.price">
+<code class="descname">price</code><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudAction.FiveCardStudAction.price" title="Permalink to this definition">¶</a></dt>
+<dd><p>The price of the action (chips used by this action)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.fivecardstud.FiveCardStudEnv">
+<span id="roomai-fivecardstud-fivecardstudenv-module"></span><h2>roomai.fivecardstud.FiveCardStudEnv module<a class="headerlink" href="#module-roomai.fivecardstud.FiveCardStudEnv" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv">
+<em class="property">class </em><code class="descclassname">roomai.fivecardstud.FiveCardStudEnv.</code><code class="descname">FiveCardStudEnv</code><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractEnv" title="roomai.common.common.AbstractEnv"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractEnv</span></code></a></p>
+<p>FiveCardStud game enviroment</p>
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_bet">
+<code class="descname">action_bet</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.action_bet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_bet" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_call">
+<code class="descname">action_call</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.action_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_call" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_check">
+<code class="descname">action_check</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.action_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_check" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_fold">
+<code class="descname">action_fold</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.action_fold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_fold" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_raise">
+<code class="descname">action_raise</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.action_raise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_raise" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_showhand">
+<code class="descname">action_showhand</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.action_showhand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.action_showhand" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:</dd>
+</dl>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.available_actions">
+<em class="property">classmethod </em><code class="descname">available_actions</code><span class="sig-paren">(</span><em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.available_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.available_actions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>public_state:
+person_state:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.cards2pattern">
+<em class="property">classmethod </em><code class="descname">cards2pattern</code><span class="sig-paren">(</span><em>cards</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.cards2pattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.cards2pattern" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>cards:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.choose_player_at_begining_of_round">
+<em class="property">classmethod </em><code class="descname">choose_player_at_begining_of_round</code><span class="sig-paren">(</span><em>public_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.choose_player_at_begining_of_round"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.choose_player_at_begining_of_round" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>public_state:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.compare_cards">
+<em class="property">classmethod </em><code class="descname">compare_cards</code><span class="sig-paren">(</span><em>cards1</em>, <em>cards2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.compare_cards"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.compare_cards" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>cards1:
+cards2:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.compete">
+<em class="property">classmethod </em><code class="descname">compete</code><span class="sig-paren">(</span><em>env</em>, <em>players</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.compete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.compete" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>env:
+players:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.compute_scores">
+<em class="property">classmethod </em><code class="descname">compute_scores</code><span class="sig-paren">(</span><em>public_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.compute_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.compute_scores" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>public_state:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.forward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:</dd>
+<dt>Raises:</dt>
+<dd>None: throw ValueError when the action is invalid at this time</dd>
+</dl>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.fourcards2pattern">
+<em class="property">classmethod </em><code class="descname">fourcards2pattern</code><span class="sig-paren">(</span><em>cards</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.fourcards2pattern"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.fourcards2pattern" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>cards:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.init">
+<code class="descname">init</code><span class="sig-paren">(</span><em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize FiveCardStud game enviroment with the params. The params are as follows:
+1) num_players denotes how many players join in this game, default 3
+2) chips denotes the initialization chips of players, default [500,500,500]
+3) floor_bet denotes the minimal bet, default 10
+4) allcards denotes the order of the poker cards appearing, default random
+5) record_history denotes whether the environment will stores all history information. If you need call the backward function, please set it to bet True. default False
+An example of params is {“num_players”:3,”chips”:[500,500,500]}</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> – initialization param</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">infos, public_state, person_states, private_state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.is_action_valid">
+<em class="property">classmethod </em><code class="descname">is_action_valid</code><span class="sig-paren">(</span><em>action</em>, <em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.is_action_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.is_action_valid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:
+public_state:
+person_state:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.is_compute_scores">
+<em class="property">classmethod </em><code class="descname">is_compute_scores</code><span class="sig-paren">(</span><em>public_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.is_compute_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.is_compute_scores" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>public_state:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.is_nextround">
+<em class="property">classmethod </em><code class="descname">is_nextround</code><span class="sig-paren">(</span><em>public_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.is_nextround"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.is_nextround" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A boolean variable indicates whether is it time to enter the next stage</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.next_player">
+<em class="property">classmethod </em><code class="descname">next_player</code><span class="sig-paren">(</span><em>pu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudEnv.html#FiveCardStudEnv.next_player"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudEnv.FiveCardStudEnv.next_player" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>pu:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.fivecardstud.FiveCardStudInfo">
+<span id="roomai-fivecardstud-fivecardstudinfo-module"></span><h2>roomai.fivecardstud.FiveCardStudInfo module<a class="headerlink" href="#module-roomai.fivecardstud.FiveCardStudInfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState">
+<em class="property">class </em><code class="descclassname">roomai.fivecardstud.FiveCardStudInfo.</code><code class="descname">FiveCardStudPersonState</code><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudInfo.html#FiveCardStudPersonState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPersonState" title="roomai.common.common.AbstractPersonState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPersonState</span></code></a></p>
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.available_actions">
+<code class="descname">available_actions</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.available_actions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.fifth_hand_card">
+<code class="descname">fifth_hand_card</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.fifth_hand_card" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.first_hand_card">
+<code class="descname">first_hand_card</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.first_hand_card" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.fourth_hand_card">
+<code class="descname">fourth_hand_card</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.fourth_hand_card" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.id">
+<code class="descname">id</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.second_hand_card">
+<code class="descname">second_hand_card</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.second_hand_card" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.third_hand_card">
+<code class="descname">third_hand_card</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPersonState.third_hand_card" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPrivateState">
+<em class="property">class </em><code class="descclassname">roomai.fivecardstud.FiveCardStudInfo.</code><code class="descname">FiveCardStudPrivateState</code><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudInfo.html#FiveCardStudPrivateState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPrivateState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPrivateState" title="roomai.common.common.AbstractPrivateState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPrivateState</span></code></a></p>
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPrivateState.all_hand_cards">
+<code class="descname">all_hand_cards</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPrivateState.all_hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState">
+<em class="property">class </em><code class="descclassname">roomai.fivecardstud.FiveCardStudInfo.</code><code class="descname">FiveCardStudPublicState</code><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudInfo.html#FiveCardStudPublicState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPublicState" title="roomai.common.common.AbstractPublicState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPublicState</span></code></a></p>
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.bets">
+<code class="descname">bets</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.bets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.chips">
+<code class="descname">chips</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.chips" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.fifth_hand_cards">
+<code class="descname">fifth_hand_cards</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.fifth_hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.first_hand_cards">
+<code class="descname">first_hand_cards</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.first_hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.floor_bet">
+<code class="descname">floor_bet</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.floor_bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.fourth_hand_cards">
+<code class="descname">fourth_hand_cards</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.fourth_hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_needed_to_action">
+<code class="descname">is_needed_to_action</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_needed_to_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_quit">
+<code class="descname">is_quit</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_quit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_raise">
+<code class="descname">is_raise</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_raise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_terminal">
+<code class="descname">is_terminal</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.is_terminal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.max_bet_sofar">
+<code class="descname">max_bet_sofar</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.max_bet_sofar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_needed_to_action">
+<code class="descname">num_needed_to_action</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_needed_to_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_players">
+<code class="descname">num_players</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_players" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_quit">
+<code class="descname">num_quit</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_quit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_raise">
+<code class="descname">num_raise</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.num_raise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.previous_action">
+<code class="descname">previous_action</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.previous_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.previous_id">
+<code class="descname">previous_id</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.previous_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.previous_round">
+<code class="descname">previous_round</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.previous_round" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.round">
+<code class="descname">round</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.round" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.scores">
+<code class="descname">scores</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.scores" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.second_hand_cards">
+<code class="descname">second_hand_cards</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.second_hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.third_hand_cards">
+<code class="descname">third_hand_cards</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.third_hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.turn">
+<code class="descname">turn</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.upper_bet">
+<code class="descname">upper_bet</code><em class="property"> = None</em><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudInfo.FiveCardStudPublicState.upper_bet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.fivecardstud.FiveCardStudUtils">
+<span id="roomai-fivecardstud-fivecardstudutils-module"></span><h2>roomai.fivecardstud.FiveCardStudUtils module<a class="headerlink" href="#module-roomai.fivecardstud.FiveCardStudUtils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.fivecardstud.FiveCardStudUtils.FiveCardStudPokerCard">
+<em class="property">class </em><code class="descclassname">roomai.fivecardstud.FiveCardStudUtils.</code><code class="descname">FiveCardStudPokerCard</code><span class="sig-paren">(</span><em>point</em>, <em>suit=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudUtils.html#FiveCardStudPokerCard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudUtils.FiveCardStudPokerCard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.PokerCard" title="roomai.common.common.PokerCard"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.PokerCard</span></code></a></p>
+<p>A poker card used in FiveCardStud game
+The difference in the common poker card(roomai.common.PokerCard) and the fivecardstud poker card(roomai.fivecardstud.FiveCardStudPokerCard) is: they have different suit rank
+The common poker card: ‘Spade’: ‘Spade’:0, ‘Heart’:1, ‘Diamond’:2, ‘Club’:3,  ‘ForKing’:4
+The FiveCardStud poker card:’Spade’: 3, ‘Heart’: 2, ‘Club’: 1, ‘Diamond’:0
+Besides, there aren’t r and R in FiveCardStud</p>
+<dl class="classmethod">
+<dt id="roomai.fivecardstud.FiveCardStudUtils.FiveCardStudPokerCard.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/fivecardstud/FiveCardStudUtils.html#FiveCardStudPokerCard.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.fivecardstud.FiveCardStudUtils.FiveCardStudPokerCard.lookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.fivecardstud">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-roomai.fivecardstud" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="roomai.html">roomai package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="roomai.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="roomai.common.html">roomai.common package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.doudizhu.html">roomai.doudizhu package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">roomai.fivecardstud package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.fivecardstud.FiveCardStudAction">roomai.fivecardstud.FiveCardStudAction module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.fivecardstud.FiveCardStudEnv">roomai.fivecardstud.FiveCardStudEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.fivecardstud.FiveCardStudInfo">roomai.fivecardstud.FiveCardStudInfo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.fivecardstud.FiveCardStudUtils">roomai.fivecardstud.FiveCardStudUtils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.fivecardstud">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.kuhn.html">roomai.kuhn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.sevenking.html">roomai.sevenking package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.texas.html">roomai.texas package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai.RoomAILogger">roomai.RoomAILogger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="roomai.html">roomai package</a><ul>
+      <li>Previous: <a href="roomai.doudizhu.html" title="previous chapter">roomai.doudizhu package</a></li>
+      <li>Next: <a href="roomai.kuhn.html" title="next chapter">roomai.kuhn package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/roomai.fivecardstud.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

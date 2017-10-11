@@ -1,0 +1,307 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.doudizhu.DouDiZhuPokerInfo &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.doudizhu.DouDiZhuPokerInfo</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+<span class="kn">from</span> <span class="nn">roomai.doudizhu.DouDiZhuPokerAction</span> <span class="k">import</span> <span class="n">DouDiZhuActionElement</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+
+<div class="viewcode-block" id="DouDiZhuPokerHandCards"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPokerHandCards">[docs]</a><span class="k">class</span> <span class="nc">DouDiZhuPokerHandCards</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The hand cards in the DouDiZhuPoker game.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cardstr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">total_normal_cards</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cardstr</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">str_to_rank</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">total_normal_cards</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is invalid for a handcard&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cardstr</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__num_card__</span>  <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__count2num__</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__count2num__</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">strs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">[</span><span class="n">h</span><span class="p">]):</span>
+                <span class="n">strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="n">h</span><span class="p">])</span>
+        <span class="n">strs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_card_pointrank_count__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">)</span>
+    <span class="n">card_pointrank_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_card_pointrank_count__</span><span class="p">,</span>
+                                    <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The card_pointrank_count is an array of counts for different card point</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+                                        <span class="s2">&quot;cardpoint_to_rank  = {&#39;3&#39;:0, &#39;4&#39;:1, &#39;5&#39;:2, &#39;6&#39;:3, &#39;7&#39;:4, &#39;8&#39;:5, &#39;9&#39;:6, &#39;T&#39;:7, &#39;J&#39;:8, &#39;Q&#39;:9, &#39;K&#39;:10, &#39;A&#39;:11, &#39;2&#39;:12, &#39;r&#39;:13, &#39;R&#39;:14}.</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+                                        <span class="s2">&quot;If key = </span><span class="se">\&quot;</span><span class="s2">33rR</span><span class="se">\&quot;</span><span class="s2">, card_pointrank_count = [2,0,...,0,1,1], len(card_pointrank_count) = 15&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_num_card__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__num_card__</span>
+    <span class="n">num_card</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_num_card__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The number of cards in HandCards. For example, key = </span><span class="se">\&quot;</span><span class="s2">33rR</span><span class="se">\&quot;</span><span class="s2">, num_card = 4&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_key__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The key of HandCards. For example, key = </span><span class="se">\&quot;</span><span class="s2">33rR</span><span class="se">\&quot;</span><span class="s2">. &quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_count2num__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__count2num__</span><span class="p">)</span>
+    <span class="n">count2num</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_count2num__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span>
+    <span class="s2">&quot;The count2num is an array of the number of the different counts.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
+    <span class="s2">&quot;For example, key = </span><span class="se">\&quot;</span><span class="s2">333rR</span><span class="se">\&quot;</span><span class="s2">, count2num = [0,2,0,1,0]. count2num[1] = 2 denotes that two cards (r and R) appear onces. count2num[3] = 1 that one card(3) appears three times &quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__compute_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">strs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">[</span><span class="n">h</span><span class="p">]):</span>
+                <span class="n">strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DouDiZhuActionElement</span><span class="o">.</span><span class="n">rank_to_str</span><span class="p">[</span><span class="n">h</span><span class="p">])</span>
+        <span class="n">strs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cards</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cards</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">cards</span> <span class="o">=</span> <span class="n">DouDiZhuPokerHandCards</span><span class="p">(</span><span class="n">cards</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cards</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">)):</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">cards</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__num_card__</span> <span class="o">+=</span> <span class="n">count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__count2num__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="n">count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__count2num__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__compute_key__</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">__remove_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cards</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cards</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">cards</span> <span class="o">=</span> <span class="n">DouDiZhuPokerHandCards</span><span class="p">(</span><span class="n">cards</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cards</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">)):</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="n">cards</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__num_card__</span> <span class="o">-=</span> <span class="n">count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__count2num__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__card_pointrank_count__</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">-=</span> <span class="n">count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__count2num__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">card_pointrank_count</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__compute_key__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__remove_action__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="nb">str</span> <span class="o">=</span> <span class="n">action</span><span class="o">.</span><span class="n">key</span>
+        <span class="k">if</span> <span class="nb">str</span> <span class="o">==</span> <span class="s1">&#39;x&#39;</span> <span class="ow">or</span> <span class="nb">str</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__remove_cards__</span><span class="p">(</span><span class="n">DouDiZhuPokerHandCards</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DouDiZhuPokerHandCards</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DouDiZhuPrivateState"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPrivateState">[docs]</a><span class="k">class</span> <span class="nc">DouDiZhuPrivateState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPrivateState</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__get_keep_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__keep_cards__</span>
+    <span class="n">keep_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_keep_cards__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;A DouDiZhuPokerHandCards class about the keep cards&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">DouDiZhuPrivateState</span><span class="p">()</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_cards</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+
+<div class="viewcode-block" id="DouDiZhuPublicState"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPublicState">[docs]</a><span class="k">class</span> <span class="nc">DouDiZhuPublicState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPublicState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The public state of DouDiZhuPoker</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__landlord_candidate_id__</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__landlord_id__</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__license_playerid__</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__license_action__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__continuous_cheat_num__</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_response__</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__first_player__</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__phase__</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__epoch__</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__get_landlord_candidate_id__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__landlord_candidate_id__</span>
+    <span class="n">landlord_candidate_id</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_landlord_candidate_id__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The candiate landlord player id during the betting_for_be_landlord phase&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_landlord_id__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__landlord_id__</span>
+    <span class="n">landlord_id</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_landlord_id__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The landlord player id.&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__get_license_playerid__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__license_playerid__</span>
+    <span class="n">license_playerid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_license_playerid__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The license player id.&quot;</span><span class="o">+</span>
+                                                               <span class="s2">&quot; During the </span><span class="se">\&quot;</span><span class="s2">playing</span><span class="se">\&quot;</span><span class="s2"> phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. &quot;</span><span class="o">+</span>
+                                                              <span class="s2">&quot;Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn&#39;t response the license action and can take any valid action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_license_action__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__license_action__</span>
+    <span class="n">license_action</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_license_action__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The license action.  During the </span><span class="se">\&quot;</span><span class="s2">playing</span><span class="se">\&quot;</span><span class="s2"> phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. &quot;</span><span class="o">+</span>
+                                                      <span class="s2">&quot;Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn&#39;t response the license action and can take any valid action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_continuous_cheat_num__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__continuous_cheat_num__</span>
+    <span class="n">continuous_cheat_num</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_continuous_cheat_num__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The number of the continuous cheat actions.During the </span><span class="se">\&quot;</span><span class="s2">playing</span><span class="se">\&quot;</span><span class="s2"> phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. &quot;</span><span class="o">+</span>
+                                                      <span class="s2">&quot;Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn&#39;t response the license action and can take any valid action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_is_response__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="k">return</span>  <span class="bp">self</span><span class="o">.</span><span class="n">__is_response__</span>
+    <span class="n">is_response</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_is_response__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;is_response.  During the </span><span class="se">\&quot;</span><span class="s2">playing</span><span class="se">\&quot;</span><span class="s2"> phase, if is_response is True, the current player need take an valid action with the same pattern as the license action, which was taken by the license player. &quot;</span>
+                                                      <span class="s2">&quot;Unless, he takes the check action. If two continuous cheat actions are taken, is_response will be false, so that the current player needn&#39;t response the license action and can take any valid action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_keep_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__keep_cards__</span>
+    <span class="n">keep_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_keep_cards__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The keep cards&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_first_player__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__first_player__</span>
+    <span class="n">first_player</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_first_player__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The players[first_player] is first to take an action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_phase__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__phase__</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_phase__</span><span class="p">,</span>
+                     <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;There are two stages in DouDiZhu, namely 0) betting for being the landlord and 1) playing the game.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span>
+                           <span class="s2">&quot;0 denotes the betting for being the landlord phase, 1 denotes the playing the game phase.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_epoch__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__epoch__</span>
+    <span class="n">epoch</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_epoch__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The epoch denotes the count about a player takes an action.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">newinstance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span> <span class="o">=</span> <span class="n">DouDiZhuPublicState</span><span class="p">()</span>
+        <span class="n">newinstance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">DouDiZhuPublicState</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span><span class="o">=</span><span class="n">newinstance</span><span class="p">)</span>
+
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__landlord_candidate_id__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landlord_candidate_id</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__landlord_id__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">landlord_id</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__license_playerid__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_playerid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__license_action__</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__license_action__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_action</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__continuous_cheat_num__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_cheat_num</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__is_response__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_response</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_cards</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__keep_cards__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">keep_cards</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__first_player__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_player</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__phase__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span>
+        <span class="n">newinstance</span><span class="o">.</span><span class="n">__epoch__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span>
+
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+<div class="viewcode-block" id="DouDiZhuPersonState"><a class="viewcode-back" href="../../../roomai.doudizhu.html#roomai.doudizhu.DouDiZhuPokerInfo.DouDiZhuPersonState">[docs]</a><span class="k">class</span> <span class="nc">DouDiZhuPersonState</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPersonState</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The person state of DouDiZhu game environment</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span>        <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__get_hand_cards__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hand_cards__</span>
+
+    <span class="n">hand_cards</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_hand_cards__</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s2">&quot;The cards in the hand of the corresponding player&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">newinstance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">DouDiZhuPersonState</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">(</span><span class="n">newinstance</span><span class="o">=</span><span class="n">newinstance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_cards</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__hand_cards__</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">newinstance</span><span class="o">.</span><span class="n">__hand_cards__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hand_cards</span><span class="o">.</span><span class="n">__deepcopy__</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">newinstance</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,170 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.texas.TexasHoldemAction &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for roomai.texas.TexasHoldemAction</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/bin/python</span>
+<span class="c1">#coding:utf-8</span>
+<span class="kn">import</span> <span class="nn">roomai.common</span>
+
+<div class="viewcode-block" id="TexasHoldemAction"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.TexasHoldemAction.TexasHoldemAction">[docs]</a><span class="k">class</span> <span class="nc">TexasHoldemAction</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractAction</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The TexasHoldemAction. The action consists of two parts, namely option and price.\n</span>
+<span class="sd">    The option is [&quot;Fold&quot;,&quot;Check&quot;,&quot;Call&quot;,&quot;Raise&quot;,&quot;AllIn&quot;], and the price is the chips used by this action.\n</span>
+<span class="sd">    The TexasHoldemAction has a key &quot;%s_%d&quot;%(option, price) as its identification. Examples of usages:\n</span>
+<span class="sd">    &gt;&gt; import roomai.TexasHoldem\n</span>
+<span class="sd">    &gt;&gt; a = roomai.TexasHoldem.TexasHoldemAction.lookup(&quot;Fold_0&quot;)\n</span>
+<span class="sd">    &gt;&gt; ## We strongly recommend you to get a TexasHoldemAction using the lookup function\n</span>
+<span class="sd">    &gt;&gt; a.option \n</span>
+<span class="sd">    &quot;Fold&quot;\n</span>
+<span class="sd">    &gt;&gt; a.price\n</span>
+<span class="sd">    0\n</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    
+    <span class="c1"># 弃牌</span>
+    <span class="n">Fold</span>        <span class="o">=</span> <span class="s2">&quot;Fold&quot;</span>
+    <span class="c1"># 过牌</span>
+    <span class="n">Check</span>       <span class="o">=</span> <span class="s2">&quot;Check&quot;</span>
+    <span class="c1"># 更注</span>
+    <span class="n">Call</span>        <span class="o">=</span> <span class="s2">&quot;Call&quot;</span>
+    <span class="c1"># 加注</span>
+    <span class="n">Raise</span>       <span class="o">=</span> <span class="s2">&quot;Raise&quot;</span>
+    <span class="c1"># all in</span>
+    <span class="n">AllIn</span>       <span class="o">=</span> <span class="s2">&quot;Allin&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">opt_price</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__option__</span> <span class="o">=</span> <span class="n">opt_price</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__price__</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">opt_price</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>    <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">option</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__option__</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">Fold</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__option__</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">Check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is invalid key for TexasHoldemAction. The </span><span class="si">%s</span><span class="s2"> option only matches the zero price&quot;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__key__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__option__</span><span class="p">))</span>
+
+
+    <span class="k">def</span> <span class="nf">__get_key__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_key__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The key of this action&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_option__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__option__</span>
+    <span class="n">option</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_option__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The option of this action&quot;</span><span class="p">)</span>
+    
+    
+    <span class="k">def</span> <span class="nf">__get_price__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__price__</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__get_price__</span><span class="p">,</span> <span class="n">doc</span> <span class="o">=</span> <span class="s2">&quot;The price of this action&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TexasHoldemAction.lookup"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.TexasHoldemAction.TexasHoldemAction.lookup">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">lookup</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        lookup an action with this specified key</span>
+<span class="sd">        </span>
+<span class="sd">        :param key: The specified key</span>
+<span class="sd">        :return: The action</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">AllTexasActions</span><span class="p">:</span>
+            <span class="n">AllTexasActions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">TexasHoldemAction</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">AllTexasActions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memodict</span><span class="o">=</span><span class="p">{},</span> <span class="n">newinstance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">AllTexasActions</span><span class="p">:</span>
+            <span class="n">AllTexasActions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">TexasHoldemAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">AllTexasActions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">]</span></div>
+
+<span class="n">AllTexasActions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../roomai.html">roomai package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

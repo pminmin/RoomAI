@@ -1,0 +1,525 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>roomai.texas package &#8212; roomai  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="roomai.sevenking package" href="roomai.sevenking.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="roomai-texas-package">
+<h1>roomai.texas package<a class="headerlink" href="#roomai-texas-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-roomai.texas.TexasHoldemAction">
+<span id="roomai-texas-texasholdemaction-module"></span><h2>roomai.texas.TexasHoldemAction module<a class="headerlink" href="#module-roomai.texas.TexasHoldemAction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction">
+<em class="property">class </em><code class="descclassname">roomai.texas.TexasHoldemAction.</code><code class="descname">TexasHoldemAction</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemAction.html#TexasHoldemAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractAction" title="roomai.common.common.AbstractAction"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractAction</span></code></a></p>
+<p>The TexasHoldemAction. The action consists of two parts, namely option and price.</p>
+<p>The option is [“Fold”,”Check”,”Call”,”Raise”,”AllIn”], and the price is the chips used by this action.</p>
+<p>The TexasHoldemAction has a key “%s_%d”%(option, price) as its identification. Examples of usages:</p>
+<p>&gt;&gt; import roomai.TexasHoldem</p>
+<p>&gt;&gt; a = roomai.TexasHoldem.TexasHoldemAction.lookup(“Fold_0”)</p>
+<p>&gt;&gt; ## We strongly recommend you to get a TexasHoldemAction using the lookup function</p>
+<p>&gt;&gt; a.option</p>
+<p>“Fold”</p>
+<p>&gt;&gt; a.price</p>
+<p>0</p>
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.AllIn">
+<code class="descname">AllIn</code><em class="property"> = 'Allin'</em><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.AllIn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.Call">
+<code class="descname">Call</code><em class="property"> = 'Call'</em><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.Call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.Check">
+<code class="descname">Check</code><em class="property"> = 'Check'</em><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.Check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.Fold">
+<code class="descname">Fold</code><em class="property"> = 'Fold'</em><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.Fold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.Raise">
+<code class="descname">Raise</code><em class="property"> = 'Raise'</em><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.Raise" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.key">
+<code class="descname">key</code><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key of this action</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.lookup">
+<em class="property">classmethod </em><code class="descname">lookup</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemAction.html#TexasHoldemAction.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>lookup an action with this specified key</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – The specified key</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The action</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.option">
+<code class="descname">option</code><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.option" title="Permalink to this definition">¶</a></dt>
+<dd><p>The option of this action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemAction.TexasHoldemAction.price">
+<code class="descname">price</code><a class="headerlink" href="#roomai.texas.TexasHoldemAction.TexasHoldemAction.price" title="Permalink to this definition">¶</a></dt>
+<dd><p>The price of this action</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.texas.TexasHoldemEnv">
+<span id="roomai-texas-texasholdemenv-module"></span><h2>roomai.texas.TexasHoldemEnv module<a class="headerlink" href="#module-roomai.texas.TexasHoldemEnv" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.texas.TexasHoldemEnv.TexasHoldemEnv">
+<em class="property">class </em><code class="descclassname">roomai.texas.TexasHoldemEnv.</code><code class="descname">TexasHoldemEnv</code><a class="reference internal" href="_modules/roomai/texas/TexasHoldemEnv.html#TexasHoldemEnv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemEnv.TexasHoldemEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractEnv" title="roomai.common.common.AbstractEnv"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractEnv</span></code></a></p>
+<p>The TexasHoldem game environment</p>
+<dl class="classmethod">
+<dt id="roomai.texas.TexasHoldemEnv.TexasHoldemEnv.available_actions">
+<em class="property">classmethod </em><code class="descname">available_actions</code><span class="sig-paren">(</span><em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemEnv.html#TexasHoldemEnv.available_actions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemEnv.TexasHoldemEnv.available_actions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate all valid actions given the public state and the person state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>public_state</strong> – </li>
+<li><strong>person_state</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">all valid actions</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.texas.TexasHoldemEnv.TexasHoldemEnv.compete">
+<em class="property">classmethod </em><code class="descname">compete</code><span class="sig-paren">(</span><em>env</em>, <em>players</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemEnv.html#TexasHoldemEnv.compete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemEnv.TexasHoldemEnv.compete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the game environment to hold a compete for the players</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>env</strong> – The game environment</li>
+<li><strong>players</strong> – The players</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">scores for the players</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.texas.TexasHoldemEnv.TexasHoldemEnv.compute_rank_pattern_cards">
+<em class="property">classmethod </em><code class="descname">compute_rank_pattern_cards</code><span class="sig-paren">(</span><em>pattern_cards</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemEnv.html#TexasHoldemEnv.compute_rank_pattern_cards"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemEnv.TexasHoldemEnv.compute_rank_pattern_cards" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.texas.TexasHoldemEnv.TexasHoldemEnv.forward">
+<code class="descname">forward</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemEnv.html#TexasHoldemEnv.forward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemEnv.TexasHoldemEnv.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TexasHoldem game environments steps with the action taken by the current player</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>action</strong> – The action taken by the current player</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">infos, public_state, person_states, private_state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.texas.TexasHoldemEnv.TexasHoldemEnv.init">
+<code class="descname">init</code><span class="sig-paren">(</span><em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemEnv.html#TexasHoldemEnv.init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemEnv.TexasHoldemEnv.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the TexasHoldem game environment with the initialization params.</p>
+<p>The initialization is a dict with some options</p>
+<ol class="arabic simple">
+<li>allcards: the order of all poker cards appearing</li>
+<li>record_history: whether to record all history states. if you need call the backward function, please set it to True. default False</li>
+<li>num_players: how many players are in the game, default 3</li>
+<li>dealer_id: the player id of the dealer, default random</li>
+<li>chips: the initialization chips, default [1000,1000,…]</li>
+<li>big_blind_bet: the number of chips for the big blind bet, default 10</li>
+</ol>
+<p>An example of the initialization param is {“num_players”:2,”record_history”:True}</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> – the initialization params</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">infos, public_state, person_states, private_state</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="roomai.texas.TexasHoldemEnv.TexasHoldemEnv.is_action_valid">
+<em class="property">classmethod </em><code class="descname">is_action_valid</code><span class="sig-paren">(</span><em>action</em>, <em>public_state</em>, <em>person_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/TexasHoldemEnv.html#TexasHoldemEnv.is_action_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemEnv.TexasHoldemEnv.is_action_valid" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>action:
+public_state:
+person_state:</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.texas.TexasHoldemInfo">
+<span id="roomai-texas-texasholdeminfo-module"></span><h2>roomai.texas.TexasHoldemInfo module<a class="headerlink" href="#module-roomai.texas.TexasHoldemInfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPersonState">
+<em class="property">class </em><code class="descclassname">roomai.texas.TexasHoldemInfo.</code><code class="descname">TexasHoldemPersonState</code><a class="reference internal" href="_modules/roomai/texas/TexasHoldemInfo.html#TexasHoldemPersonState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPersonState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPersonState" title="roomai.common.common.AbstractPersonState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPersonState</span></code></a></p>
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPersonState.hand_cards">
+<code class="descname">hand_cards</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPersonState.hand_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hand cards of the corresponding player. It contains two poker cards. For example, hand_cards=[roomai.coomon.PokerCard.lookup(“A_Spade”),roomai.coomon.PokerCard.lookup(“A_Heart”)]</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPrivateState">
+<em class="property">class </em><code class="descclassname">roomai.texas.TexasHoldemInfo.</code><code class="descname">TexasHoldemPrivateState</code><a class="reference internal" href="_modules/roomai/texas/TexasHoldemInfo.html#TexasHoldemPrivateState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPrivateState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPrivateState" title="roomai.common.common.AbstractPrivateState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPrivateState</span></code></a></p>
+<p>The private state of TexasHoldem</p>
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPrivateState.keep_cards">
+<code class="descname">keep_cards</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPrivateState.keep_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>the keep cards</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState">
+<em class="property">class </em><code class="descclassname">roomai.texas.TexasHoldemInfo.</code><code class="descname">TexasHoldemPublicState</code><a class="reference internal" href="_modules/roomai/texas/TexasHoldemInfo.html#TexasHoldemPublicState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPublicState" title="roomai.common.common.AbstractPublicState"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPublicState</span></code></a></p>
+<p>The public state of TexasHoldem</p>
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.bets">
+<code class="descname">bets</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.bets" title="Permalink to this definition">¶</a></dt>
+<dd><p>bets is an array which contains the bets from all players. For example, bets=[50,25,25]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.big_blind_bet">
+<code class="descname">big_blind_bet</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.big_blind_bet" title="Permalink to this definition">¶</a></dt>
+<dd><p>The big blind bet</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.chips">
+<code class="descname">chips</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.chips" title="Permalink to this definition">¶</a></dt>
+<dd><p>chips is an array of the chips of all players. For example, chips=[50,50,50]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.dealer_id">
+<code class="descname">dealer_id</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.dealer_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The player id of the dealer. The next player after the dealer is the small blind. The next player after the small blind is the big blind.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.is_allin">
+<code class="descname">is_allin</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.is_allin" title="Permalink to this definition">¶</a></dt>
+<dd><p>is_allin is an array of which player has take the allin action. For example, is_allin = [true,true,false] denotes the player0 and player1 have taken the allin action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.is_fold">
+<code class="descname">is_fold</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.is_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>is_fold is an array of which player has take the fold action. For example, is_fold = [true,true,false] denotes the player0 and player1 have taken the fold action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.is_needed_to_action">
+<code class="descname">is_needed_to_action</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.is_needed_to_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>is_needed_to_action is an array of which player has take the needed_to_action action. For example, is_needed_to_action = [true,true,false] denotes the player0 and player1 have taken the needed_to_action action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.max_bet_sofar">
+<code class="descname">max_bet_sofar</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.max_bet_sofar" title="Permalink to this definition">¶</a></dt>
+<dd><p>The max bet used by one player so far</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_allin">
+<code class="descname">num_allin</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_allin" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of players who has taken the allin action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_fold">
+<code class="descname">num_fold</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of players who has taken the fold action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_needed_to_action">
+<code class="descname">num_needed_to_action</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_needed_to_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of players who has taken the needed_to_action action</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_players">
+<code class="descname">num_players</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.num_players" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of players in this game</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.public_cards">
+<code class="descname">public_cards</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.public_cards" title="Permalink to this definition">¶</a></dt>
+<dd><p>The public cards of this game. For example, public_cards = [roomai.common.PokerCards.lookup(“A_Spade”), roomai.common.PokerCards.lookup(“A_Heart”)]</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.raise_account">
+<code class="descname">raise_account</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.raise_account" title="Permalink to this definition">¶</a></dt>
+<dd><p>The raise account. If a player want to raise, the price must be max_bet_sofar + raise_account * N. The raise account will increases as the game goes forward</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.stage">
+<code class="descname">stage</code><a class="headerlink" href="#roomai.texas.TexasHoldemInfo.TexasHoldemPublicState.stage" title="Permalink to this definition">¶</a></dt>
+<dd><p>stage in [1,2,3,4]</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.texas.TexasHoldemUtil">
+<span id="roomai-texas-texasholdemutil-module"></span><h2>roomai.texas.TexasHoldemUtil module<a class="headerlink" href="#module-roomai.texas.TexasHoldemUtil" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.texas.TexasHoldemUtil.StageSpace">
+<em class="property">class </em><code class="descclassname">roomai.texas.TexasHoldemUtil.</code><code class="descname">StageSpace</code><a class="reference internal" href="_modules/roomai/texas/TexasHoldemUtil.html#StageSpace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.TexasHoldemUtil.StageSpace" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="roomai.texas.TexasHoldemUtil.StageSpace.firstStage">
+<code class="descname">firstStage</code><em class="property"> = 1</em><a class="headerlink" href="#roomai.texas.TexasHoldemUtil.StageSpace.firstStage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemUtil.StageSpace.fourthStage">
+<code class="descname">fourthStage</code><em class="property"> = 4</em><a class="headerlink" href="#roomai.texas.TexasHoldemUtil.StageSpace.fourthStage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemUtil.StageSpace.secondStage">
+<code class="descname">secondStage</code><em class="property"> = 2</em><a class="headerlink" href="#roomai.texas.TexasHoldemUtil.StageSpace.secondStage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="roomai.texas.TexasHoldemUtil.StageSpace.thirdStage">
+<code class="descname">thirdStage</code><em class="property"> = 3</em><a class="headerlink" href="#roomai.texas.TexasHoldemUtil.StageSpace.thirdStage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.texas.play">
+<span id="roomai-texas-play-module"></span><h2>roomai.texas.play module<a class="headerlink" href="#module-roomai.texas.play" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="roomai.texas.play.Player">
+<em class="property">class </em><code class="descclassname">roomai.texas.play.</code><code class="descname">Player</code><a class="reference internal" href="_modules/roomai/texas/play.html#Player"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.play.Player" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="roomai.common.html#roomai.common.common.AbstractPlayer" title="roomai.common.common.AbstractPlayer"><code class="xref py py-class docutils literal"><span class="pre">roomai.common.common.AbstractPlayer</span></code></a></p>
+<dl class="method">
+<dt id="roomai.texas.play.Player.receive_info">
+<code class="descname">receive_info</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/play.html#Player.receive_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.play.Player.receive_info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>info:</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="roomai.texas.play.Player.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/play.html#Player.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.play.Player.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="roomai.texas.play.Player.take_action">
+<code class="descname">take_action</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/play.html#Player.take_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.play.Player.take_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="roomai.texas.play.show_info">
+<code class="descclassname">roomai.texas.play.</code><code class="descname">show_info</code><span class="sig-paren">(</span><em>info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/play.html#show_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.play.show_info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>info:</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="roomai.texas.play.show_public">
+<code class="descclassname">roomai.texas.play.</code><code class="descname">show_public</code><span class="sig-paren">(</span><em>public_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/roomai/texas/play.html#show_public"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#roomai.texas.play.show_public" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Args:</dt>
+<dd>public_state:</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-roomai.texas">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-roomai.texas" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">roomai</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="roomai.html">roomai package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="roomai.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="roomai.common.html">roomai.common package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.doudizhu.html">roomai.doudizhu package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.fivecardstud.html">roomai.fivecardstud package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.kuhn.html">roomai.kuhn package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="roomai.sevenking.html">roomai.sevenking package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">roomai.texas package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.texas.TexasHoldemAction">roomai.texas.TexasHoldemAction module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.texas.TexasHoldemEnv">roomai.texas.TexasHoldemEnv module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.texas.TexasHoldemInfo">roomai.texas.TexasHoldemInfo module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.texas.TexasHoldemUtil">roomai.texas.TexasHoldemUtil module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.texas.play">roomai.texas.play module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-roomai.texas">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai.RoomAILogger">roomai.RoomAILogger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomai.html#module-roomai">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="roomai.html">roomai package</a><ul>
+      <li>Previous: <a href="roomai.sevenking.html" title="previous chapter">roomai.sevenking package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Author.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/roomai.texas.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
