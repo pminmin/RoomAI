@@ -155,7 +155,7 @@ class SevenKingEnv(roomai.common.AbstractEnv):
             keys = list(pes[new_turn].available_actions.keys())
             for key in keys:
                 if min_card.key not in key:
-                    del pes[new_turn].available_actions[key]
+                    del pes[new_turn].__available_actions__[key]
             pu.__stage__                        = 1
 
 
