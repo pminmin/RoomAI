@@ -56,6 +56,7 @@ if __name__ == "__main__":
 # For More Information
 
  - [RoomAI Tutorials](https://github.com/roomai/RoomAI/blob/master/roomai/README.md)
+ - [RoomAI API Docs](http://roomai.readthedocs.io/en/latest/?badge=latest)
  - [RoomAI Model Zoo](https://github.com/roomai/RoomAI/blob/master/models/README.md)
 
 
