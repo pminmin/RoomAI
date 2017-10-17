@@ -175,5 +175,5 @@ class AbstractEnv:
 
 If you want to develop an AI-bot for a particular game, you need to know the details of this game.
 For example,  if you want to deveop an AI for TexasHoldem, you need to know where to find your hand cards.
-You can find these information in the [API doc](https://github.com/roomai/RoomAI).
+You can find these information in the [API doc](http://roomai.readthedocs.io/en/latest/?badge=latest).
 
