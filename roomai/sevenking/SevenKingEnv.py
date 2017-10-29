@@ -268,11 +268,12 @@ class SevenKingEnv(roomai.common.AbstractEnv):
 
                 elif pattern[0] == "p_1":
                     license_pattern = license_action.pattern
+                    license_card = None
                     if license_pattern[0] != "p_0":
                         license_card = license_action.cards[-1]
 
                     for c in person_state.hand_cards:
-                        if SevenKingPokerCard.compare(c,license_card) >0:
+                        if license_pattern[0] == "p_0" or SevenKingPokerCard.compare(c,license_card) >0:
                             available_actions[c.key] = SevenKingAction.lookup(c.key)
 
                 elif pattern[0] == "p_2":
