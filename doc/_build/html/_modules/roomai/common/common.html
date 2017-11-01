@@ -217,7 +217,7 @@
 <div class="viewcode-block" id="RandomPlayer.take_action"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.RandomPlayer.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">random</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="n">idx</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">available_actions</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="n">idx</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="RandomPlayer.reset"><a class="viewcode-back" href="../../../roomai.common.html#roomai.common.common.RandomPlayer.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div></div>

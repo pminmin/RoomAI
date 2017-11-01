@@ -200,8 +200,14 @@ class SevenKingPersonState(roomai.common.AbstractPersonState):
                 if pointrank not in point2cards:
                     point2cards[pointrank] = []
                 point2cards[pointrank].append(c)
-            #for p in point2cards:
-            #    point2cards[p].sort(cmp=SevenKingPokerCard.compare)
+            for p in point2cards:
+                for i in range(len(point2cards[p])-1):
+                    for j in range(i+1,len(point2cards[p])):
+                        if SevenKingPokerCard.compare(point2cards[p][i],point2cards[p][j]) > 0:
+                            tmp = point2cards[p][i]
+                            point2cards[p][i] = point2cards[p][j]
+                            point2cards[p][j] = tmp
+                #point2cards[p].sort(cmp=SevenKingPokerCard.compare)
 
             AllPointRank2Cards[self.__hand_cards_key__] = point2cards
             return point2cards

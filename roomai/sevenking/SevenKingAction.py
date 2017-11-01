@@ -13,12 +13,12 @@ class SevenKingAction(roomai.common.AbstractAction):
     >> ## We strongly recommend you to get an action with the lookup function.\n
     >> action.key \n
     "A_Heart, A_Spade"\n
-    >> action.cards[0].point
+    >> action.cards[0].point\n
     "A"\n
-    >> action.cards[0].suit
+    >> action.cards[0].suit\n
     "Heart"\n
     >> action.pattern\n
-    p_2 # 2 cards in this action\n
+    p_2 # There are 2 cards in this action\n
     '''
 
     def __init__(self, key):
@@ -26,12 +26,15 @@ class SevenKingAction(roomai.common.AbstractAction):
             raise TypeError("The key for SevenKingAction is an str, not %s"%(type(str)))
 
         super(SevenKingAction,self).__init__(key)
-        self.__key__         = key.strip()
         self.__cards__       = []
         if len(key) > 0:
             for c in self.key.split(","):
                 self.__cards__.append(roomai.sevenking.SevenKingPokerCard.lookup(c))
             self.__cards__.sort(key = cmp_to_key(roomai.sevenking.SevenKingPokerCard.compare))
+            self.__key__ = ",".join([c.key for c in self.__cards__])
+        else:
+            self.__key__ = ""
+
         self.__pattern__ = self.__action2pattern__(self)
 
     @classmethod

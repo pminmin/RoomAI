@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    roomai.bridge
     roomai.common
     roomai.doudizhu
     roomai.fivecardstud

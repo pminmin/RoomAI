@@ -44,14 +44,6 @@ roomai\.doudizhu\.actions module
     :undoc-members:
     :show-inheritance:
 
-roomai\.doudizhu\.doudizhu\_gen\_all\_actions module
-----------------------------------------------------
-
-.. automodule:: roomai.doudizhu.doudizhu_gen_all_actions
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 roomai\.doudizhu\.patterns module
 ---------------------------------
 

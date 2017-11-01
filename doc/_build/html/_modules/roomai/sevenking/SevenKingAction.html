@@ -54,12 +54,12 @@
 <span class="sd">    &gt;&gt; ## We strongly recommend you to get an action with the lookup function.\n</span>
 <span class="sd">    &gt;&gt; action.key \n</span>
 <span class="sd">    &quot;A_Heart, A_Spade&quot;\n</span>
-<span class="sd">    &gt;&gt; action.cards[0].point</span>
+<span class="sd">    &gt;&gt; action.cards[0].point\n</span>
 <span class="sd">    &quot;A&quot;\n</span>
-<span class="sd">    &gt;&gt; action.cards[0].suit</span>
+<span class="sd">    &gt;&gt; action.cards[0].suit\n</span>
 <span class="sd">    &quot;Heart&quot;\n</span>
 <span class="sd">    &gt;&gt; action.pattern\n</span>
-<span class="sd">    p_2 # 2 cards in this action\n</span>
+<span class="sd">    p_2 # There are 2 cards in this action\n</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -67,12 +67,15 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The key for SevenKingAction is an str, not </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="p">)))</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">SevenKingAction</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span>         <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span>       <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">sevenking</span><span class="o">.</span><span class="n">SevenKingPokerCard</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span> <span class="o">=</span> <span class="n">cmp_to_key</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">sevenking</span><span class="o">.</span><span class="n">SevenKingPokerCard</span><span class="o">.</span><span class="n">compare</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cards__</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__key__</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">__pattern__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__action2pattern__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>

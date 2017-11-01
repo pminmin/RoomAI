@@ -45,37 +45,17 @@
 <span class="kn">import</span> <span class="nn">roomai.common</span>
 <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.play.Player">[docs]</a><span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">roomai</span><span class="o">.</span><span class="n">common</span><span class="o">.</span><span class="n">AbstractPlayer</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Player.receive_info"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.play.Player.receive_info">[docs]</a>    <span class="k">def</span> <span class="nf">receive_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            info:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">available_actions</span> <span class="o">=</span> <span class="n">info</span></div>
 <div class="viewcode-block" id="Player.take_action"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.play.Player.take_action">[docs]</a>    <span class="k">def</span> <span class="nf">take_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        Returns:</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">action</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">(</span><span class="s2">&quot;choosed_acton:&quot;</span><span class="p">)</span>
         <span class="c1">#action = &quot;&quot;</span>
         <span class="k">return</span> <span class="n">roomai</span><span class="o">.</span><span class="n">texas</span><span class="o">.</span><span class="n">TexasHoldemAction</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="n">action</span><span class="p">)</span></div>
 <div class="viewcode-block" id="Player.reset"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.play.Player.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 
 
 <div class="viewcode-block" id="show_public"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.play.show_public">[docs]</a><span class="k">def</span> <span class="nf">show_public</span><span class="p">(</span><span class="n">public_state</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        public_state:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;dealer_id:</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">public_state</span><span class="o">.</span><span class="n">dealer_id</span><span class="p">)</span> <span class="o">+</span>\
            <span class="s2">&quot;chips:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">public_state</span><span class="o">.</span><span class="n">chips</span><span class="p">]))</span> <span class="o">+</span>\
            <span class="s2">&quot;  bets:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">public_state</span><span class="o">.</span><span class="n">bets</span><span class="p">]))</span> <span class="o">+</span>\
@@ -83,11 +63,6 @@
            <span class="s2">&quot;public_cards:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">public_state</span><span class="o">.</span><span class="n">public_cards</span><span class="p">]))</span>
            <span class="p">)</span></div>
 <div class="viewcode-block" id="show_info"><a class="viewcode-back" href="../../../roomai.texas.html#roomai.texas.play.show_info">[docs]</a><span class="k">def</span> <span class="nf">show_info</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        info:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">person_state</span>          <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">person_state</span>
     <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> available_actions: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">available_actions</span><span class="o">.</span><span class="n">keys</span><span class="p">()))))</span>
     <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> cards:</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">person_state</span><span class="o">.</span><span class="n">id</span><span class="p">,</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">key</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">person_state</span><span class="o">.</span><span class="n">hand_cards</span><span class="p">])))</span></div>

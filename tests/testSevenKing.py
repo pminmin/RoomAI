@@ -144,6 +144,17 @@ class testSevenKing(unittest.TestCase):
         self.assertFalse(env.is_action_valid(SevenKingAction.lookup(""),public_state, person_states[public_state.turn]))
 
 
+    def testCase1(self):
+        import roomai.sevenking
+        env = SevenKingEnv()
+        all_cards = roomai.sevenking.AllSevenKingPokerCards.values()
+        infos, public_state, person_states, private_state = env.init({"allcards":all_cards})
+
+    def testCase1(self):
+        env = SevenKingEnv()
+        players = [AlwaysFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
+        env.compete(env, players)
+
 if __name__ == "__main__":
     env = SevenKingEnv()
     players = [AlwaysFoldPlayer(), AlwaysFoldPlayer(), AlwaysNotFoldPlayer()]
