@@ -1,163 +1,181 @@
 #!/bin/python
 import roomai.common
+from roomai.threeking import ThreeKingPorkerCard
 
 class ThreeKingPublicState(roomai.common.AbstractPublicState):
-	def __init__(self):
-		self.__state__ = None			# state of game
-		self.__stage__ = None			# stage of current player
-		self.__lord_id__ = None			# id of lord
-		self.__num_players__ = None		# number of players
-		self.__previous_id__ = None		# previous player of proactive action
-		self.__previous_action__ = None # previous action
-		self.__turn__ = None			# turn
+    def __init__(self):
+        super(ThreeKingPublicState,self).__init__()
+        
+        self.__terminal__                           = None
+        self.__state__			                    		= None
+        self.__turn__                               = None
+        self.__previous_id__                        = None
+        self.__previous_action__                    = None
 
-		self.__players__ = None			# hero name of each player
-		self.__blood__ = None			# remaining blood of each player
-		self.__distance__ = None		# distances from other players
-		self.__equipment_cards__ = None	# list = [], equipment cards of each player
-		self.__fate_zone_cards__ = None # list = [], fate zone cards of each player
+        self.__lord_id__	                        	= None
+        self.__num_players__	                    	= None
+        self.__num_discard_cards__	                = None
+        self.__discard_cards__		                	= None
+        self.__num_deposit_cards__	                = None
+        self.__deposit_cards__		                	= None
+        self.__num__equipment_cards__	            	= None
+        self.__equipment_cards__		           	 		= None
+        self.__num_fate_zone_cards__	            	= None
+        self.__fate_zone_cards__		            		= None
+        self.__num_hand_cards__			            		= None
+        self.__num_keep_cards__                     = None
+		
+		
+		def __get__terminal__(self): return self.__terminal__
+		terminal = property(__get_terminal__, doc="Is terminal?")
 
-		@property
-		def state(self):
-			return self.__state__
+		def __get_state__(self):
+			if self.__state__ is None:
+				return None
+			return tuple(self.__state__)
+		state = property(__get_state__, doc="")
 
-		@property
-		def stage(self):
-			return self.__stage__
+		def __get_turn__(self): return self.__turn__
+		turn = property(__get_turn__, doc="")
 
-		@property
-		def lord_id(self):
-			return self.__lord_id__
+		def __get_previous_id__(self): return self.__previous_id__
+		previous_id = property(__get_previous_id__, doc="")
 
-		@property
-		def num_players(self):
-			return self.__num_players__
+		def __get_previous_action__(self): return self.__previous_action__
+		previous_action = property(__get_previous_action__, doc="")
 
-		@property
-		def previous_id(self):
-			return self.__previous_id__
+		def __get_lord_id__(self): return self.__lord_id__
+		lord_id = property(__get_lord_id__, doc="lord_id= 1")
 
-		@property
-		def previous_action(self):
-			return self.__previous_action__
+		def __get_num_players__(self): return self.__num_players__
+		num_players = property(__get_num_players__, doc="num_players = 4 denotes the number of players in this game")
+		
+		def __get_discard_cards__(self):
+			if self.__discard_cards__ is None:
+				return None
+			return tuple(self.__discard_cards__)
+		discard_cards = property(__get_discard_cards__, doc="discard_cards = [roomai.threeking.ThreeKingPokerCards.lookup(\" \"), ...]")
 
-		@property
-		def turn(self):
-			return self.__turn__
+		def __get_num_discard_cards__(self): return self.__num_discard_cards__
+		num_discard_cards = property(__get_num_discard_cards__, doc="num_discard_cards = 10")
 
-		@property
-		def players(self):
-			return self.__players__
+		def __get_deposit_cards__(self):
+			if self.__deposit_cards__ is None:
+				return None
+			return tuple(self.__deposit_cards__)
+		deposit_cards = property(__get_deposit_cards__, doc="deposit_cards = [roomai.threeking.ThreeKingPokerCards.lookup(\" \"), ...]")
 
-		@property
-		def blood(self):
-			return self.__blood__
+		def __get_num_deposit_cards__(self): return self.__num_deposit_cards__
+		num_deposite_cards = property(__get_num_deposit_cards__, doc="num_deposite_cards = 10")
 
-		@property
-		def distance(self):
-			return self.__distance__
+		def __get_equipment_cards__(self):
+			if self.__equipment_cards__ is None:
+				return None
+			return tuple(self.__equipment_cards__)
+		equipment_cards = property(__get_equipment_cards__, doc="quipment_cards = [[roomai.threeking.ThreeKingPokerCards.lookup(\" \"), ...],[roomai.threeking.ThreeKingPokerCards.lookup(\" \"), ...]] denotes the players0......")
 
-		@property
-		def equipment_cards(self):
-			return self.__equipment_cards__
+		def __get_num_equipment_cards__(self):
+			if self.__num_equipment_cards__ is None:
+				return None
+			return tuple(self.__num_equipment_cards__)
+		num_equipment_cards = property(__get_num_equipment_cards__, doc="num_equipment_cards = [3,5,2] denotes the player0 has 3 cards in equipment zone.")
 
-		@property
-		def fate_zone_cards(self):
-			return self.__fate_zone_cards__
+		def __get_fate_zone_cards__(self):
+			if self.__fate_zone_cards__ is None:
+				return None
+			return tuple(self.__fate_zone_cards__)
+			fate_zone_cards = property(__get_fate_zone_cards__, doc="fate_zone_cards = [[roomai.threeking.ThreeKingPokerCards.lookup(\" \"), ...],[roomai.threeking.ThreeKingPokerCards.lookup(\" \"), ...]] denotes the players0......")
 
-	def __deepcopy__(self, newinstance=None, memodict={}):
-		if newinstance is None:
-			newinstance = ThreeKingPublicState()
-		newinstance   = super(ThreeKingPublicState,self).__deepcopy__(newinstance = newinstance)
+		def __get_num_fate_zone_cards__(self):
+			if self.__num_fate_zone_cards__ is None:
+				return None
+			return tuple(self.__num_fate_zone_cards__)
+			num_fate_zone_cards = property(__get_num_fate_zone_cards__, doc="num_fate_zone_cards = [0,1,0] denotes the player0 has 0 card in fate zone, player1 has ...")
+	
+		def __get_num_hand_cards__(self):
+			if self.__num_hand_cards__ is None:
+				return None
+			return tuple(self.__num_hand_cards__)
+		num_hand_cards = property(__get_num_hand_cards__, doc="num_hand_cards = [3,5,2] denotes the players0 3 cards in hand, player1 has ...")
 
-		newinstance.__state__ = self.state
-		newinstance.__stage__ = self.stage
-		newinstance.__turn__ = self.turn
-		newinstance.__lord_id__ = self.lord_id
-		newinstance.__previous_id__ = self.previous_id
+		def __get_num_keep_cards__(self):
+			if self.__num_keep_cards__ is None:
+				return None
+			return tuple(self.__num_keep_cards__)
+		num_keep_cards = property(__get_num_keep_cards__, doc="num_keep_cards = 12 denotes 12 cards in keep zone ...")
+        
 
-		newinstance.__players__ = self.players
-		newinstance.__blood__ = self.blood
-		newinstance.__distance__ = self.distance
-
-		if self.previous_action is None:
-			newinstance.__previous_action__ = None
-		else:
-			newinstance.__previous_action__ = self.previous_action
-
-		if self.equipment_cards is None:
-			newinstance.__equipment_cards__ = None
-		else:
-			newinstance.__equipment_cards__ = [self.equipment_cards[i] for i in xrange(len(self.num_players))]
-
-		if self.fate_zone_cards is None:
-			newinstance.__fate_zone_cards__ = None
-		else:
-			newinstance.__fate_zone_cards__ = [self.fate_zone_cards[i] for i in xrange(len(self.num_players))]
-		return newinstance
 
 class ThreeKingPrivateState(roomai.common.AbstractPrivateState):
+    '''
+    The private state of ThreeKing
+    '''
+    def __init__(self):
+        super(ThreeKingPrivateState,self).__init__()
+        self.__keep_cards__   = []
+
+    def __get_keep_cards__(self):
+        return tuple(self.__keep_cards__)
+    keep_cards = property(__get_keep_cards__, doc="The keep cards")
+
+    def __deepcopy__(self, newinstance = None, memodict={}):
+        if newinstance is None:
+            newinstance = ThreeKingPrivateState()
+        newinstance                = super(ThreeKingPrivateState,self).__deepcopy__(newinstance = newinstance)
+        newinstance.__keep_cards__ =  [card.__deepcopy__() for card in self.keep_cards   ]
+        return newinstance
+
+
+
+		
+class ThreekingPersonState(roomai.common.AbstractPersonState):
+	'''
+	The person state of ThreeKing
+	'''
 	def __init__(self):
-		super(ThreeKingPrivateState, self).__init__()
-		self.__keep_cards__ = []
-
-	@property
-	def keep_cards(self):
-		return tuple(self._keep_cards)
-
-	def __deepcopy__(self, newinstance=None, memodict={}):
-		if newinstance is None:
-			newinstance = ThreeKingPrivateState()
-		if self.keep_cards == None:
-			newinstance.__keep_cards__ = None
-		else:
-			newinstance.__keep_cards__ = [self.keep_cards[i].__deepcopy__() for i in xrange(len(self.keep_cards))]
-		return newinstance
+		super(ThreeKingPersonState,self).__init__()
+	    self.__role__                   = None
+		self.__hand_cards_keyset__		= set()
+		self.__hand_cards_key__			= ""
 	
-class ThreeKingPersonState(roomai.common.AbstractPersonState):
-	def __init__(self):
-		super(ThreeKingPersonState, self).__init__()
-		self.__hand_cards__ = None
-		self.__role_id__ = None
-
-		@property
-		def hand_cards(self):
-			return self._hand_cards
-
-		@property
-		def role_id(self):
-			return self._role_id
+	def __get_hand_cards__(self):
+		return tuple(self.__hand_cards__)
+	hand_cards = property(__get_hand_cards__, doc="hand_cards = [roomai.threeking.ThreeKingPokerCards.lookup(\" \"), ...]")
+	
+	def __get_hand_cards_key__(self):
+		return self.__hand_cards_key__
+	hand_cards_key = property(self.__get_hand_cards_keyset__, doc="hand_cards_key = \" \"")
+	
+	def __get_hand_cards_keyset__(self):
+		return frozenset(self.__hand_cards_keyset__)
+	hand_cards_keyset = property(__get_hand_cards_keyset__, doc="hand_cards_keyset={\" \"}")
 
 	def __add_cards__(self, cards):
-		for c in cards:
+	    len1 = len(self.__hand_cards__)
+	    for c in cards:
 			self.__hand_cards__.append(c)
+			self.__hand_cards_keyset__.add(c.key)
+	    len2 = len(self.__hand_cards__)
+
+	    for i in range(len1, len2-1):
+			for j in range(i,0,-1):
+		    	if ThreeKingPokerCard.compare(self.__hand_cards__[j-1], self.__hand_cards__[j]) > 0:
+					tmp = self.__hand_cards__[j]
+					self.__hand_cards__[j] = self.__hand_cards__[j-1]
+					self.__hand_cards__[j-1] = tmp
+		    	else:
+					break
+		self.__hand_cards_key__ = ",".join([c.key for c in self.__hand_cards__])
+
 
 	def __del_cards__(self, cards):
-		for c in cards:
-			self.__hand_cards__.remove(c)
+    	for c in cards:
+        	self.__hand_cards_keyset__.remove(c.key)
 
-	def __deepcopy__(self, newinstance=None, memodict={}):
-		if newinstance is None:
-			newinstance = ThreeKingPersonState()
-		if self.hand_cards is None:
-			newinstance.__hand_cards__ = None
-		else:
-			newinstance.__hand_cards__ = [self.hand_cards[i].__deepcopy__() for i in xrange(len(self.hand_cards))]
-
-		newinstance.__role_id__ = self.role_id
-		return newinstance
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
+        tmp = self.__hand_cards__
+        self.__hand_cards__ = []
+        for i in range(len(tmp)):
+        	if tmp[i].key not in self.__hand_cards_keyset__:
+            	continue
+        	self.__hand_cards__.append(tmp[i])
+        self.__hand_cards_key__ = ",".join([c.key for c in self.__hand_cards__])

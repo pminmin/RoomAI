@@ -1,6 +1,17 @@
 #!/bin/python
 import roomai.common
 
+# pattern 1
+p1 = ["Pass"]
+# pattern 2
+p2 = ["Get" "Dodge" "Equip" "Fate" "NanManRuQin" "WuZhongShengYou" "WanJianQiFa" "TaoYuanJieYi"]
+# pattern 3
+p3 = ["Slash" "FangTianHuaJi" "JueDou" "WuXieKeJi" "LeBuSiShu"]
+# pattern 4
+p4 = ["ShunShouQianYang" "GuoHeChaiQiao"]
+# pattern 5
+p5 = ["JieDaoShaRen"]
+
 class ThreeKingAction(roomai.common.AbstractAction):
 	def __init__(self, key):
 		if not isinstance(key, str):
@@ -10,21 +21,21 @@ class ThreeKingAction(roomai.common.AbstractAction):
 			action_info = key.strip().split("-") # skill, card, targets, other_targets, target_cards
 			self.__skill__ = roomai.threeking.ThreeKingSkills.lookup(action_info[0])
 
-			if self.__skill__.name in []: # pattern 1
+			if self.__skill__.name in p1: # pattern 1
 				self.__key__ = self.__skill__.name
 
-			elif self.__skill__.name in []: # pattern 2
+			elif self.__skill__.name in p2: # pattern 2
 				self.__card__ = roomai.threeking.ThreeKingPokerCard.lookup(action_info[1])
 				self.__key__ = self.__skill__.name + "-" + self.__card__.key
 
-			elif self.__skill__.name in []: # pattern 3
+			elif self.__skill__.name in p3: # pattern 3
 				self.__card__ = roomai.threeking.ThreeKingPokerCard.lookup(action_info[1])
 
 				for target in action_info[2].split(","):
 					self.__targets__.append(roomai.threeking.players.lookup(target))
 				self.__key__ = self.__skill__.name + "-" + self.__card__.key + "-" + ",".join([t.name for t in self.__targets__])
 
-			elif self.__skill__.name in []: # pattern 4
+			elif self.__skill__.name in p4: # pattern 4
 				self.__card__ = roomai.threeking.ThreeKingPokerCard.lookup(action_info[1])
 
 				for target in action_info[2].split(","):
@@ -36,7 +47,7 @@ class ThreeKingAction(roomai.common.AbstractAction):
 				self.__key__ = self.__skill__.name + "-" + self.__card__.key + "-" + ",".join([t.name for t in self.__targets__]) \
 								+ "-" + ",".join([o_t.name for o_t in self.__other_targets__])
 
-			elif self.__skill__.name in []: # pattern 5
+			elif self.__skill__.name in p5: # pattern 5
 				self.__card__ = roomai.threeking.ThreeKingPokerCard.lookup(action_info[1])
 
 				for target in action_info[2].split(","):
