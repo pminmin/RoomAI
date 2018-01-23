@@ -131,7 +131,7 @@ class ThreeKingEnv(roomai.common.AbstractEnv):
         if self.is_action_valid(action, pu, pes[turn]) == False: #implement code here!
             raise ValueError("The (%s) is an invalid action " % (action.key))
         
-        self.change_state()#implement you code here!
+        self.change_state() # implement you code here!
         '''
         ThreeKingSkills.take_action(pu,pr,pes,action)# action is an object
         '''
