@@ -97,7 +97,7 @@ class ThreeKingAction(roomai.common.AbstractAction):
 			newinstance = ThreeKingAction(self.__key__)
 		newinstance = super(ThreeKingAction, self).__deepcopy__(newinstance = newinstance)
 		newinstance.__skill__ = self.__skill__
-		newinstance.__card__ = self.__card__
+		newinstance.__cards__ = self.__card__
 		newinstance.__targets__ = self.__targets__
 		newinstance.__other_targets__ = self.__other_targets__
 		newinstance.__target_cards__ = self.__target_cards__
